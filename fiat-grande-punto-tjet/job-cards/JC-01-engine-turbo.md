@@ -76,7 +76,7 @@ Genuine kit+pump 8,000–12,000 · Gates/SKF kit+pump 4,500–7,500 · Estirad: 
 
 ## 4. Turbocharger & Boost Control — 🟡 MEDIUM · **Inspect First — do NOT pre-buy**
 
-> ❓ **Ledger shows turbo work (EGP 3,000) + exhaust manifold (EGP 3,000) with no date/km.** Owner to confirm: when, repair vs. replacement, new/used/rebuilt, brand. EGP 3,000 suggests a repair/rebuild or used unit, not a new turbo — a boost log at baseline will show whether it performs to spec.
+> ✅ **Owner confirmed (2026-07-12): turbo and exhaust manifold are ORIGINAL at 155,000 km** — ledger figures were quotes only. An original turbo at 155k with documented oil care is normal, but it is now the highest-mileage major component on the engine. Baseline boost log + shaft-play check move up in importance: catch wear early, before it feeds debris downstream.
 
 | # | Item | Detail |
 |---|---|---|
@@ -126,13 +126,13 @@ Risk if ignored: drivetrain shunt loads crack exhaust flex pipe and stress drive
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Oil + filters service (no date on record) | Must Replace now | 🔴 | 1,600–2,400 |
+| Oil + filters service (last @149k, 5W-40) | Due ~157k — do at catch-up visit | 🟠 | 1,600–2,400 |
 | Spark plugs (43k km old) | Must Replace — overdue | 🟠 | 2,200–3,500 |
 | Coils | Inspect First | 🟡 | 0–8,000 |
 | Timing belt + WP + coolant | ✅ done @112k → next ~172–180k / Oct 2027 | 🟡 scheduled | 5,500–8,000 reserved |
 | PCV/oil separator | ✅ done ~122k — verify only | 🟢 | 0 |
 | Fuel pump | ✅ done @115k | 🟢 | 0 |
 | Engine mounts | ✅ 2 done @125k — check 3rd | 🟢 | 0–1,800 |
-| Boost system small parts | Inspect First (+ boost log; turbo history ❓) | 🟡 | 0–5,000 |
+| Boost system small parts | Inspect First — **turbo is original @155k: boost log + shaft-play check mandatory at baseline** | 🟡 | 0–5,000 |
 
 All prices EGP, confidence Low–Medium, re-quote at purchase.

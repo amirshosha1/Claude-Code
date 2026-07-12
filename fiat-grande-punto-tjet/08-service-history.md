@@ -19,7 +19,7 @@ Source: owner's price/maintenance spreadsheet (Car.pdf, Arabic). Prices in EGP a
 | — | 128,000 | دينامو → **Alternator** | 3,300 | |
 | 10-Nov-25 | 135,000 | تيل ورا → **Rear brake pads** | ~600–900 | |
 | 10-Dec-25 | 140,000 | **فولام Flywheel (11,000)** · دسكات قدام front discs · تيل قدام front pads · علبة دركسيون **steering box/rack (1,000)** · بلية إيطالي bearing, Italian (3,800) ❓ | 15,800+ | Major visit |
-| — | date unknown | تربو → **Turbo** (3,000) · فرن هيدر → **Exhaust manifold** (3,000) | 6,000 | ❓ no date/km recorded — was this a repair or a replacement? Owner to confirm |
+| — | — | ~~Turbo (3,000) · Exhaust manifold (3,000)~~ | — | ✅ RESOLVED: these were **price quotes, not work done**. Turbo and manifold are **original/stock at 155,000 km** |
 
 ## Consumables/accessories also in ledger (undated)
 
@@ -45,12 +45,12 @@ Oil 820 · ceramic additive 380 · oil flush 110 · oil filter 130 · air filter
 | Underbody shield (مصفحة تحت) | 450 |
 | Steering wheel + gear leather | 500–800 |
 
-## Open questions for owner (to close ❓ flags)
+## Owner's answers (2026-07-12) — all ❓ flags closed
 
-1. **Turbo + exhaust manifold (EGP 6,000)** — when, at what km, new/used/repair, which brand?
-2. **Coolant** — was Paraflu UP refilled at the 112k water pump job? Any record since?
-3. **Brake fluid** — ever flushed? No entry found in ledger.
-4. **Gearbox oil** — was it renewed during the 125k clutch or 140k flywheel job (box was out — often done)?
-5. **Engine oil interval** — the ledger prices an oil service (~1,440 with filters) but no dates: what km was the last change?
-6. Rear discs quoted (1,200–1,500) but no purchase row — are rear discs currently worn and awaiting replacement?
-7. Front discs at 140k on 10-Dec-25 — which brand was fitted?
+1. **Turbo + manifold**: never changed — **original at 155k km**. Ledger figures were quotes only.
+2. **Coolant**: changed with **Mannol "G10"-type antifreeze** (at the water pump job). ⚠️ Fiat spec is Paraflu UP (red OAT, G12+-class). Action: do **not** mix types when topping up (same Mannol or distilled water only); at the **next timing-belt service (~172–180k / Oct 2027) do a full flush and switch to Paraflu UP or a G12+/OAT equivalent**.
+3. **Brake fluid**: never a full flush, but **changed @ 125,000 km** (with the gearbox-oil/clutch visit). ~30k km / ~2 yr ago → a proper flush at the catch-up visit is cheap insurance (🟠, no longer 🔴).
+4. **Gearbox oil**: ✅ done @ 125,000 km — good until ~205k+.
+5. **Engine oil**: last change **@ 149,000 km, 5W-40** → 6,000 km ago → **next due ~157–159k km** (do it at the catch-up visit).
+6. **Rear discs**: **confirmed worn — need replacement** → moved to NEEDS ORDERING.
+7. Front disc brand (Dec 2025): not remembered — check stamping on the disc at next wheel-off.

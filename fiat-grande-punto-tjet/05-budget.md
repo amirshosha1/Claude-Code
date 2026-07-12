@@ -6,15 +6,16 @@
 
 | Item | Parts (EGP) | Labor (EGP) | Total |
 |---|---|---|---|
-| Engine oil + oil filter + flush (ledger: 820+130+110) | 1,060–1,500 | 150–300 | 1,200–1,800 |
+| Engine oil + oil filter + flush (due ~157k; ledger: 820+130+110) | 1,060–1,500 | 150–300 | 1,200–1,800 |
 | Air filter + cabin filter (ledger: 250+150) | 400–600 | — | 400–600 |
 | Spark plugs — overdue (ledger last time: 1,900) | 1,900–3,000 | 300–500 | 2,200–3,500 |
-| Brake fluid DOT4 flush (no record ever) | 250–500 | 300–600 | 550–1,100 |
-| Coolant Paraflu UP — if owner can't confirm | 800–1,500 | 300–500 | 0 or 1,100–2,000 |
-| Gearbox oil — if not done at clutch job | 800–1,500 | 200–400 | 0 or 1,000–1,900 |
-| Baseline checks: suspension shake-down + battery CCA + tire DOT + A/C vent temp + OBD scan | — | 800–2,000 | 800–2,000 |
+| Brake fluid DOT4 flush (last @125k, ~2 yr) | 250–500 | 300–600 | 550–1,100 |
+| **Rear discs + pads — owner confirms worn** (owner quotes: discs 1,200–1,500 + pads 600–900) | 1,800–2,400 | 400–700 | 2,200–3,100 |
+| Baseline checks: boost log + turbo shaft play (original turbo!) + suspension shake-down + battery CCA + tire DOT + A/C vent temp + OBD scan | — | 800–2,000 | 800–2,000 |
 | Grounds + scuttle drains + wipers | 300–500 | 300–600 | 600–1,100 |
-| **Committed subtotal** | | | **≈ 8,000–14,000** |
+| **Committed subtotal** | | | **≈ 8,000–13,200** |
+
+✅ Removed after owner confirmation: gearbox oil (done @125k) · coolant (done with Mannol — full flush deferred to next belt job, where +EGP 1,100–2,000 is reserved for the switch to Paraflu UP/G12+).
 
 ## B. Probable near-term (inspection decides — history-informed)
 
@@ -22,7 +23,6 @@
 |---|---|---|
 | Front suspension refresh (shocks/mounts/links as found) | 4,000–10,000 | Overhaul is 53k km old (ledger benchmark: full job was 4,195 in 2021 — prices have risen) |
 | Rear shocks (never recorded; owner quote 1,500) | 2,000–4,500 | Likely original at 155k |
-| Rear discs (quoted 1,200–1,500, never bought) + pads if needed | 2,000–3,500 | Owner was already pricing them |
 | Battery | 3,500–5,500 | No record; Egypt heat |
 | Tires ×4 (only if DOT >5 yr or <3 mm) | 14,000–26,000 | No record |
 | A/C leak path (compressor clutch quoted 1,000 in ledger) | 1,100–6,000 | Test first |
@@ -33,9 +33,9 @@
 
 | Item | Reserve | When |
 |---|---|---|
-| **Next timing belt + tensioner + WP + acc. belt + coolant** | 5,500–8,000 (ledger benchmark 5,400 in 2023) | ~172–180k km or Oct 2027 |
+| **Next timing belt + tensioner + WP + acc. belt + coolant flush → Paraflu UP/G12+** | 6,500–10,000 (ledger benchmark 5,400 in 2023 + coolant switch) | ~172–180k km or Oct 2027 |
 | Coils ×4 (if misfires appear) | up to 8,000 | Evidence only |
-| Turbo/boost small parts | 1,500–4,000 | Evidence only (turbo itself had work — confirm ❓) |
+| Turbo/boost — **turbo original @155k**: solenoid/hoses/actuator first; turbo reserve grows with boost-log evidence | 1,500–4,000 small parts | Evidence only |
 | EPS/steering — rack is new (Dec 2025) | minimal | — |
 | Clutch — done at 125k + flywheel 140k | not needed this cycle | — |
 | Recommended cash reserve | **12,000–18,000** | |

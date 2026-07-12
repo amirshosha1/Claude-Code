@@ -20,7 +20,7 @@ No action this cycle; typical remaining life 60–100k km. Reference below kept 
 | Pricing (EGP, LOW) | Kit Valeo/LuK 6,000–10,000 · Labor (box out) 2,500–4,500 · **Total ≈ 9,000–14,500** |
 | Risk if ignored | Slipping clutch glazes flywheel (+EGP 2–4k machining/replacement) and can strand you mid-traffic. Worst case: friction material disintegrates, car immobile |
 
-## 2. Gearbox Oil — 🟠 · **Confirm with owner/workshop** — was it renewed during the 125k clutch or 140k flywheel job (box was out both times)? If unconfirmed → replace.
+## 2. Gearbox Oil — 🟢 DONE · ✅ owner confirmed renewed @ 125,000 km with clutch job. Next due ~205k+.
 
 Tutela Car Matryx / 75W-85 GL-4 (spec per handbook — verify). ~2 L.
 Brands: Tutela ★★★★★ (OE) · Motul Gear 300 / Castrol Syntrans ★★★★★.
@@ -51,7 +51,7 @@ Covered in JC-01 §6 (they act as one system for drivetrain shunt).
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Gearbox oil | Confirm history → replace if unknown | 🟠 | 0–1,900 |
+| Gearbox oil | ✅ done @125k (owner confirmed) | 🟢 | 0 |
 | CV boots/joints | Inspect First (owner's ledger quotes: outer 2,000 / inner 2,500) | 🟠 | 0–7,000 |
 | Clutch + flywheel | ✅ done @125k/@140k | 🟢 | 0 |
 | Linkage bushes | Inspect First | 🟡 | 0–1,400 |

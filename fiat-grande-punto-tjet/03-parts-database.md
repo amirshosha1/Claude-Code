@@ -12,13 +12,13 @@ Statuses: `NEEDS ORDERING` · `WAITING QUOTE` · `ORDERED` · `PURCHASED` · `IN
 | 3 | Air filter | 55192012 | ⬜ | Mann C-series · Mahle | Mann | TBD | 1 | ~250 | NEEDS ORDERING | | | |
 | 4 | Cabin filter | via ePER | ⬜ | Mann CU-series · Bosch | Mann | TBD | 1 | 120–150 | NEEDS ORDERING | | | |
 | 5 | Spark plugs iridium (OE heat range) | 55212466 | ⬜ | NGK IKR9F8-type · Denso equivalent | NGK | TBD | 4 | ~1,900 set | NEEDS ORDERING — overdue | | | |
-| 6 | Brake fluid DOT4 | — | — | ATE · Bosch · TRW | ATE | TBD | 1 L | 250–500 | NEEDS ORDERING | | | |
-| 7 | Coolant Paraflu UP | — | — | Petronas Paraflu UP | Paraflu | TBD | 4–5 L | TBD | ON HOLD (confirm if done @112k) | | | |
-| 8 | Gearbox oil 75W-85 GL-4 | — | — | Tutela · Motul · Castrol | Tutela | TBD | 2 L | TBD | ON HOLD (confirm if done @125k/140k) | | | |
+| 6 | Brake fluid DOT4 | — | — | ATE · Bosch · TRW | ATE | TBD | 1 L | 250–500 | NEEDS ORDERING (last flush @125k) | | | |
+| 7 | Coolant Paraflu UP / G12+ (switch from Mannol) | — | — | Petronas Paraflu UP | Paraflu | TBD | 4–5 L | TBD | SCHEDULED with next belt job | | | |
+| 8 | ~~Gearbox oil~~ | — | — | — | — | — | — | — | ✅ DONE @125k (owner confirmed) | | | 125,000 |
 | 9 | Wiper blades | — | — | Bosch Aerotwin | Bosch | TBD | 1 pair | ~300 | NEEDS ORDERING | | | |
 | 10 | Rear shocks (pair) | via ePER | ⬜ | Sachs · KYB · Monroe | TBD | TBD | 0–2 | owner quote 1,500 | ON HOLD (inspection — likely) | | | |
 | 11 | Front suspension items as found | via ePER | ⬜ | TRW · Lemförder · Sachs/KYB · SNR/SKF | TBD | TBD | TBD | TBD | ON HOLD (shake-down, 53k since overhaul) | | | |
-| 12 | Rear discs + pads | via ePER | ⬜ | Brembo · ATE · TRW | TBD | TBD | 0–1 set | owner quote 1,200–1,500 | ON HOLD (measure) | | | |
+| 12 | **Rear discs (pair) + rear pads** | via ePER | ⬜ | Brembo · ATE · TRW | TBD | TBD | 1 set | owner quotes: discs 1,200–1,500 + pads 600–900 | **NEEDS ORDERING — owner confirms worn** | | | |
 | 13 | Battery ~60Ah 540CCA | — | — | Varta · Bosch | TBD | TBD | 0–1 | 3,500–5,500 | ON HOLD (CCA test) | | | |
 | 14 | Tires | — | — | Michelin · Continental · Hankook | TBD | TBD | 0–4 | TBD | ON HOLD (DOT check) | | | |
 | 15 | Ignition coil | 55200486 | ⬜ | Eldor · Bosch · Magneti Marelli | TBD | TBD | 0–4 | TBD | ON HOLD (diagnosis) | | | |
@@ -39,7 +39,9 @@ Statuses: `NEEDS ORDERING` · `WAITING QUOTE` · `ORDERED` · `PURCHASED` · `IN
 | Alternator | — | 128,000 | 3,300 |
 | Rear brake pads | Nov 2025 | 135,000 | ~600–900 |
 | Flywheel + front discs/pads + steering rack | Dec 2025 | 140,000 | 15,800+ |
-| Turbo + exhaust manifold work ❓ | unknown | unknown | 6,000 |
+| Gearbox oil + brake fluid change | with clutch job | 125,000 | incl. |
+
+(Turbo + exhaust manifold: **original, never changed** — earlier ledger figures were quotes.)
 
 ## Rules
 

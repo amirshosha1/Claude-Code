@@ -77,14 +77,16 @@ The owner's maintenance ledger ([`08-service-history.md`](08-service-history.md)
 
 **Already done (verified):** timing belt + tensioner + water pump + plugs @ 112k (Oct 2023) · PCV/oil separator @ ~122k · fuel pump @ 115k · clutch (LuK) + engine mounts @ 125k · alternator @ 128k · rear pads @ 135k (Nov 2025) · flywheel + front discs/pads + steering rack @ 140k (Dec 2025) · full front suspension overhaul @ 102k (Sep 2021) · turbo + exhaust manifold work (date unconfirmed ❓).
 
-**What actually needs attention now (155k km):**
+**What actually needs attention now (155k km — owner Q&A closed all ❓ flags):**
 
 1. 🟠 **Spark plugs — overdue** (43k km on them; turbo interval is 30–40k).
-2. 🔴 **Fluids with no record**: engine oil (date unknown), brake fluid (never logged), coolant + gearbox oil (confirm if done during pump/clutch jobs).
-3. 🟠 **Front suspension re-inspection** — the Sep-2021 overhaul is now 53k Egyptian-road km old; rear shocks have no record at all.
-4. 🟠 Battery CCA test, tire DOT check, A/C leak test — no records.
-5. 🟡 **Next timing belt due ~172–180k km or Oct 2027** — a scheduled event, not an emergency.
-6. ❓ Rear discs were price-quoted but never purchased — measure them.
+2. 🟠 **Rear discs — owner confirms worn** → replace pair + new pads.
+3. 🟠 **Oil service due ~157k** (last @149k) + brake fluid flush (last @125k, ~2 yr).
+4. 🟠 **Front suspension re-inspection** — the Sep-2021 overhaul is now 53k Egyptian-road km old; rear shocks have no record at all.
+5. 🟠 **Turbo is original @155k** (confirmed) — boost log + shaft-play check at the catch-up visit.
+6. 🟠 Battery CCA test, tire DOT check, A/C diagnosis — no records.
+7. 🟡 **Next timing belt due ~172–180k km or Oct 2027** — includes coolant flush + switch from Mannol to Paraflu UP/G12+. Until then: top up with same type or distilled water only, never mix.
+8. 🟢 Confirmed healthy/done: gearbox oil @125k, coolant changed, clutch+flywheel, front brakes, steering rack, alternator, fuel pump, PCV.
 
 **Budget snapshot (revised)** (see [`05-budget.md`](05-budget.md)): Immediate catch-up service ≈ **EGP 8–14k** · Probable near-term (suspension refresh + battery + tires as tests demand) ≈ **EGP 25–55k** · Full recommended incl. next belt + comfort ≈ **EGP 60–100k** · Premium incl. cosmetic ≈ **EGP 130–200k**. Confidence: **Low–Medium** — re-quote at purchase; the owner's own ledger prices are the best local benchmark.
 

@@ -1,7 +1,7 @@
 # JC-05 — Brakes & ABS
 
 **Spec note:** T-Jet 120 typically runs **284×22 mm vented front discs** (some markets 257 mm — measure yours before ordering!) and 251 mm solid rear discs or drums depending on trim. **Measure + ePER by VIN before any order.**
-**Status (rev. 2026-07-12):** ✅ Front discs + pads fitted **10-Dec-2025 @ 140,000 km** · ✅ Rear pads **10-Nov-2025 @ 135,000 km**. Friction hardware is fresh (15–20k km). ⚠️ Rear discs were price-quoted (1,200–1,500) but never bought — measure them. ⚠️ Brake fluid: **no flush ever recorded → Must Replace.**
+**Status (rev. 2026-07-12, owner-confirmed):** ✅ Front discs + pads fitted **10-Dec-2025 @ 140,000 km** (brand unknown — read the disc stamping at next wheel-off) · ✅ Rear pads **10-Nov-2025 @ 135,000 km** · Brake fluid changed @ 125k with clutch job (~2 yr ago) → **flush due now** 🟠 · **Rear discs: owner confirms worn → Must Replace** 🟠 — original at 155k km, fit **new pads with them** (fresh discs + part-worn pads bed poorly; pads are cheap at 600–900).
 
 ---
 
@@ -53,10 +53,10 @@ Adjust ≤ 6–8 clicks; cables (pair 800–1,600 + labor 500–900) only if sei
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Brake fluid flush (never recorded) | Must Replace | 🔴 | 550–1,100 |
+| Brake fluid flush (last @125k, ~2 yr) | Must Replace — due | 🟠 | 550–1,100 |
 | Front discs+pads | ✅ done @140k Dec 2025 | 🟢 | 0 |
-| Rear pads | ✅ done @135k Nov 2025 | 🟢 | 0 |
-| Rear discs (quoted but never bought) | Measure → replace if below min | 🟡 | 0–3,500 |
+| Rear pads | ✅ done @135k — but renew with new rear discs | 🟢→🟠 | 600–900 |
+| **Rear discs (owner confirms worn)** | **Must Replace** (pair + pads) | 🟠 | 2,000–3,500 incl. labor |
 | Caliper service | Recommended with fluid flush | 🟠 | 800–1,800 |
 | Hoses ×4 (2010 rubber, likely original) | Inspect First | 🟠 | 0–3,800 |
 | ABS items | DTC-evidence only | 🟡 | 0–2,000 |
