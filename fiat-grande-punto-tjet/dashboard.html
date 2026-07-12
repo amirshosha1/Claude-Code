@@ -111,7 +111,9 @@
   .task.p-high{border-left-color:var(--amber)}
   .task.p-med{border-left-color:var(--sky)}
   .task.p-done{border-left-color:var(--lime);opacity:.78}
+  .task.p-plan{border-left-color:#8a6bd6}
   .task.hidden{display:none}
+  .p-plan .t-badge{background:rgba(138,107,214,.16);color:#b79cf0}
   .t-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
   .t-title{font-weight:700;font-size:14.5px;text-transform:uppercase;letter-spacing:.03em}
   .t-badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:4px;white-space:nowrap}
@@ -326,6 +328,7 @@
       <button class="fbtn" data-f="p-crit">🔴 CRITICAL</button>
       <button class="fbtn" data-f="p-high">🟠 HIGH</button>
       <button class="fbtn" data-f="p-med">🟡 MEDIUM</button>
+      <button class="fbtn" data-f="p-plan">🟣 PHASE 2–3</button>
       <button class="fbtn" data-f="p-done">🟢 DONE</button>
     </div>
     <div class="tasks">
@@ -378,6 +381,26 @@
         <div class="t-head"><span class="t-title">Timing Belt (Scheduled)</span><span class="t-badge">🟡 ~172–180K</span></div>
         <div class="t-ar">سير التقسيمة — موعد قادم</div>
         <div class="t-body">Done @112k Oct-2023. Next ~172–180k or Oct 2027: belt + tensioner + water pump + accessory belt.</div>
+      </div>
+      <div class="task p-plan">
+        <div class="t-head"><span class="t-title">Interior Refresh</span><span class="t-badge">🟣 PHASE 2</span></div>
+        <div class="t-ar">تجديد الصالون — فرش جلد + تنظيف</div>
+        <div class="t-body">Leather covers (front seats + rear bench), full deep clean incl. headliner + floor. Upholstery specialist job — not a parts order.</div>
+      </div>
+      <div class="task p-plan">
+        <div class="t-head"><span class="t-title">Audio System</span><span class="t-badge">🟣 PHASE 2</span></div>
+        <div class="t-ar">شاشة أندرويد ٩" + ٤ سماعات + صب ووفر</div>
+        <div class="t-body">9" Android head unit + 4 door speakers + repair built-in subwoofer. Check the boot amp/connector FIRST — the fault is usually the amp, not the sub.</div>
+      </div>
+      <div class="task p-plan">
+        <div class="t-head"><span class="t-title">Exterior Detail</span><span class="t-badge">🟣 PHASE 3</span></div>
+        <div class="t-ar">بوليش + كومباوند + واكس + كروم</div>
+        <div class="t-body">Compound → polish → wax full correction, headlight polish + UV seal, chrome clean, full wash. Cowl/scuttle panel (فبرة المساحات) is a confirmed replace — also protects the BSI from water.</div>
+      </div>
+      <div class="task p-plan">
+        <div class="t-head"><span class="t-title">LED Lighting Upgrade</span><span class="t-badge">🟣 PHASE 3</span></div>
+        <div class="t-ar">ترقية إضاءة LED — واطي/عالي/فوجات</div>
+        <div class="t-body">Low + high beam (+ fogs). Philips Ultinon Pro or Osram LEDriving ONLY — verify beam pattern against a wall. Cheap LED kits scatter light and blind oncoming traffic.</div>
       </div>
       <div class="task p-done">
         <div class="t-head"><span class="t-title">Clutch + Flywheel + Gearbox Oil</span><span class="t-badge">🟢 DONE</span></div>
@@ -560,6 +583,32 @@
        alt:"Denso genuine clutch kit", fits:"GP w/ Denso SCSB06 — match compressor label", intl:"€40–80", qty:1},
       {id:"cowl",   nm:"Cowl / scuttle panel", ar:"فبرة المساحات", oem:"via ePER ⚠️",
        alt:"genuine or clean used (Estirad OK — it's plastic)", fits:"Grande Punto · Punto Evo", intl:"€15–40 used", qty:1}
+    ]},
+    {group:"🟣 المرحلة ٢–٣ — الراحة والشكل (Interior · Audio · Exterior · Lighting)", items:[
+      {id:"leatherF",nm:"Leather seat covers — front", ar:"كسوة جلد كراسي أمامية", oem:"upholstery job (not a part #)",
+       alt:"local trimmer · quality genuine/synthetic leather", fits:"Grande Punto 5-door seats", intl:"workshop-priced", qty:1},
+      {id:"leatherR",nm:"Leather cover — rear bench", ar:"كسوة الكنبة الخلفية", oem:"upholstery job",
+       alt:"same trimmer — match front", fits:"GP rear bench", intl:"workshop-priced", qty:1},
+      {id:"detailIn",nm:"Interior deep clean (seats·roof·floor)", ar:"تنظيف وتجديد الصالون + السقف + الأرضية", oem:"service",
+       alt:"steam + extraction detailer", fits:"—", intl:"service", qty:1},
+      {id:"headunit",nm:"9\" Android head unit", ar:"شاشة أندرويد ٩ بوصة", oem:"aftermarket + Fiat fascia/CANbus adapter",
+       alt:"Pioneer · Kenwood · Sony · quality Android · keep Blue&Me wiring", fits:"Grande Punto double-DIN + 199 canbus lead", intl:"€120–300 + adapter €25–50", qty:1},
+      {id:"speakers",nm:"Door speakers ×4", ar:"٤ سماعات أبواب", oem:"165mm (6.5\") — verify depth",
+       alt:"Focal · JBL · Pioneer · Hertz", fits:"GP front + rear doors (adapter rings may be needed)", intl:"€40–120 /pair", qty:2},
+      {id:"subamp", nm:"Built-in subwoofer repair (check AMP first)", ar:"إصلاح الصب ووفر — افحص المضخم الأول", oem:"diagnose boot amp/connector",
+       alt:"often the amp/wiring, not the sub cone", fits:"GP HiFi option (boot-mounted)", intl:"diagnose first", qty:1},
+      {id:"deaden", nm:"Door sound deadening", ar:"عزل صوت الأبواب", oem:"—",
+       alt:"butyl mat (STP/Dynamat-type)", fits:"front doors — big comfort/audio gain", intl:"€30–60", qty:1},
+      {id:"detailEx",nm:"Compound + polish + wax correction", ar:"كومباوند + بوليش + واكس", oem:"detailing service",
+       alt:"machine polish + sealant/wax", fits:"—", intl:"service", qty:1},
+      {id:"headpol", nm:"Headlight polish + UV seal (pair)", ar:"تلميع الفوانيس + طبقة UV", oem:"restoration kit",
+       alt:"sand + polish + UV clearcoat (lasts vs. toothpaste)", fits:"GP headlamps", intl:"€15–30 kit", qty:1},
+      {id:"ledlow", nm:"LED bulbs — low beam (pair)", ar:"لمبات LED واطي", oem:"check base (H7/H1 per trim)",
+       alt:"Philips Ultinon Pro · Osram LEDriving (verify beam pattern!)", fits:"GP — match your reflector type", intl:"€60–130 /pair", qty:1},
+      {id:"ledhigh",nm:"LED bulbs — high beam (pair)", ar:"لمبات LED عالي", oem:"check base (H1/H7 per trim)",
+       alt:"Philips/Osram matched to low beam", fits:"GP", intl:"€50–110 /pair", qty:1},
+      {id:"ledfog", nm:"LED fog bulbs (if fitted)", ar:"لمبات LED فوجات", oem:"check base (H1/H3/H11)",
+       alt:"Philips/Osram — optional", fits:"GP w/ fog option", intl:"€30–70 /pair", qty:1}
     ]}
   ];
 
