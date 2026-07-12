@@ -14,9 +14,15 @@ Pricing (MEDIUM): 3,500–5,500. Risk: weak battery causes phantom BSI/EPS fault
 
 ✅ **Alternator replaced @ 128,000 km (EGP 3,300 per ledger)** — 27k km old, verify charging voltage at baseline anyway. Starter: original — test draw/engagement, replace only on Confirmed failure (rebuild 1,500–3,000 · Estirad 2,000–4,500).
 
-## 3. Grounds, Scuttle Drains & Wiring — 🟠 · **Must Do (cheap, prevents chaos)**
+## 3. Grounds, Scuttle Drains & Wiring — 🔴 **ROOT-CAUSE SUSPECT (upgraded 2026-07)**
 
-Clean/retighten engine-body-battery grounds; clear windshield scuttle drains (water on BSI = classic Punto electrical chaos). Labor 300–600.
+Clean/retighten engine-body-battery grounds; clear windshield scuttle drains. **On this car it's no longer preventive** — with the **cowl panel confirmed broken** and a live **multi-module electrical fault** (airbag no-comms + ESP unavailable), water ingress onto the BSI/connectors under the scuttle is the prime hypothesis. See [`../09-diagnostic-findings-2026-07.md`](../09-diagnostic-findings-2026-07.md) §12. Labor 300–600 + connector cleaning/drying.
+
+## 3b. Multi-Module Fault — Airbag no-comms + ESP/Hill-Holder unavailable — 🔴 SAFETY
+
+Symptoms: airbag light ON, scan tool can't read airbag ECU, ESP + Hill Holder unavailable, "fuel cut off". **Likely ONE shared cause** (power/ground/CAN/water), not five faults — Hill Holder is a function of ESP; airbag "no-comms" = lost power/ground/CAN, not a stored code.
+**Diagnose (do NOT buy modules): 1)** full MultiECUScan noting which nodes answer **2)** battery + grounds **3)** airbag fuse + yellow connectors (under seats + module) **4)** water under scuttle (broken cowl!) **5)** only then suspect airbag/BSI module (needs Fiat-capable proxi/coding).
+Cost: mostly diagnosis labor; likely fixes are fuse/connector/ground/cowl — cheap. Module replacement is last resort.
 
 ## 4. Body Computer (BSI) & Proxi — 🟡
 

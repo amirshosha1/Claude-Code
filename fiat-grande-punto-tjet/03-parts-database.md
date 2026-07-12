@@ -33,6 +33,8 @@ Statuses: `NEEDS ORDERING` · `WAITING QUOTE` · `ORDERED` · `PURCHASED` · `IN
 | 24 | Radiator (TURBO version) | 51780659 | ⬜ | Valeo · Denso · Behr · Nissens | TBD | TBD | 0–1 | TBD | ON HOLD (pressure test) | | | |
 | 25 | Complete driveshaft RH / inner CV | ePER SGR.21220 item 1; boot clamp item 2 | ⬜ | GKN/Löbro · SKF · Metelli | TBD | TBD | 0–1 | TBD | ON HOLD (load-noise tests) | | | |
 | 26 | Rear engine mount (torque rod) | 51782714 | ⬜ | Corteco · Febi · Magneti Marelli | TBD | TBD | 0–1 | TBD | ON HOLD (load-noise tests) | | | |
+| 27 | Airbag control module / BSI | via ePER + proxi/coding | ⬜ | genuine only (last resort) | TBD | TBD | 0–1 | TBD | ON HOLD — **do NOT buy; diagnose comms/water first** | | | |
+| 28 | Airbag fuse + connector repair | — | — | OE fuse · connector cleaning | — | TBD | 1 | pennies | NEEDS CHECK (no-comms first suspect) | | | |
 
 ## Installed (from verified history — see [`08-service-history.md`](08-service-history.md))
 

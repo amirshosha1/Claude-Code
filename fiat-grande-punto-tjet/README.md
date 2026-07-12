@@ -81,8 +81,9 @@ The owner's maintenance ledger ([`08-service-history.md`](08-service-history.md)
 
 **What actually needs attention now (155k km — July 2026 diagnostic report in [`09-diagnostic-findings-2026-07.md`](09-diagnostic-findings-2026-07.md)):**
 
-1. 🔴 **Coolant leak from expansion tank (Confirmed)** + suspected radiator hole → pressure test decides. Coolant switch to Paraflu UP/G12+ moves up to NOW (system is open anyway).
-2. 🔴 **Torn air-intake hose (filter → turbo) — Confirmed.** Feeds unfiltered dust to the ORIGINAL 155k turbo; prime suspect for the 10 L/100km consumption. Replace immediately.
+1. 🔴 **Electrical/SAFETY (NEW): airbag light + airbag ECU no-comms + ESP & Hill Holder unavailable + "fuel cut off".** Likely ONE shared cause — prime suspect is **water from the broken cowl panel onto the BSI**. Airbag may not deploy. Diagnose fuse/connectors/ground/water first; do NOT buy a module. See findings §12.
+2. 🔴 **Coolant leak from expansion tank (Confirmed)** + suspected radiator hole → pressure test decides. Coolant switch to Paraflu UP/G12+ moves up to NOW (system is open anyway).
+3. 🔴 **Torn air-intake hose (filter → turbo, OEM 51822558) — Confirmed.** Feeds unfiltered dust to the ORIGINAL 155k turbo; prime suspect for the 10 L/100km consumption. Replace immediately.
 3. 🟠 **Noise under load, right side, 2nd/3rd gear** → ranked: inner CV joint > 3rd engine mount > clutch (clutch is 30k km young — **do NOT buy a clutch kit before the tests**).
 4. 🟠 **Brakes weak + pulling/judder** despite Dec-2025 front discs → rear brakes + fluid flush + caliper service first, then re-judge master/servo.
 5. 🟠 **Hard thudding over bumps** → rear shocks (original!) + front mounts/bump stops prime suspects.

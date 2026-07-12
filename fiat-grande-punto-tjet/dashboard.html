@@ -264,13 +264,13 @@
         <svg viewBox="0 0 200 120">
           <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#262b34" stroke-width="14" stroke-linecap="round"/>
           <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#f5a623" stroke-width="14" stroke-linecap="round"
-                stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="68"/>
-          <line x1="100" y1="100" x2="100" y2="34" stroke="#e8e4da" stroke-width="4" stroke-linecap="round" class="needle" data-pct="68" transform="rotate(-90 100 100)"/>
+                stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="55"/>
+          <line x1="100" y1="100" x2="100" y2="34" stroke="#e8e4da" stroke-width="4" stroke-linecap="round" class="needle" data-pct="55" transform="rotate(-90 100 100)"/>
           <circle cx="100" cy="100" r="8" fill="#e2352b"/>
         </svg>
-        <div class="g-value" style="color:var(--amber)">68%</div>
-        <div class="g-label">Mechanical Health</div>
-        <div class="g-sub">coolant leak + torn intake hose confirmed</div>
+        <div class="g-value" style="color:var(--rosso)">55%</div>
+        <div class="g-label">Health / Safety</div>
+        <div class="g-sub">+ airbag & ESP fault (safety) · coolant leak · torn hose</div>
       </div>
       <div class="gauge-card">
         <svg viewBox="0 0 200 120">
@@ -299,9 +299,10 @@
     </div>
 
     <div class="alert">
-      🔴 <b>عطلان مؤكدان — الأسبوع ده:</b> ١) تسريب قربة المياه: غيّر القربة والغطاء ← اختبار ضغط ← الردياتير حسب النتيجة ← مية Paraflu UP/G12+.
-      ٢) خرطوم السحب المقطوع (فلتر ← تيربو): تراب على التيربو الأصلي = خطر فوري، وهو المتهم الأول في استهلاك الـ10 لتر/100كم.
-      <b>لحد الإصلاح:</b> تكميل بمية مقطرة فقط · راقب الحرارة · بلاش دعس.
+      🔴 <b>سلامة — الأسبوع ده:</b> ١) تسريب قربة المياه ← قربة+غطاء+اختبار ضغط+مية Paraflu.
+      ٢) خرطوم السحب المقطوع (OEM 51822558) = خطر على التيربو + المتهم في استهلاك الـ10 لتر.
+      ٣) <b>عطل كهربائي/سلامة:</b> لمبة إيرباج + الجهاز مش بيقرا ECU الإيرباج + ESP وHill Holder مقفولين — <b>غالبًا سبب واحد مشترك: مية من الفبرة المكسورة على الكمبيوتر (BSI)</b>. الإيرباج ممكن ميضربش — افحص فيوز/فيش/مية الأول، <b>متشتريش ECU</b>.
+      <b>لحد الإصلاح:</b> مية مقطرة فقط · راقب الحرارة · بلاش سرعات عالية.
     </div>
 
     <div class="belt">
@@ -341,6 +342,21 @@
         <div class="t-head"><span class="t-title">Air-Intake Hose Torn</span><span class="t-badge">🔴 CONFIRMED</span></div>
         <div class="t-ar">خرطوم السحب مقطوع — فلتر ← تيربو</div>
         <div class="t-body">Unfiltered dust into the ORIGINAL 155k turbo = turbo killer. Prime suspect for 10 L/100km. Replace + all clamps immediately.</div>
+      </div>
+      <div class="task p-crit">
+        <div class="t-head"><span class="t-title">Airbag ECU — No Communication</span><span class="t-badge">🔴 SAFETY</span></div>
+        <div class="t-ar">لمبة إيرباج + الجهاز مش بيقرا ECU الإيرباج</div>
+        <div class="t-body">No-comms = lost power/ground/CAN, NOT a stored code — airbag may not deploy. Likely shared cause with ESP fault below. Check fuse + yellow connectors + water under scuttle FIRST. Do NOT buy a module.</div>
+      </div>
+      <div class="task p-crit">
+        <div class="t-head"><span class="t-title">ESP + Hill Holder Unavailable</span><span class="t-badge">🔴 SAFETY</span></div>
+        <div class="t-ar">ESP مقفول + Hill Holder + fuel cut off</div>
+        <div class="t-body">Hill Holder is a function OF ESP = one fault. Multiple modules down together → shared cause: power/ground/CAN or WATER from the broken cowl panel onto the BSI. Prime lead ↓.</div>
+      </div>
+      <div class="task p-crit">
+        <div class="t-head"><span class="t-title">Broken Cowl → Water on BSI</span><span class="t-badge">🔴 ROOT-CAUSE?</span></div>
+        <div class="t-ar">الفبرة المكسورة = مية على الكمبيوتر</div>
+        <div class="t-body">The confirmed-broken cowl/scuttle panel sits over the Body Computer + connectors. Classic Punto: water here = airbag no-comms + ESP faults + gremlins. Now upgraded from cosmetic to prime electrical suspect.</div>
       </div>
       <div class="task p-high">
         <div class="t-head"><span class="t-title">Idle Whistle — Belt Set</span><span class="t-badge">🟠 REPLACE SET</span></div>
@@ -507,7 +523,10 @@
         <li data-k="batt"><span class="box">✓</span><span class="txt">Battery CCA + charging voltage<small>13.8–14.5 V loaded</small></span></li>
         <li data-k="tires"><span class="box">✓</span><span class="txt">Tire DOT dates + tread ×5<small>&gt;5 yrs Egypt heat = replace</small></span></li>
         <li data-k="ac"><span class="box">✓</span><span class="txt">A/C vent temp + leak test + compressor clutch<small>diagnose before parts</small></span></li>
-        <li data-k="obd"><span class="box">✓</span><span class="txt">Full OBD scan + save fault list<small>engine · ABS · EPS · BSI</small></span></li>
+        <li data-k="obd"><span class="box">✓</span><span class="txt">Full OBD scan — note which modules ANSWER<small>engine · ABS/ESP · airbag · BSI — no-comms = power/ground/CAN</small></span></li>
+        <li data-k="airbag"><span class="box">✓</span><span class="txt">🔴 Airbag: fuse + yellow connectors + clock spring<small>no-comms first check — do NOT buy an ECU</small></span></li>
+        <li data-k="scuttle"><span class="box">✓</span><span class="txt">🔴 Water/corrosion check at BSI under scuttle + drains<small>broken cowl = prime cause of airbag/ESP faults</small></span></li>
+        <li data-k="fuelcut"><span class="box">✓</span><span class="txt">Clarify "fuel cut off": stall while driving vs inertia switch<small>check crash/inertia cut-off switch reset</small></span></li>
       </ul>
       <button class="reset" id="resetBtn" style="margin-top:14px">⟲ RESET CHECKLIST</button>
     </div>
@@ -583,8 +602,8 @@
        alt:"Bosch · NGK-NTK (OE suppliers only)", fits:"1.4 T-Jet family — pre-cat sensor", intl:"€50–100", qty:1},
       {id:"acclutch",nm:"A/C compressor clutch (if diagnosis confirms)", ar:"كباس الكومبروسور", oem:"via ePER (Denso compressor)",
        alt:"Denso genuine clutch kit", fits:"GP w/ Denso SCSB06 — match compressor label", intl:"€40–80", qty:1},
-      {id:"cowl",   nm:"Cowl / scuttle panel", ar:"فبرة المساحات", oem:"via ePER ⚠️",
-       alt:"genuine or clean used (Estirad OK — it's plastic)", fits:"Grande Punto · Punto Evo", intl:"€15–40 used", qty:1}
+      {id:"cowl",   nm:"🔴 Cowl / scuttle panel (ROOT-CAUSE suspect!)", ar:"فبرة المساحات — مشتبه رئيسي في أعطال الكهربا", oem:"via ePER ⚠️",
+       alt:"genuine or clean used — water ingress here = airbag/ESP faults", fits:"Grande Punto · Punto Evo", intl:"€15–40 used", qty:1}
     ]},
     {group:"🟣 المرحلة ٢–٣ — الراحة والشكل (Interior · Audio · Exterior · Lighting)", items:[
       {id:"leatherF",nm:"Leather seat covers — front", ar:"كسوة جلد كراسي أمامية", oem:"upholstery job (not a part #)",

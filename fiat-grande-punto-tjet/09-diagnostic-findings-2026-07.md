@@ -100,6 +100,38 @@ Leather covers front seats + rear bench · full interior deep clean incl. headli
 
 Compound + polish + wax full detail · headlight polish + UV seal · chrome clean · **cowl/scuttle panel (فبرة المساحات) replacement — Confirmed broken** (ledger had مصفحة قديمة quotes; genuine or good used, ~450–1,500) — this also protects the BSI from water, so it's functional not just cosmetic · **LED upgrade low/high (+fogs)**: quality only (Philips Ultinon Pro / Osram LEDriving with correct beam pattern) — cheap LED kits scatter light and blind oncoming traffic; verify pattern against a wall.
 
+## 12. Electrical — Multi-Module Fault (NEW, 2026-07) — 🔴 SAFETY
+
+**Symptoms reported together:** "fuel cut off" · **ESP unavailable** · **Hill Holder unavailable** · **airbag warning light ON** · **diagnostic tool CANNOT read the airbag ECU (no communication)**.
+
+### Key reasoning — these are almost certainly ONE fault, not five
+- **Hill Holder is a function OF ESP.** ESP unavailable → Hill Holder unavailable automatically = one fault, not two.
+- **Airbag ECU "no communication"** (not just a stored code) = the module has lost **power, ground, or CAN/K-line comms**, or is dead. A live module with a normal fault (e.g. pretensioner) would still answer the scan and show a code.
+- Multiple independent modules dropping/faulting at once points to a **shared root cause**: power/ground/CAN network — or **water ingress**.
+
+### 🎯 Prime hypothesis — the BROKEN COWL/SCUTTLE PANEL (فبرة المساحات)
+This is the strongest lead. On the Grande Punto (199), the **Body Computer (BSI) and major connectors sit under the scuttle/plenum area**. A broken cowl panel + blocked scuttle drains = **water pours onto the BSI and connectors** → exactly this picture: airbag no-comms, ESP faults, random "unavailable" messages, gremlins. **The cowl panel is no longer cosmetic — it is now a 🔴 root-cause suspect.**
+
+### Diagnosis order (cheapest / safest first — do NOT buy an airbag module yet)
+1. **Full multi-module scan (MultiECUScan)** — log which modules answer and which don't (BSI, ABS/ESP, airbag). Record all DTCs + note comms status per node.
+2. **Battery + grounds FIRST** — weak battery / bad main ground causes phantom ESP/BSI/airbag faults on this platform (already flagged for CCA test — now critical). Clean battery-body-engine grounds.
+3. **Airbag circuit basics** — check the airbag system **fuse**, the yellow connectors (under both front seats + at the module under the console), and the clock-spring/squib circuit. Corroded/unplugged connector = no-comms.
+4. **Water inspection under scuttle** — given the broken cowl panel: look for water/corrosion at the BSI and connectors; clear scuttle drains; dry and treat.
+5. **Only after 1–4:** suspect the airbag control module itself or the BSI (both need proxi/coding — Fiat-capable shop).
+
+### ⚠️ "Fuel cut off" — needs clarification (changes urgency)
+Two very different meanings:
+- **(a) Engine stalls / dies while driving** → dangerous; could be the same power/CAN/ground fault, crank sensor, or the **inertia (crash) fuel cut-off switch tripped**. Do not drive on highways until diagnosed.
+- **(b) A dashboard "fuel cut-off" message after a knock/impact** → the inertia switch tripped; reset it, and this ties directly to the airbag system waking up (minor impact can lock the airbag module + trip inertia cut).
+
+→ **Question to owner recorded** — see Next Steps.
+
+### Safety status
+🔴 Airbag light ON = airbags may not deploy. 🔴 ESP unavailable = no stability control. Treat as a Phase-1 safety priority alongside the cooling leak and intake hose. Do NOT let the "no-comms" scare you into buying an airbag ECU — 80% of these are power/ground/connector/water, all cheap.
+
+### Parts stance
+**Buy nothing yet.** Airbag module, BSI, ESP module = all ON HOLD pending the scan. The only likely purchases are: cowl panel (already on list), battery (if CCA fails), and connector/fuse repairs (pennies).
+
 ## 11. Age-Based Inspection List (16 years) — merged into workshop checklist
 
 Engine mounts (3rd one!) · gearbox mounts · exhaust hangers · catalytic converter rattle · O2 sensor (via fuel trims) · EVAP purge valve · radiator mounts · A/C compressor + serpentine (single belt drives alternator+AC) · all rubber bushes.
