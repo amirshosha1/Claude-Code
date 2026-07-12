@@ -70,6 +70,7 @@ Diagnosis confidence classes: **Confirmed Failure / Likely Failure / Possible Fa
 | [`08-service-history.md`](08-service-history.md) | **Verified service history** from owner's ledger (Car.pdf) |
 | [`09-diagnostic-findings-2026-07.md`](09-diagnostic-findings-2026-07.md) | **Diagnostic findings** — owner's July 2026 symptom report + ranked diagnoses |
 | [`dashboard.html`](dashboard.html) | Interactive garage dashboard (open in any browser) |
+| [`10-shopping-list-dealer.md`](10-shopping-list-dealer.md) | **Clean parts list to send to the dealer** (Arabic, no prices) |
 
 ---
 
