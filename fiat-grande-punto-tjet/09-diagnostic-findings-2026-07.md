@@ -100,51 +100,45 @@ Leather covers front seats + rear bench · full interior deep clean incl. headli
 
 Compound + polish + wax full detail · headlight polish + UV seal · chrome clean · **cowl/scuttle panel (فبرة المساحات) replacement — Confirmed broken** (ledger had مصفحة قديمة quotes; genuine or good used, ~450–1,500) — this also protects the BSI from water, so it's functional not just cosmetic · **LED upgrade low/high (+fogs)**: quality only (Philips Ultinon Pro / Osram LEDriving with correct beam pattern) — cheap LED kits scatter light and blind oncoming traffic; verify pattern against a wall.
 
-## 12. Electrical — Multi-Module Fault (NEW, 2026-07) — 🔴 SAFETY
+## 12. Electrical — Post-Impact CAN Bus Fault (CONFIRMED by AlfaOBD scans, 2026-07) — 🔴 SAFETY
 
-**Symptoms reported together:** "fuel cut off" · **ESP unavailable** · **Hill Holder unavailable** · **airbag warning light ON** · **diagnostic tool CANNOT read the airbag ECU (no communication)**.
+**★ ROOT CAUSE FOUND — supersedes the earlier "cowl water" guess.** Owner history + scan data now give a coherent, confirmed picture.
 
-### Key reasoning — these are almost certainly ONE fault, not five
-- **Hill Holder is a function OF ESP.** ESP unavailable → Hill Holder unavailable automatically = one fault, not two.
-- **Airbag ECU "no communication"** (not just a stored code) = the module has lost **power, ground, or CAN/K-line comms**, or is dead. A live module with a normal fault (e.g. pretensioner) would still answer the scan and show a code.
-- Multiple independent modules dropping/faulting at once points to a **shared root cause**: power/ground/CAN network — or **water ingress**.
+### The event (owner)
+A while back (**around 140–144k km**, matches the scan odometers) the car took a **rear-right impact near the fuel tank**; the **rear bumper was pushed inward** and the underbody shield damaged. **At that moment the car cut out and would not restart**; the mechanic cleared the fault and it started. Since then it recurs: engine would **actually cut off and not restart, power steering assist dropped, gauges dropped** — clear the code on the tool and it runs again. A Fiat engineer (Louai) did a **proxi alignment** via MultiECUScan → good for a while → came back, but now **milder: dash error only, no stalling**.
 
-### 🎯 Prime hypothesis — the BROKEN COWL/SCUTTLE PANEL (فبرة المساحات)
-This is the strongest lead. On the Grande Punto (199), the **Body Computer (BSI) and major connectors sit under the scuttle/plenum area**. A broken cowl panel + blocked scuttle drains = **water pours onto the BSI and connectors** → exactly this picture: airbag no-comms, ESP faults, random "unavailable" messages, gremlins. **The cowl panel is no longer cosmetic — it is now a 🔴 root-cause suspect.**
+### Confirmed fault codes (AlfaOBD)
+| Module | Code | Meaning | State |
+|---|---|---|---|
+| Engine (Bosch ME7.9.10) | **U1711** | CAN network (NCM–NCR) | stored |
+| Engine | **U0422** | "Fire Prevention System" data from Body Computer = the **crash fuel-cut-off** | present → intermittent |
+| Engine | **U0001** | C-CAN line error | intermittent (counter 26) |
+| ABS/ESP (Bosch 8) | **C1221** | Engine Control (NCM) signal not valid | intermittent → **present** (= ESP drops) |
+| Body Computer (Delphi) | **U1726** | **Airbag Node (NAB) — no node on B-CAN** | intermittent, counter climbing 14→32 |
+| Body Computer | **B1023** | **Number-plate lights — short to ground / overload** | **PRESENT** |
+| Body Computer | U1715/U1706/U1702/U1701/U0426/U0001/B1028/B1053/B1021/B1045 | CAN + lights + comms faults | mixed |
 
-### Diagnosis order (cheapest / safest first — do NOT buy an airbag module yet)
-1. **Full multi-module scan (MultiECUScan)** — log which modules answer and which don't (BSI, ABS/ESP, airbag). Record all DTCs + note comms status per node.
-2. **Battery + grounds FIRST** — weak battery / bad main ground causes phantom ESP/BSI/airbag faults on this platform (already flagged for CCA test — now critical). Clean battery-body-engine grounds.
-3. **Airbag circuit basics** — check the airbag system **fuse**, the yellow connectors (under both front seats + at the module under the console), and the clock-spring/squib circuit. Corroded/unplugged connector = no-comms.
-4. **Water inspection under scuttle** — given the broken cowl panel: look for water/corrosion at the BSI and connectors; clear scuttle drains; dry and treat.
-5. **Only after 1–4:** suspect the airbag control module itself or the BSI (both need proxi/coding — Fiat-capable shop).
+### What it means (plain)
+1. **"Fuel cut off" = the anti-fire crash fuel-cutoff** (U0422, "Fire Prevention System from BCM"). The impact **latched the crash flag** → originally cut fuel (no start); after clears/proxi it's now just a message. **Car runs = fuel not actively cut now.**
+2. **ESP/Hill Holder unavailable** = the ABS module intermittently loses the engine node over CAN (C1221 NCM signal not valid). Hill Holder is a function of ESP — one fault.
+3. **Airbag light** = the airbag node (NAB) intermittently drops off B-CAN (U1726). **Intermittent + counter climbing = a CONNECTION/wiring fault, NOT a dead module.**
+4. **B1023 number-plate-light short-to-ground is PRESENT** and sits **exactly in the rear impact zone** — a real, findable damaged circuit that can disturb the body computer / bus.
+5. **Battery is weak** (rest ~12.0–12.25 V, dips to **10.3 V** cranking) — aggravates every intermittent CAN dropout.
 
-### ✅ Fault pattern clarified by owner (2026-07)
-- **ESP unavailable = INTERMITTENT** (comes and goes)
-- **Airbag light = INTERMITTENT** (sometimes off, sometimes on)
-- **"Fuel cut off" = PERMANENT** (always displayed)
-- **Car still starts and drives** → fuel is NOT actually being cut; "fuel cut off" is a **latched message/flag**, not live fuel interruption.
+### 🎯 Real diagnosis: impact-damaged rear wiring + latched crash flag + weak battery — NOT a failed module
+This is an **auto-electrical / wiring repair job**, not a parts-cannon. Chase it in this order:
 
-### Refined diagnosis — points to ONE node: the airbag/crash module + its wiring
-- **Intermittent airbag + ESP = a CONNECTION fault** (loose/corroded connector, ground, water) — **not a dead module.** A failed ECU produces PERMANENT faults. This is good news: cheap cause, and it **rules out buying an airbag/BSI module.**
-- **Permanent "fuel cut off"** = the crash-safety system has **latched a fuel-cutoff flag** (the airbag/crash module raises it on a fault or a knock, and it stays set until cleared with a scan tool). It ties the whole picture to the **airbag/crash module and its connector**.
-- Most likely chain: **broken cowl → water/damp at the airbag module connector (and BSI) under the scuttle → intermittent comms drop (airbag light + ESP flicker) + a latched crash/fuel-cutoff flag.**
+1. **Fix the rear harness (impact zone) — start with the B1023 number-plate-light short-to-ground** (it's "present", concrete, and where the bumper was pushed in). Inspect CAN + lighting wiring behind the rear bumper/tailgate for crushed/pinched/chafed/shorted wires. Repair properly (solder + heatshrink, not tape).
+2. **Battery** — replace/recover the weak battery early; it's cheap and removes a big variable.
+3. **Airbag node connection** — inspect/reseat the airbag ECU connector + its B-CAN wiring and ground; wiggle-test in AlfaOBD "monitor faults" to catch the intermittent.
+4. **Grounds** — the owner already has the "Car Grounds and Earth" map; check rear + main grounds (impact side) for tightness/corrosion.
+5. **After physical repairs:** clear all codes + the crash/Fire-Prevention flag, re-scan, and **re-do proxi alignment** if any node was replaced/reset. Re-check with a road/wiggle test.
 
-### Action (unchanged order, sharper focus)
-1. MultiECUScan: read airbag + ABS/ESP + BSI; note intermittent vs stored codes; **after fixing connections, CLEAR the latched fuel-cutoff/crash flag** and see if it stays gone.
-2. **Airbag module connector + fuse + ground** = the hot spot — unplug, inspect for damp/green corrosion, clean, re-seat, dielectric grease.
-3. Water/scuttle inspection + fix the broken cowl (root cause of the damp).
-4. Battery + main grounds.
-5. Ask workshop: does an inertia/crash switch exist on this VIN, or is crash-cutoff handled inside the airbag ECU over CAN? Reset accordingly.
-
-### Still worth confirming
-Any recent knock/impact/pothole hit — even minor — that could have first latched the crash flag? (Not blocking; the connector work proceeds either way.)
+### Parts stance — DO NOT BUY
+**Airbag ECU / BSI / ESP module = all ON HOLD, do not buy.** Intermittent + climbing counters = wiring/connection. Likely spend: **wiring repair labor + a battery + maybe number-plate light unit/pins** — all cheap. Use an auto-electrician who understands Fiat CAN (Louai-type). The cowl-panel water theory is **downgraded** (still replace the cowl for weather, but it is NOT the confirmed cause).
 
 ### Safety status
-🔴 Airbag light ON = airbags may not deploy. 🔴 ESP unavailable = no stability control. Treat as a Phase-1 safety priority alongside the cooling leak and intake hose. Do NOT let the "no-comms" scare you into buying an airbag ECU — 80% of these are power/ground/connector/water, all cheap.
-
-### Parts stance
-**Buy nothing yet.** Airbag module, BSI, ESP module = all ON HOLD pending the scan. The only likely purchases are: cowl panel (already on list), battery (if CCA fails), and connector/fuse repairs (pennies).
+🔴 Airbag light on = airbags may not deploy. 🔴 ESP intermittently unavailable. 🔴 History of real stalling. This is a Phase-1 safety item — but a **wiring fix, not an expensive module**. Drive cautiously until the rear harness is repaired.
 
 ## 11. Age-Based Inspection List (16 years) — merged into workshop checklist
 

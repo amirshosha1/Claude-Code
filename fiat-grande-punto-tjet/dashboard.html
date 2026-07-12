@@ -301,7 +301,7 @@
     <div class="alert">
       🔴 <b>سلامة — الأسبوع ده:</b> ١) تسريب قربة المياه ← قربة+غطاء+اختبار ضغط+مية Paraflu.
       ٢) خرطوم السحب المقطوع (OEM 51822558) = خطر على التيربو + المتهم في استهلاك الـ10 لتر.
-      ٣) <b>عطل كهربائي/سلامة:</b> لمبة إيرباج + الجهاز مش بيقرا ECU الإيرباج + ESP وHill Holder مقفولين — <b>غالبًا سبب واحد مشترك: مية من الفبرة المكسورة على الكمبيوتر (BSI)</b>. الإيرباج ممكن ميضربش — افحص فيوز/فيش/مية الأول، <b>متشتريش ECU</b>.
+      ٣) <b>عطل كهربائي/سلامة (اتأكد بالسكان):</b> بعد خبطة الجمب اليمين، النظام قفل فلاج "قطع بنزين الصدمة" + اتلف سلك خلفي (شورت لمبات اللوحة B1023) → أعطال CAN متقطّعة (ESP/إيرباج). <b>ده إصلاح أسلاك مش موديول — متشتريش ECU إيرباج/BSI.</b> ابدأ من السلك الخلفي + بطارية ضعيفة.
       <b>لحد الإصلاح:</b> مية مقطرة فقط · راقب الحرارة · بلاش سرعات عالية.
     </div>
 
@@ -344,19 +344,19 @@
         <div class="t-body">Unfiltered dust into the ORIGINAL 155k turbo = turbo killer. Prime suspect for 10 L/100km. Replace + all clamps immediately.</div>
       </div>
       <div class="task p-crit">
-        <div class="t-head"><span class="t-title">Airbag + ESP — INTERMITTENT</span><span class="t-badge">🔴 CONNECTION</span></div>
-        <div class="t-ar">إيرباج وESP متقطّعين — يظهروا ويختفوا</div>
-        <div class="t-body">Both come & go = a CONNECTION fault (connector/ground/water), NOT a dead module — a failed ECU stays permanent. Great news: cheap cause, rules out buying an airbag/BSI ECU. Hot spot: airbag module connector + ground.</div>
+        <div class="t-head"><span class="t-title">Post-Impact CAN Bus Fault (ROOT CAUSE)</span><span class="t-badge">🔴 CONFIRMED</span></div>
+        <div class="t-ar">عطل شبكة CAN بعد خبطة الجمب اليمين</div>
+        <div class="t-body">Rear-right impact (~144k) latched the crash fuel-cutoff + damaged rear wiring. Scans confirm: U1711/U0001 CAN errors, U0422 crash fuel-cut, C1221 ESP loses engine node, U1726 airbag node drops B-CAN. It's WIRING, not a dead module.</div>
       </div>
       <div class="task p-crit">
-        <div class="t-head"><span class="t-title">"Fuel Cut Off" — PERMANENT (latched)</span><span class="t-badge">🔴 CLEAR FLAG</span></div>
-        <div class="t-ar">fuel cut off ثابت — فلاج مخزّن</div>
-        <div class="t-body">Car still runs → fuel isn't actually cut; it's a LATCHED crash-safety flag from the airbag module. Fix the connector/water FIRST, then clear the flag with MultiECUScan and see if it stays gone.</div>
+        <div class="t-head"><span class="t-title">B1023 Plate-Light Short (impact zone)</span><span class="t-badge">🔴 PRESENT</span></div>
+        <div class="t-ar">شورت لمبات اللوحة الخلفية — في مكان الخبطة</div>
+        <div class="t-body">Number-plate lights short-to-ground, "present", right where the rear bumper was pushed in. Concrete findable fault that can disturb the whole bus. START the wiring hunt here → repair rear harness properly.</div>
       </div>
       <div class="task p-crit">
-        <div class="t-head"><span class="t-title">Broken Cowl → Water on BSI</span><span class="t-badge">🔴 ROOT-CAUSE?</span></div>
-        <div class="t-ar">الفبرة المكسورة = مية على الكمبيوتر</div>
-        <div class="t-body">The confirmed-broken cowl/scuttle panel sits over the Body Computer + connectors. Classic Punto: water here = airbag no-comms + ESP faults + gremlins. Now upgraded from cosmetic to prime electrical suspect.</div>
+        <div class="t-head"><span class="t-title">Weak Battery — aggravates CAN</span><span class="t-badge">🔴 REPLACE</span></div>
+        <div class="t-ar">بطارية ضعيفة — بتزوّد الأعطال</div>
+        <div class="t-body">Scan shows rest ~12.0–12.25V, dips to 10.3V cranking. Low voltage makes CAN nodes drop out intermittently. Cheap fix, removes a big variable — do it early. DO NOT buy an airbag/BSI ECU.</div>
       </div>
       <div class="task p-high">
         <div class="t-head"><span class="t-title">Idle Whistle — Belt Set</span><span class="t-badge">🟠 REPLACE SET</span></div>
@@ -523,10 +523,11 @@
         <li data-k="batt"><span class="box">✓</span><span class="txt">Battery CCA + charging voltage<small>13.8–14.5 V loaded</small></span></li>
         <li data-k="tires"><span class="box">✓</span><span class="txt">Tire DOT dates + tread ×5<small>&gt;5 yrs Egypt heat = replace</small></span></li>
         <li data-k="ac"><span class="box">✓</span><span class="txt">A/C vent temp + leak test + compressor clutch<small>diagnose before parts</small></span></li>
-        <li data-k="obd"><span class="box">✓</span><span class="txt">Full OBD scan — note which modules ANSWER<small>engine · ABS/ESP · airbag · BSI — no-comms = power/ground/CAN</small></span></li>
-        <li data-k="airbag"><span class="box">✓</span><span class="txt">🔴 Airbag: fuse + yellow connectors + clock spring<small>no-comms first check — do NOT buy an ECU</small></span></li>
-        <li data-k="scuttle"><span class="box">✓</span><span class="txt">🔴 Water/corrosion check at BSI under scuttle + drains<small>broken cowl = prime cause of airbag/ESP faults</small></span></li>
-        <li data-k="fuelcut"><span class="box">✓</span><span class="txt">Clear latched "fuel cut off" flag AFTER fixing connector<small>car runs = not a live cut · verify it stays gone</small></span></li>
+        <li data-k="rearwire"><span class="box">✓</span><span class="txt">🔴 Repair REAR harness (impact zone) — B1023 plate-light short<small>present short-to-ground · solder+heatshrink · START HERE</small></span></li>
+        <li data-k="canwire"><span class="box">✓</span><span class="txt">🔴 Inspect CAN + ground wiring behind rear bumper/tailgate<small>crushed/pinched from the impact · use grounds map</small></span></li>
+        <li data-k="battxt"><span class="box">✓</span><span class="txt">🔴 Battery replace (weak: 12.0V rest, 10.3V cranking)<small>weak battery drops CAN nodes — do early</small></span></li>
+        <li data-k="airbagcon"><span class="box">✓</span><span class="txt">Airbag ECU connector + B-CAN + ground — wiggle test<small>U1726 node drops · monitor faults in AlfaOBD · do NOT buy ECU</small></span></li>
+        <li data-k="fuelcut"><span class="box">✓</span><span class="txt">Clear crash "fuel cut off" flag + all codes AFTER wiring fix<small>car runs = not a live cut · re-do proxi if needed</small></span></li>
       </ul>
       <button class="reset" id="resetBtn" style="margin-top:14px">⟲ RESET CHECKLIST</button>
     </div>
@@ -602,8 +603,8 @@
        alt:"Bosch · NGK-NTK (OE suppliers only)", fits:"1.4 T-Jet family — pre-cat sensor", intl:"€50–100", qty:1},
       {id:"acclutch",nm:"A/C compressor clutch (if diagnosis confirms)", ar:"كباس الكومبروسور", oem:"via ePER (Denso compressor)",
        alt:"Denso genuine clutch kit", fits:"GP w/ Denso SCSB06 — match compressor label", intl:"€40–80", qty:1},
-      {id:"cowl",   nm:"🔴 Cowl / scuttle panel (ROOT-CAUSE suspect!)", ar:"فبرة المساحات — مشتبه رئيسي في أعطال الكهربا", oem:"via ePER ⚠️",
-       alt:"genuine or clean used — water ingress here = airbag/ESP faults", fits:"Grande Punto · Punto Evo", intl:"€15–40 used", qty:1}
+      {id:"cowl",   nm:"Cowl / scuttle panel", ar:"فبرة المساحات — مكسورة (تغيير للحماية من المطر)", oem:"via ePER ⚠️",
+       alt:"genuine or clean used (plastic — Estirad OK)", fits:"Grande Punto · Punto Evo", intl:"€15–40 used", qty:1}
     ]},
     {group:"🟣 المرحلة ٢–٣ — الراحة والشكل (Interior · Audio · Exterior · Lighting)", items:[
       {id:"leatherF",nm:"Leather seat covers — front", ar:"كسوة جلد كراسي أمامية", oem:"upholstery job (not a part #)",
