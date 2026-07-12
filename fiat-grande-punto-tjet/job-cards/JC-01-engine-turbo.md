@@ -1,0 +1,129 @@
+# JC-01 — Engine, Turbo, Ignition & Fuel
+
+**Engine:** 1.4 T-Jet 16v (198A4000, 120 HP) · **Mileage:** 155,000 km · **Status:** Awaiting baseline inspection
+All OEM numbers: **verify by VIN in ePER before ordering** — Type 199 had running changes.
+
+---
+
+## 1. Timing Belt System — 🔴 CRITICAL · **Must Replace**
+
+The single most important job on this car. Interference engine: belt failure = bent valves ≈ EGP 35,000–60,000 head rebuild.
+
+| # | Item | Detail |
+|---|---|---|
+| Category | Engine — timing drive |
+| Component | Timing belt + tensioner + water pump (+ accessory belt while there) |
+| Current symptoms | None needed — **age/history unknown at 155k km = expired by definition** |
+| Root cause | Rubber ages ≤5 yrs in Egyptian heat regardless of km; interval 105k km / 5 yr (use 60–80k / 4 yr in hot climate) |
+| Recommended inspection | Look for replacement sticker/invoice only — do not "inspect and reuse" an unknown belt |
+| Decision | **Must Replace** (belt, tensioner, water pump, coolant, accessory belt) |
+| OEM part names | Cinghia distribuzione kit + pompa acqua |
+| OEM numbers (verify ePER) | Belt kit ~**71771499** / belt **55183527**; water pump **55221397** / metal-impeller updates exist — confidence Medium |
+| Quantity | 1 kit + 1 pump + 4–5 L Paraflu UP + accessory belt |
+| Compatible aftermarket kit numbers | Gates **KP15646XS** (kit + pump) / K015646XS (kit only); SKF **VKMC 02390**; INA 530 0621 30; Dayco KTBWP4680 — cross-check application lists for 1.4 16v turbo |
+| Best OEM-line brand | Gates / INA (OE belt suppliers) ★★★★★ |
+| Aftermarket ranking | Gates ★★★★★ · SKF ★★★★★ · INA ★★★★★ · Dayco ★★★★☆ · Contitech ★★★★☆ · unbranded ☆ never |
+
+**Pricing (EGP, confidence LOW–MEDIUM — re-quote at purchase):**
+Genuine kit+pump 8,000–12,000 · Gates/SKF kit+pump 4,500–7,500 · Estirad: **do not buy used rubber** · Labor 1,200–2,000 (3–4 h incl. coolant refill/bleed) · **Total ≈ 6,000–9,500 aftermarket premium brand**
+
+**Risk if ignored:** belt snap → valve/piston contact → engine-out head rebuild EGP 35–60k, car stranded. Worst case: full engine replacement.
+
+---
+
+## 2. Spark Plugs & Ignition Coils — 🟠 HIGH
+
+| # | Item | Detail |
+|---|---|---|
+| Category | Ignition |
+| Component | 4× spark plugs, 4× pencil coils |
+| Current symptoms | TBD at inspection — T-Jet classics: misfire under boost, flashing MIL, hesitation 3,000+ rpm |
+| Root cause | Coils crack from engine-bay heat; wrong/old plugs foul under turbo load; low-octane fuel worsens knock retard |
+| Recommended inspection | Pull plugs (read color/gap/type), read misfire counters live, swap-test suspect coil |
+| Decision | Plugs: **Must Replace** (unknown age, turbo engine, 30–40k interval). Coils: **Inspect First** — replace only failed ones unless ≥2 failed, then do all 4 |
+| OEM part names | Candela accensione / Bobina |
+| OEM numbers (verify ePER) | Plug **55212466** (NGK IKR9F8-type iridium, gap ~0.8) — do NOT fit generic heat range. Coil **55200486** (Eldor/Bosch) — confidence Medium-High |
+| Quantity | 4 + 4 |
+| Best brands | Plugs: **NGK ★★★★★ (OE)** · Denso iridium ★★★★☆. Coils: genuine/Eldor ★★★★★ · Bosch ★★★★★ · Magneti Marelli ★★★★☆ · cheap Chinese coils ☆ cause repeat misfires |
+
+**Pricing (EGP, LOW confidence):** NGK iridium plug 450–750 ×4 · Genuine coil 1,800–2,800 each / Bosch 1,200–2,000 · Labor 300–500 · **Plugs-only total ≈ 2,100–3,500**
+
+**Risk if ignored:** misfire → raw fuel melts catalytic converter (EGP 8–15k) → limp mode. Worst case: detonation damage to piston ring lands.
+
+---
+
+## 3. PCV / Cam Cover Membrane — 🟠 HIGH · **Inspect First (Likely at this mileage)**
+
+| # | Item | Detail |
+|---|---|---|
+| Symptoms to check | Whistle at idle, rough idle, oil use >1L/5,000 km, vacuum felt at oil cap, oil in intake pipes |
+| Root cause | Rubber PCV diaphragm in cam cover hardens/tears with heat cycles |
+| Inspection | Oil-cap vacuum test + listen for hiss; smoke test intake |
+| Decision | If torn: replace **complete cam cover** (membrane integrated) + cam cover gasket + fresh plugs-well seals |
+| OEM number (verify) | Cam cover ~**55231491** (T-Jet; supersessions exist) — confidence Medium |
+| Brands | Genuine ★★★★★ · Metelli/Febi cover kits ★★★☆☆ (verify membrane quality) — genuine preferred here |
+| Pricing (EGP, LOW) | Genuine cover 3,500–6,000 · Labor 400–800 · **Total ≈ 4,000–7,000** |
+| Risk if ignored | Rising oil consumption → fouled plugs/coils, oil into turbo inlet, smoke, cat damage |
+
+---
+
+## 4. Turbocharger & Boost Control — 🟡 MEDIUM · **Inspect First — do NOT pre-buy**
+
+| # | Item | Detail |
+|---|---|---|
+| Components | IHI turbo, wastegate actuator, Pierburg boost solenoid, blow-off/diverter valve, boost hoses, intercooler |
+| Symptoms to check | Low boost/limp (P0299), overboost cut, turbo whine change, oil smoke on overrun |
+| Root causes (ranked) | 1) Boost solenoid failure (cheap) 2) Cracked/soft boost hose 3) Wastegate actuator diaphragm 4) Sticking wastegate 5) Actual turbo wear (least likely if oil changes done) |
+| Inspection | Boost log via MultiECUScan → shaft play check → actuator hand-pump test → solenoid swap. **Never replace the turbo before these steps** |
+| Decision | Solenoid/hoses: cheap consumables, replace on suspicion. Actuator: Confirmed Failure only. Turbo: Confirmed Failure only |
+| OEM numbers (verify) | Turbo assy ~**55212917** (IHI RHF3-P family); solenoid Pierburg **7.02256.04** cross; actuator often only with turbo from Fiat — aftermarket actuators exist (Melett) |
+| Brands | Turbo: genuine IHI ★★★★★ · Melett rebuild kit ★★★★☆ · no-name Chinese turbo ☆. Solenoid: Pierburg ★★★★★ · Bosch ★★★★☆ |
+| Pricing (EGP, LOW) | Solenoid 1,500–3,000 · Hose each 800–2,500 · Genuine/IHI turbo 25,000–45,000 · Estirad used turbo 8,000–15,000 (⚠️ only with shaft-play check + warranty) · Turbo R&R labor 2,500–4,500 |
+| Risk if ignored | Limp mode (safe but slow); a truly failing turbo can dump oil → runaway risk (rare) or debris into intercooler → new engine killer. Overboost from stuck wastegate → head gasket/piston damage |
+
+---
+
+## 5. Engine Oil Service — 🟠 HIGH · **Must Do Now** (baseline)
+
+| Item | Detail |
+|---|---|
+| Spec | 5W-40 ACEA C3, Fiat 9.55535-S2 — turbo engines in hot climate: change every **7,500–10,000 km max** (not 15k) |
+| Filter OEM (verify) | Oil filter **55223416** (UFI 23.475.00 = OE) · Air filter **55192012** · verify in ePER |
+| Brands | Oil: Selenia ★★★★★ (OE) · Motul/Mobil/Liqui Moly 5W-40 ★★★★★. Filters: UFI ★★★★★ (OE) · Mann ★★★★★ · Mahle ★★★★★ · Fram ★★☆☆☆ |
+| Pricing (EGP, MEDIUM) | 4 L quality 5W-40: 1,800–2,800 · Oil filter 250–450 · Air filter 350–600 · Labor 150–300 · **Total ≈ 2,600–4,100** |
+| Note | First service: also engine flush is NOT recommended blindly on unknown history — just shorten first two intervals to 5,000 km |
+
+---
+
+## 6. Engine Mounts — 🟡 MEDIUM · **Inspect First**
+
+Symptoms: clunk on take-off/reverse, vibration at idle in gear. 3 mounts (RH hydraulic, LH gearbox, rear torque rod — rear fails first).
+OEM numbers via ePER by VIN. Brands: Corteco ★★★★★ · Febi ★★★★☆ · Magneti Marelli ★★★★☆ · unbranded ☆.
+Pricing (LOW): rear torque mount 900–1,800; side mounts 1,500–3,000 each; labor 400–900.
+Risk if ignored: drivetrain shunt loads crack exhaust flex pipe and stress driveshafts.
+
+---
+
+## 7. Fuel System — 🟡 MEDIUM · **Inspect First**
+
+- Fuel pump module (in-tank): test rail pressure before condemning. OEM via ePER. Brands: Bosch ★★★★★ · Magneti Marelli ★★★★★ (often OE) · VDO ★★★★☆.
+- Injectors: clean/flow-test first (EGP 800–1,500 for 4) — almost never need replacement on T-Jet.
+- Purge valve: cheap, rattles/vacuum leak — Bosch ★★★★★.
+- ⚠️ Egypt fuel note: use 95 RON. Persistent 92 use on a turbo = knock retard, heat, long-term piston damage.
+
+---
+
+## Job Card Summary
+
+| Task | Decision | Priority | Est. total (EGP) |
+|---|---|---|---|
+| Timing belt + tensioner + WP + coolant | Must Replace | 🔴 | 6,000–9,500 |
+| Oil + filters service | Must Replace | 🟠 | 2,600–4,100 |
+| Spark plugs | Must Replace | 🟠 | 2,100–3,500 |
+| Coils | Inspect First | 🟠 | 0–8,000 |
+| PCV/cam cover | Inspect First (Likely) | 🟠 | 0–7,000 |
+| Boost system small parts | Inspect First | 🟡 | 0–5,000 |
+| Turbo itself | Confirmed Failure only | 🟡 | 0–45,000 |
+| Engine mounts | Inspect First | 🟡 | 0–6,000 |
+
+All prices EGP, confidence Low–Medium, re-quote at purchase.
