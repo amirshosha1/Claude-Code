@@ -1,7 +1,7 @@
 # JC-04 — Suspension & Steering
 
 **Context:** Front: MacPherson. Rear: twist beam. Steering: **Dualdrive electric (column motor)**.
-**Status (rev. 2026-07-12):** ✅ Full front overhaul done **Sep 2021 @ 102,000 km** (shocks, top mounts, links, arms, inner tie rod, alignment — EGP 4,195 per ledger) — now **53,000 km / ~5 Egyptian-road years old → shake-down re-inspection due**. ✅ Steering box/rack replaced **Dec 2025 @ 140,000 km** — steering is fresh. ⚠️ Rear shocks: no record ever (owner has 1,500 quote) — likely original at 155k.
+**Status (rev. 2026-07-12):** ⚠️ **SYMPTOMATIC — hard thudding over bumps (هبدة قوية).** Front overhaul (Sep 2021 @102k, EGP 4,195) is 53k km old; rear shocks have no record ever = original at 155k. **Prime suspects: rear shocks + front strut mounts/bump stops.** Full shake-down per [`../09-diagnostic-findings-2026-07.md`](../09-diagnostic-findings-2026-07.md) §7 — shocks, mounts, bump stops, arms/bushes, ARB + links, tie rods, ball joints. ✅ Steering rack replaced Dec 2025 @140k. Note: **EPS is electric (Dualdrive) — no hydraulic pump/hoses/belt exist on this car.**
 
 ---
 

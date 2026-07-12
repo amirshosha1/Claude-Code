@@ -1,7 +1,8 @@
 # JC-03 — Transmission, Clutch & Driveshafts
 
 **Gearbox:** manual (confirm C510 5-sp vs C635 6-sp — stamped on case / ePER by VIN; changes clutch kit number).
-**Status (rev. 2026-07-12):** ✅ Clutch done @ 125k (LuK disc + pressure plate 8,000 · release bearing 6,500 · 2 engine mounts 1,700) · ✅ **Flywheel replaced @ 140k Dec 2025 (11,000)**. Drivetrain is fresh — 30k km on clutch, 15k on flywheel.
+**Status (rev. 2026-07-12):** ✅ Clutch done @ 125k (LuK) + flywheel @ 140k — drivetrain hardware is young.
+⚠️ **NEW SYMPTOM:** strong noise under load, 2nd/3rd gear, RIGHT side, disappears out of gear. **Ranked diagnosis: 1) inner CV joint (right) 2) the un-replaced 3rd engine mount 3) shaft bearing 4) clutch (least likely at 30k km, no slip).** See [`../09-diagnostic-findings-2026-07.md`](../09-diagnostic-findings-2026-07.md) §6. **Do NOT buy a clutch kit before the tests:** full-lock circles both ways · 4th-gear low-rpm load · pry-bar on mounts · 4 boot inspection. Clutch master shares the brake reservoir — the planned brake-fluid flush services both; check for leaks at the pedal.
 
 ---
 
@@ -52,6 +53,8 @@ Covered in JC-01 §6 (they act as one system for drivetrain shunt).
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
 | Gearbox oil | ✅ done @125k (owner confirmed) | 🟢 | 0 |
-| CV boots/joints | Inspect First (owner's ledger quotes: outer 2,000 / inner 2,500) | 🟠 | 0–7,000 |
-| Clutch + flywheel | ✅ done @125k/@140k | 🟢 | 0 |
+| **Right-side load noise diagnosis** (CV vs mount vs clutch) | Must Do — tests before any parts | 🟠 | in inspection labor |
+| Inner CV joint right — if confirmed | Likely Failure | 🟠 | 3,000–8,000 incl. labor |
+| 3rd engine mount — if confirmed | Possible | 🟠 | 1,300–2,700 |
+| Clutch + flywheel | ✅ done @125k/@140k — no purchase without confirmed diagnosis | 🟢 | 0 |
 | Linkage bushes | Inspect First | 🟡 | 0–1,400 |

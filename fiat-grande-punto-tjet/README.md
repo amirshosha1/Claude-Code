@@ -68,6 +68,8 @@ Diagnosis confidence classes: **Confirmed Failure / Likely Failure / Possible Fa
 | [`06-roadmap.md`](06-roadmap.md) | Phases 1–7 with costs, time, dependencies |
 | [`07-workshop-log.md`](07-workshop-log.md) | Workshop visits, invoices, warranties |
 | [`08-service-history.md`](08-service-history.md) | **Verified service history** from owner's ledger (Car.pdf) |
+| [`09-diagnostic-findings-2026-07.md`](09-diagnostic-findings-2026-07.md) | **Diagnostic findings** — owner's July 2026 symptom report + ranked diagnoses |
+| [`dashboard.html`](dashboard.html) | Interactive garage dashboard (open in any browser) |
 
 ---
 
@@ -77,16 +79,17 @@ The owner's maintenance ledger ([`08-service-history.md`](08-service-history.md)
 
 **Already done (verified):** timing belt + tensioner + water pump + plugs @ 112k (Oct 2023) · PCV/oil separator @ ~122k · fuel pump @ 115k · clutch (LuK) + engine mounts @ 125k · alternator @ 128k · rear pads @ 135k (Nov 2025) · flywheel + front discs/pads + steering rack @ 140k (Dec 2025) · full front suspension overhaul @ 102k (Sep 2021) · turbo + exhaust manifold work (date unconfirmed ❓).
 
-**What actually needs attention now (155k km — owner Q&A closed all ❓ flags):**
+**What actually needs attention now (155k km — July 2026 diagnostic report in [`09-diagnostic-findings-2026-07.md`](09-diagnostic-findings-2026-07.md)):**
 
-1. 🟠 **Spark plugs — overdue** (43k km on them; turbo interval is 30–40k).
-2. 🟠 **Rear discs — owner confirms worn** → replace pair + new pads.
-3. 🟠 **Oil service due ~157k** (last @149k) + brake fluid flush (last @125k, ~2 yr).
-4. 🟠 **Front suspension re-inspection** — the Sep-2021 overhaul is now 53k Egyptian-road km old; rear shocks have no record at all.
-5. 🟠 **Turbo is original @155k** (confirmed) — boost log + shaft-play check at the catch-up visit.
-6. 🟠 Battery CCA test, tire DOT check, A/C diagnosis — no records.
-7. 🟡 **Next timing belt due ~172–180k km or Oct 2027** — includes coolant flush + switch from Mannol to Paraflu UP/G12+. Until then: top up with same type or distilled water only, never mix.
-8. 🟢 Confirmed healthy/done: gearbox oil @125k, coolant changed, clutch+flywheel, front brakes, steering rack, alternator, fuel pump, PCV.
+1. 🔴 **Coolant leak from expansion tank (Confirmed)** + suspected radiator hole → pressure test decides. Coolant switch to Paraflu UP/G12+ moves up to NOW (system is open anyway).
+2. 🔴 **Torn air-intake hose (filter → turbo) — Confirmed.** Feeds unfiltered dust to the ORIGINAL 155k turbo; prime suspect for the 10 L/100km consumption. Replace immediately.
+3. 🟠 **Noise under load, right side, 2nd/3rd gear** → ranked: inner CV joint > 3rd engine mount > clutch (clutch is 30k km young — **do NOT buy a clutch kit before the tests**).
+4. 🟠 **Brakes weak + pulling/judder** despite Dec-2025 front discs → rear brakes + fluid flush + caliper service first, then re-judge master/servo.
+5. 🟠 **Hard thudding over bumps** → rear shocks (original!) + front mounts/bump stops prime suspects.
+6. 🟠 **Idle whistle** → accessory belt tensioner/idler set replacement (43k km old) + the torn hose itself.
+7. 🟠 Spark plugs overdue (43k km) · oil service due (~157k) · battery/tires/A/C tests.
+8. 🟡 Next timing belt ~172–180k or Oct 2027 (coolant switch no longer waits for it — see #1).
+9. 🟢 Healthy/done: gearbox oil, clutch+flywheel, front discs, steering rack (EPS is electric — no hydraulic pump/hoses exist on this car), alternator, fuel pump, PCV.
 
 **Budget snapshot (revised)** (see [`05-budget.md`](05-budget.md)): Immediate catch-up service ≈ **EGP 8–14k** · Probable near-term (suspension refresh + battery + tires as tests demand) ≈ **EGP 25–55k** · Full recommended incl. next belt + comfort ≈ **EGP 60–100k** · Premium incl. cosmetic ≈ **EGP 130–200k**. Confidence: **Low–Medium** — re-quote at purchase; the owner's own ledger prices are the best local benchmark.
 

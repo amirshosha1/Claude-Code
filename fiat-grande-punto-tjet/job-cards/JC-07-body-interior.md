@@ -1,7 +1,7 @@
 # JC-07 — Body, Interior, Audio & Cosmetic Restoration
 
 **Phase 5–7 work — only after mechanical restoration is complete.** Everything here is 🟢 unless noted.
-**Status:** Awaiting photo survey at baseline inspection.
+**Status (rev. 2026-07-12): owner scope CONFIRMED** — Interior: leather covers (front seats + rear bench), full deep clean incl. headliner/floor. Audio: **9" Android head unit + 4 door speakers + repair built-in subwoofer** (check the boot amp/connector first — usually the amp, not the sub). Exterior: compound/polish/wax, headlight polish, chrome, full detail. **Cowl/scuttle panel (فبرة المساحات) — CONFIRMED broken, replace** (functional too: protects BSI from water; ~450–1,500). **LED upgrade low/high(+fog):** Philips Ultinon/Osram LEDriving only, verify beam pattern against a wall — cheap kits blind oncoming traffic.
 
 ---
 

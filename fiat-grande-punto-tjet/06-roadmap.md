@@ -1,6 +1,14 @@
 # 06 — Project Roadmap
 
+**Owner's 3-phase plan (July 2026) adopted:** Phase 1 سلامة واعتمادية = roadmap 0–3 · Phase 2 راحة = 4–5 · Phase 3 الشكل = 6–7.
 Rule: a phase does not open until the previous phase's 🔴/🟠 items are closed.
+
+## ⚡ Phase 1a — CONFIRMED FAILURES (this week, before anything else)
+**Cost: EGP 4,000–10,000 + radiator verdict**
+1. Expansion tank + cap → pressure test → radiator if confirmed → Paraflu UP/G12+ refill
+2. Air-intake hose (filter→turbo) + clamp set — protects the original turbo TODAY
+3. Accessory belt + tensioner + idler set (idle whistle)
+Driving rules until done: distilled-water top-ups only · watch temp gauge · no hard pulls.
 
 ---
 

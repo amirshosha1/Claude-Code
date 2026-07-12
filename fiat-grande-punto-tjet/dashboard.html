@@ -264,15 +264,15 @@
       <div class="gauge-card">
         <svg viewBox="0 0 200 120">
           <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#262b34" stroke-width="14" stroke-linecap="round"/>
-          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#7dc855" stroke-width="14" stroke-linecap="round"
-                stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="82"/>
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#f5a623" stroke-width="14" stroke-linecap="round"
+                stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="68"/>
           <line x1="100" y1="100" x2="100" y2="34" stroke="#e8e4da" stroke-width="4" stroke-linecap="round"
-                class="needle" data-pct="82" transform="rotate(-90 100 100)"/>
+                class="needle" data-pct="68" transform="rotate(-90 100 100)"/>
           <circle cx="100" cy="100" r="8" fill="#e2352b"/>
         </svg>
-        <div class="g-value" style="color:var(--lime)">82%</div>
+        <div class="g-value" style="color:var(--amber)">68%</div>
         <div class="g-label">Mechanical Health</div>
-        <div class="g-sub">clutch·brakes·steering fresh — turbo original</div>
+        <div class="g-sub">coolant leak + torn intake hose confirmed — clutch·steering fresh</div>
       </div>
       <div class="gauge-card">
         <svg viewBox="0 0 200 120">
@@ -334,6 +334,48 @@
       <button class="fbtn" data-f="p-done">🟢 DONE / HEALTHY</button>
     </div>
     <div class="tasks">
+      <div class="task p-crit">
+        <div class="t-head"><span class="t-title">Coolant Leak — Expansion Tank</span><span class="t-badge">🔴 CONFIRMED</span></div>
+        <div class="t-ar">تسريب من قربة المياه</div>
+        <div class="t-body">Replace tank + cap → pressure test → radiator only if the test confirms the suspected hole. Refill with Paraflu UP/G12+ (switch moved up). Until fixed: distilled-water top-ups, watch the gauge, no hard pulls.</div>
+        <div class="t-cost">EST <span>EGP 2,350–4,600</span> (+5,000–9,000 if radiator confirmed)</div>
+      </div>
+      <div class="task p-crit">
+        <div class="t-head"><span class="t-title">Air-Intake Hose Torn</span><span class="t-badge">🔴 CONFIRMED</span></div>
+        <div class="t-ar">خرطوم السحب مقطوع — فلتر ← تيربو</div>
+        <div class="t-body">Feeds unfiltered dusty air straight into the ORIGINAL 155k turbo = turbo killer. Also prime suspect for the 10 L/100km consumption. Replace immediately + all clamps.</div>
+        <div class="t-cost">EST <span>EGP 1,100–3,100</span></div>
+      </div>
+      <div class="task p-high">
+        <div class="t-head"><span class="t-title">Idle Whistle — Belt Set</span><span class="t-badge">🟠 REPLACE SET</span></div>
+        <div class="t-ar">صفير السلانسيه — سير + شداد + بلي</div>
+        <div class="t-body">Whistle at idle, gone on throttle = tensioner/idler bearing (43k km old) or the torn hose itself. Replace accessory belt + tensioner + idler as one set (Gates/SKF/INA).</div>
+        <div class="t-cost">EST <span>EGP 1,500–3,100</span></div>
+      </div>
+      <div class="task p-high">
+        <div class="t-head"><span class="t-title">Load Noise Right Side 2nd/3rd</span><span class="t-badge">🟠 DIAGNOSE</span></div>
+        <div class="t-ar">صوت تحميل يمين — كبالن ولا قاعدة؟</div>
+        <div class="t-body">Ranked: inner CV joint (right) → 3rd engine mount → shaft bearing → clutch LAST (30k km young, no slip). Tests: full-lock circles, 4th-gear low-rpm load, pry-bar. Do NOT buy a clutch kit.</div>
+        <div class="t-cost">IF CONFIRMED <span>EGP 1,300–8,000</span></div>
+      </div>
+      <div class="task p-high">
+        <div class="t-head"><span class="t-title">Brakes: Weak + Pulling + Noise</span><span class="t-badge">🟠 SERVICE PATH</span></div>
+        <div class="t-ar">ضعف فرامل + حدف + صوت</div>
+        <div class="t-body">Despite Dec-25 front discs. Order: rear discs+pads → DOT4 flush (shared with clutch master) → caliper slider service → runout check → only then judge servo/master.</div>
+        <div class="t-cost">EST <span>EGP 3,550–5,800</span></div>
+      </div>
+      <div class="task p-high">
+        <div class="t-head"><span class="t-title">Thudding Over Bumps</span><span class="t-badge">🟠 INSPECT</span></div>
+        <div class="t-ar">هبدة قوية في المطبات</div>
+        <div class="t-body">Prime suspects: rear shocks (original @155k!) + front strut mounts/bump stops (2021 overhaul now 53k km old). Shake-down first, replace in pairs, KYB/Sachs.</div>
+        <div class="t-cost">IF CONFIRMED <span>EGP 2,000–14,500</span></div>
+      </div>
+      <div class="task p-high">
+        <div class="t-head"><span class="t-title">Fuel: 10 L/100km (target 7–7.5)</span><span class="t-badge">🟠 DIAGNOSE</span></div>
+        <div class="t-ar">استهلاك بنزين عالي</div>
+        <div class="t-body">Fix hose + plugs + air filter → re-measure → fuel trims via MultiECUScan → thermostat → O2 sensor only if trims say so. T-Jet has NO MAF (MAP-based). 95 RON always.</div>
+        <div class="t-cost">MOSTLY <span>covered by fixes above</span></div>
+      </div>
       <div class="task p-high">
         <div class="t-head"><span class="t-title">Spark Plugs</span><span class="t-badge">🟠 OVERDUE</span></div>
         <div class="t-ar">بوجيهات — متأخرة</div>
@@ -474,14 +516,14 @@
     </div>
     <div class="budget-grid">
       <div class="brow">
-        <div class="brow-top"><span class="nm">🔴 Committed — Catch-Up Visit</span><span class="amt"><b>EGP 8,000–13,200</b></span></div>
-        <div class="bbar"><div class="bfill bf-red" data-w="13"></div></div>
-        <div class="bnote">plugs · oil+filters · brake fluid · rear discs+pads · wipers · full inspection labor</div>
+        <div class="brow-top"><span class="nm">🔴 Committed — Confirmed Failures + Catch-Up</span><span class="amt"><b>EGP 14,400–27,500</b></span></div>
+        <div class="bbar"><div class="bfill bf-red" data-w="27"></div></div>
+        <div class="bnote">expansion tank · intake hose · coolant switch · belt set · plugs · oil+filters · brake fluid · rear discs+pads · diagnosis labor</div>
       </div>
       <div class="brow">
-        <div class="brow-top"><span class="nm">🟠 Probable — As Tests Demand</span><span class="amt"><b>EGP 11,000–53,000</b></span></div>
-        <div class="bbar"><div class="bfill bf-amber" data-w="53"></div></div>
-        <div class="bnote">suspension refresh · rear shocks · battery · tires ×4 (dominates the spread) · A/C path</div>
+        <div class="brow-top"><span class="nm">🟠 Probable — As Tests Demand</span><span class="amt"><b>EGP 21,000–73,000</b></span></div>
+        <div class="bbar"><div class="bfill bf-amber" data-w="73"></div></div>
+        <div class="bnote">radiator (if confirmed) · CV joint/mount · shocks · battery · tires ×4 · A/C path · O2 sensor</div>
       </div>
       <div class="brow">
         <div class="brow-top"><span class="nm">🟡 Scheduled Reserve</span><span class="amt"><b>EGP 12,000–18,000</b></span></div>
@@ -494,7 +536,7 @@
         <div class="bnote">A/C to full performance · interior · paint correction · audio — only after mechanical phases close</div>
       </div>
     </div>
-    <div class="big-total">RECOMMENDED FULL-MECHANICAL ENVELOPE → <b>EGP 60,000–100,000</b> &nbsp;·&nbsp; verified history cut the original estimate roughly in half</div>
+    <div class="big-total">RECOMMENDED FULL-MECHANICAL ENVELOPE → <b>EGP 75,000–120,000</b> &nbsp;·&nbsp; revised after July-2026 diagnostic report</div>
   </section>
 
   <!-- CHECKLIST -->
@@ -509,6 +551,10 @@
         <div class="check-prog"><b id="doneCount">0</b>/<span id="totCount">0</span> COMPLETE</div>
       </div>
       <ul class="cl" id="cl">
+        <li data-k="tank"><span class="box">✓</span><span class="txt">🔴 Expansion tank + cap + pressure test → radiator verdict<small>leak CONFIRMED · refill Paraflu UP/G12+ · ~EGP 2,350–4,600</small></span></li>
+        <li data-k="hose"><span class="box">✓</span><span class="txt">🔴 Air-intake hose (filter→turbo) + clamps<small>torn — CONFIRMED · protects the original turbo · ~EGP 1,100–3,100</small></span></li>
+        <li data-k="beltset"><span class="box">✓</span><span class="txt">Accessory belt + tensioner + idler set (idle whistle)<small>43k km old · Gates/SKF/INA · ~EGP 1,500–3,100</small></span></li>
+        <li data-k="loadnoise"><span class="box">✓</span><span class="txt">Load-noise tests: CV joint vs 3rd mount (NOT clutch first)<small>full-lock circles · 4th-gear load · pry-bar on mounts</small></span></li>
         <li data-k="oil"><span class="box">✓</span><span class="txt">Engine oil 5W-40 C3 + oil filter<small>last @149k → due now · ~EGP 1,200–1,800</small></span></li>
         <li data-k="filters"><span class="box">✓</span><span class="txt">Air filter + cabin filter<small>~EGP 400–600 · Mann/Mahle/UFI</small></span></li>
         <li data-k="plugs"><span class="box">✓</span><span class="txt">Spark plugs ×4 — NGK, T-Jet heat range<small>overdue at 43k km · ~EGP 2,200–3,500</small></span></li>

@@ -6,10 +6,14 @@ Pipeline: `NEED → QUOTED → ORDERED → PURCHASED → DELIVERED → INSTALLED
 
 | Item | Need | Quoted | Ordered | Purchased | Delivered | Installed | Invoice # | Supplier | Price (EGP) | Warranty |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Catch-up inspection (labor incl. boost log — turbo is original) | ✅ | ⬜ | ⬜ | ⬜ | — | ⬜ | | | | |
+| 🔴 **Expansion tank + cap** (leak Confirmed) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~950–2,000 | |
+| 🔴 **Air-intake hose filter→turbo + clamps** (torn — Confirmed) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,100–3,100 | |
+| 🔴 Coolant Paraflu UP/G12+ full change (moved up) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,100–2,000 | |
+| 🟠 Accessory belt + tensioner + idler set (Gates/SKF/INA) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,500–3,100 | |
+| Diagnosis labor (pressure test · CV/mount load tests · shake-down · boost log · fuel trims · CCA · DOT · A/C · OBD) | ✅ | ⬜ | ⬜ | ⬜ | — | ⬜ | | | ~1,300–3,100 | |
 | Oil + oil/air/cabin filters | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,350 (ledger) | |
 | Spark plugs NGK ×4 (overdue) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,900 | |
-| Brake fluid + flush | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~550–1,100 | |
+| Brake fluid + flush + caliper slider service | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,350–2,900 | |
 | **Rear discs pair + rear pads** | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~2,200–3,100 | |
 | Wiper blades | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~300 | |
 
@@ -17,13 +21,18 @@ Pipeline: `NEED → QUOTED → ORDERED → PURCHASED → DELIVERED → INSTALLED
 
 | Item | Blocker |
 |---|---|
-| Rear shocks + front suspension items | Shake-down inspection (front overhaul now 53k km old) |
+| **Radiator** | Cooling pressure test with new tank fitted — hole suspected, not confirmed |
+| **Inner CV joint right / 3rd engine mount** | Load-noise tests (circles, 4th-gear load, pry-bar) — do NOT buy a clutch |
+| Rear shocks + front suspension items (thud symptom) | Shake-down inspection findings |
 | Battery | CCA test |
 | Tires | DOT date check |
-| A/C compressor clutch + leak parts | A/C diagnosis (ledger hints at compressor clutch issue) |
-| Coils / boost solenoid | Engine tests + boost log |
+| A/C compressor clutch + leak parts | A/C diagnosis |
+| Coils / boost solenoid / O2 sensor | Fuel trims + misfire counters AFTER intake-hose fix |
+| Brake master/servo | Re-test after rear brakes + flush + caliper service |
 | Brake hoses | Visual/pressure inspection |
-| Timing belt kit + Paraflu UP coolant switch (next cycle) | Scheduled ~172–180k km / Oct 2027 — do not buy early, rubber ages on the shelf |
+| Interior leather · 9" Android unit · speakers · subwoofer amp check | Owner Phase 2 — after mechanical phase closes |
+| LED kit + cowl/scuttle panel + detailing | Owner Phase 3 |
+| Timing belt kit (next cycle) | Scheduled ~172–180k km / Oct 2027 — coolant switch no longer waits (done with leak repair) |
 
 ✅ Resolved by owner (2026-07-12): gearbox oil done @125k · coolant done (Mannol, flush-and-switch deferred to belt job) · rear discs confirmed worn (moved up) · turbo/manifold original.
 

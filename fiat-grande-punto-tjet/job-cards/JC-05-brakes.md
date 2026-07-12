@@ -1,7 +1,8 @@
 # JC-05 — Brakes & ABS
 
 **Spec note:** T-Jet 120 typically runs **284×22 mm vented front discs** (some markets 257 mm — measure yours before ordering!) and 251 mm solid rear discs or drums depending on trim. **Measure + ePER by VIN before any order.**
-**Status (rev. 2026-07-12, owner-confirmed):** ✅ Front discs + pads fitted **10-Dec-2025 @ 140,000 km** (brand unknown — read the disc stamping at next wheel-off) · ✅ Rear pads **10-Nov-2025 @ 135,000 km** · Brake fluid changed @ 125k with clutch job (~2 yr ago) → **flush due now** 🟠 · **Rear discs: owner confirms worn → Must Replace** 🟠 — original at 155k km, fit **new pads with them** (fresh discs + part-worn pads bed poorly; pads are cheap at 600–900).
+**Status (rev. 2026-07-12):** ⚠️ **SYMPTOMATIC — weak braking + pulling/judder (حدف) + friction noise + whine** despite front discs/pads fitted Dec-2025 @140k (brand unknown — read the stamping). See [`../09-diagnostic-findings-2026-07.md`](../09-diagnostic-findings-2026-07.md) §8.
+**Order of operations:** 1) rear discs + new pads (owner-confirmed worn) 2) full DOT4 flush + bleed (fluid @125k; reservoir shared with clutch master) 3) strip + service both front caliper sliders (pulling suspect) 4) runout check on the Dec-25 front discs (judder — if low-grade parts were fitted, claim warranty from that workshop) 5) only after all that, re-test → judge servo/master with pedal-pump test. **Do not buy a master cylinder or servo on day one.**
 
 ---
 

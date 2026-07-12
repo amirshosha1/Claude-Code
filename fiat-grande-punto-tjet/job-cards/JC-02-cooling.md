@@ -1,7 +1,9 @@
 # JC-02 — Cooling System
 
 **Priority context:** Egypt heat + turbo engine = cooling is a reliability pillar, not an accessory.
-**Status:** Awaiting baseline pressure test. Coolant: **Paraflu UP (red OAT)** only — 50/50 with demineralized water.
+**Status (rev. 2026-07-12): 🔴 ACTIVE FAILURE — coolant leak CONFIRMED from expansion tank; radiator hole suspected.** See [`../09-diagnostic-findings-2026-07.md`](../09-diagnostic-findings-2026-07.md) §1.
+
+**Immediate plan:** replace expansion tank + cap → pressure test with new tank fitted → radiator only if the test confirms it → all hoses squeezed during the test → full refill with **Paraflu UP/G12+ 50/50 demineralized** (the Mannol switch happens NOW, not at the belt job). Until fixed: distilled-water top-ups only, watch the gauge, no highway pulls.
 
 ---
 
@@ -53,12 +55,13 @@ Usually integrated in thermostat housing on T-Jet (covered by item 2). Verify in
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Water pump | Must Replace (with belt) | 🔴 | in JC-01 |
-| Thermostat housing | Recommended (with belt) | 🟠 | 1,500–2,800 |
-| Expansion cap | Must Replace | 🟠 | 150–400 |
-| Hoses | Inspect First | 🟠 | 0–4,000 |
-| Radiator | Confirmed only | 🟡 | 0–9,000 |
-| Fans/resistor | Inspect First | 🟡 | 0–7,000 |
-| Coolant (Paraflu UP) | Must Replace | 🔴 | 800–1,500 |
+| **Expansion tank + cap (leak Confirmed)** | Must Replace NOW | 🔴 | 750–1,600 |
+| **Pressure test (radiator verdict)** | Must Do NOW | 🔴 | 300–600 |
+| Radiator | Only if test confirms hole | 🔴 if confirmed | 0–9,000 |
+| Hoses | Inspect during test — low threshold | 🟠 | 0–4,000 |
+| **Coolant full change → Paraflu UP/G12+** | Must Replace NOW (system open) | 🔴 | 1,100–2,000 |
+| Thermostat | Verify 88–90 °C via OBD while refilling | 🟡 | 0–2,800 |
+| Water pump (43k km old) | Weep-hole check only — next belt job | 🟢 | 0 |
+| Fans/resistor | Test both speeds during refill | 🟡 | 0–7,000 |
 
 **Risk narrative:** the T-Jet tolerates overheating badly (alloy head, turbo heat soak). One overheat event can cost more than this entire job card. In Egyptian summer traffic, cooling is a 🔴-class system even when nothing is "broken."
