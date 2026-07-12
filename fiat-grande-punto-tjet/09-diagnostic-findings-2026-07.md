@@ -119,12 +119,26 @@ This is the strongest lead. On the Grande Punto (199), the **Body Computer (BSI)
 4. **Water inspection under scuttle** — given the broken cowl panel: look for water/corrosion at the BSI and connectors; clear scuttle drains; dry and treat.
 5. **Only after 1–4:** suspect the airbag control module itself or the BSI (both need proxi/coding — Fiat-capable shop).
 
-### ⚠️ "Fuel cut off" — needs clarification (changes urgency)
-Two very different meanings:
-- **(a) Engine stalls / dies while driving** → dangerous; could be the same power/CAN/ground fault, crank sensor, or the **inertia (crash) fuel cut-off switch tripped**. Do not drive on highways until diagnosed.
-- **(b) A dashboard "fuel cut-off" message after a knock/impact** → the inertia switch tripped; reset it, and this ties directly to the airbag system waking up (minor impact can lock the airbag module + trip inertia cut).
+### ✅ Fault pattern clarified by owner (2026-07)
+- **ESP unavailable = INTERMITTENT** (comes and goes)
+- **Airbag light = INTERMITTENT** (sometimes off, sometimes on)
+- **"Fuel cut off" = PERMANENT** (always displayed)
+- **Car still starts and drives** → fuel is NOT actually being cut; "fuel cut off" is a **latched message/flag**, not live fuel interruption.
 
-→ **Question to owner recorded** — see Next Steps.
+### Refined diagnosis — points to ONE node: the airbag/crash module + its wiring
+- **Intermittent airbag + ESP = a CONNECTION fault** (loose/corroded connector, ground, water) — **not a dead module.** A failed ECU produces PERMANENT faults. This is good news: cheap cause, and it **rules out buying an airbag/BSI module.**
+- **Permanent "fuel cut off"** = the crash-safety system has **latched a fuel-cutoff flag** (the airbag/crash module raises it on a fault or a knock, and it stays set until cleared with a scan tool). It ties the whole picture to the **airbag/crash module and its connector**.
+- Most likely chain: **broken cowl → water/damp at the airbag module connector (and BSI) under the scuttle → intermittent comms drop (airbag light + ESP flicker) + a latched crash/fuel-cutoff flag.**
+
+### Action (unchanged order, sharper focus)
+1. MultiECUScan: read airbag + ABS/ESP + BSI; note intermittent vs stored codes; **after fixing connections, CLEAR the latched fuel-cutoff/crash flag** and see if it stays gone.
+2. **Airbag module connector + fuse + ground** = the hot spot — unplug, inspect for damp/green corrosion, clean, re-seat, dielectric grease.
+3. Water/scuttle inspection + fix the broken cowl (root cause of the damp).
+4. Battery + main grounds.
+5. Ask workshop: does an inertia/crash switch exist on this VIN, or is crash-cutoff handled inside the airbag ECU over CAN? Reset accordingly.
+
+### Still worth confirming
+Any recent knock/impact/pothole hit — even minor — that could have first latched the crash flag? (Not blocking; the connector work proceeds either way.)
 
 ### Safety status
 🔴 Airbag light ON = airbags may not deploy. 🔴 ESP unavailable = no stability control. Treat as a Phase-1 safety priority alongside the cooling leak and intake hose. Do NOT let the "no-comms" scare you into buying an airbag ECU — 80% of these are power/ground/connector/water, all cheap.

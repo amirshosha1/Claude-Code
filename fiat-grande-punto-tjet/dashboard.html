@@ -344,14 +344,14 @@
         <div class="t-body">Unfiltered dust into the ORIGINAL 155k turbo = turbo killer. Prime suspect for 10 L/100km. Replace + all clamps immediately.</div>
       </div>
       <div class="task p-crit">
-        <div class="t-head"><span class="t-title">Airbag ECU — No Communication</span><span class="t-badge">🔴 SAFETY</span></div>
-        <div class="t-ar">لمبة إيرباج + الجهاز مش بيقرا ECU الإيرباج</div>
-        <div class="t-body">No-comms = lost power/ground/CAN, NOT a stored code — airbag may not deploy. Likely shared cause with ESP fault below. Check fuse + yellow connectors + water under scuttle FIRST. Do NOT buy a module.</div>
+        <div class="t-head"><span class="t-title">Airbag + ESP — INTERMITTENT</span><span class="t-badge">🔴 CONNECTION</span></div>
+        <div class="t-ar">إيرباج وESP متقطّعين — يظهروا ويختفوا</div>
+        <div class="t-body">Both come & go = a CONNECTION fault (connector/ground/water), NOT a dead module — a failed ECU stays permanent. Great news: cheap cause, rules out buying an airbag/BSI ECU. Hot spot: airbag module connector + ground.</div>
       </div>
       <div class="task p-crit">
-        <div class="t-head"><span class="t-title">ESP + Hill Holder Unavailable</span><span class="t-badge">🔴 SAFETY</span></div>
-        <div class="t-ar">ESP مقفول + Hill Holder + fuel cut off</div>
-        <div class="t-body">Hill Holder is a function OF ESP = one fault. Multiple modules down together → shared cause: power/ground/CAN or WATER from the broken cowl panel onto the BSI. Prime lead ↓.</div>
+        <div class="t-head"><span class="t-title">"Fuel Cut Off" — PERMANENT (latched)</span><span class="t-badge">🔴 CLEAR FLAG</span></div>
+        <div class="t-ar">fuel cut off ثابت — فلاج مخزّن</div>
+        <div class="t-body">Car still runs → fuel isn't actually cut; it's a LATCHED crash-safety flag from the airbag module. Fix the connector/water FIRST, then clear the flag with MultiECUScan and see if it stays gone.</div>
       </div>
       <div class="task p-crit">
         <div class="t-head"><span class="t-title">Broken Cowl → Water on BSI</span><span class="t-badge">🔴 ROOT-CAUSE?</span></div>
@@ -526,7 +526,7 @@
         <li data-k="obd"><span class="box">✓</span><span class="txt">Full OBD scan — note which modules ANSWER<small>engine · ABS/ESP · airbag · BSI — no-comms = power/ground/CAN</small></span></li>
         <li data-k="airbag"><span class="box">✓</span><span class="txt">🔴 Airbag: fuse + yellow connectors + clock spring<small>no-comms first check — do NOT buy an ECU</small></span></li>
         <li data-k="scuttle"><span class="box">✓</span><span class="txt">🔴 Water/corrosion check at BSI under scuttle + drains<small>broken cowl = prime cause of airbag/ESP faults</small></span></li>
-        <li data-k="fuelcut"><span class="box">✓</span><span class="txt">Clarify "fuel cut off": stall while driving vs inertia switch<small>check crash/inertia cut-off switch reset</small></span></li>
+        <li data-k="fuelcut"><span class="box">✓</span><span class="txt">Clear latched "fuel cut off" flag AFTER fixing connector<small>car runs = not a live cut · verify it stays gone</small></span></li>
       </ul>
       <button class="reset" id="resetBtn" style="margin-top:14px">⟲ RESET CHECKLIST</button>
     </div>
