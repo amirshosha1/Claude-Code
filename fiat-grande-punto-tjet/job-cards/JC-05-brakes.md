@@ -1,11 +1,13 @@
 # JC-05 — Brakes & ABS
 
 **Spec note:** T-Jet 120 typically runs **284×22 mm vented front discs** (some markets 257 mm — measure yours before ordering!) and 251 mm solid rear discs or drums depending on trim. **Measure + ePER by VIN before any order.**
-**Status:** Awaiting measurement at baseline inspection.
+**Status (rev. 2026-07-12):** ✅ Front discs + pads fitted **10-Dec-2025 @ 140,000 km** · ✅ Rear pads **10-Nov-2025 @ 135,000 km**. Friction hardware is fresh (15–20k km). ⚠️ Rear discs were price-quoted (1,200–1,500) but never bought — measure them. ⚠️ Brake fluid: **no flush ever recorded → Must Replace.**
 
 ---
 
-## 1. Front Discs + Pads — 🟠 · **Inspect First → likely Must Replace**
+## 1. Front Discs + Pads — 🟢 DONE @ 140k Dec 2025 · monitor
+
+Pads ~15–25k km of life left at current rate; check thickness each oil service. Confirm brand fitted (❓ in history file). Reference below kept for next time.
 
 | Item | Detail |
 |---|---|
@@ -47,15 +49,16 @@ Adjust ≤ 6–8 clicks; cables (pair 800–1,600 + labor 500–900) only if sei
 
 ---
 
-## Job Card Summary
+## Job Card Summary (rev. 2026-07-12)
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Brake fluid flush | Must Replace | 🔴 | 550–1,100 |
-| Front discs+pads | Inspect → likely | 🟠 | 0–10,000 |
-| Caliper service | Recommended | 🟠 | 800–1,800 |
-| Hoses ×4 | Inspect First | 🟠 | 0–3,800 |
-| Rear brakes | Inspect First | 🟡 | 0–7,000 |
+| Brake fluid flush (never recorded) | Must Replace | 🔴 | 550–1,100 |
+| Front discs+pads | ✅ done @140k Dec 2025 | 🟢 | 0 |
+| Rear pads | ✅ done @135k Nov 2025 | 🟢 | 0 |
+| Rear discs (quoted but never bought) | Measure → replace if below min | 🟡 | 0–3,500 |
+| Caliper service | Recommended with fluid flush | 🟠 | 800–1,800 |
+| Hoses ×4 (2010 rubber, likely original) | Inspect First | 🟠 | 0–3,800 |
 | ABS items | DTC-evidence only | 🟡 | 0–2,000 |
 
-**Rule:** brakes are the one system where "Inspect First" flips to "Must Replace" at the slightest doubt. Budget assumes front axle is due — that is the statistically safe bet at 155k unless invoices prove otherwise.
+**Rule:** brakes flip from "Inspect First" to "Must Replace" at the slightest doubt. With friction hardware fresh, the fluid and 16-year-old hoses are now the weakest links in this system.

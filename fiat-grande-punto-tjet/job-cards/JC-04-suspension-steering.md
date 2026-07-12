@@ -1,7 +1,7 @@
 # JC-04 — Suspension & Steering
 
-**Context:** 155,000 km on Egyptian roads — statistically the most worn system on the car. Front: MacPherson. Rear: twist beam. Steering: **Dualdrive electric (column motor)**.
-**Status:** Awaiting shake-down inspection + alignment printout.
+**Context:** Front: MacPherson. Rear: twist beam. Steering: **Dualdrive electric (column motor)**.
+**Status (rev. 2026-07-12):** ✅ Full front overhaul done **Sep 2021 @ 102,000 km** (shocks, top mounts, links, arms, inner tie rod, alignment — EGP 4,195 per ledger) — now **53,000 km / ~5 Egyptian-road years old → shake-down re-inspection due**. ✅ Steering box/rack replaced **Dec 2025 @ 140,000 km** — steering is fresh. ⚠️ Rear shocks: no record ever (owner has 1,500 quote) — likely original at 155k.
 
 ---
 
@@ -60,17 +60,16 @@ Full 4-wheel alignment with printout. EGP 400–800. Non-negotiable finisher for
 
 ---
 
-## Job Card Summary
+## Job Card Summary (rev. 2026-07-12)
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Lower arms pair | Likely — confirm then replace | 🟠 | 5,500–9,500 |
-| ARB links/bushes | Likely | 🟠 | 1,200–2,800 |
-| Front struts + mounts | Inspect First (Likely) | 🟠 | 0–13,500 |
-| Track rod ends/inners | Inspect First | 🟠 | 0–4,000 |
-| Rear shocks/bushes | Inspect First | 🟡 | 0–7,500 |
-| Wheel bearings | Inspect First | 🟡 | 0–8,000 |
+| Front shake-down inspection (53k km since overhaul) | Must Do | 🟠 | in baseline labor |
+| Front items as found (links/arms/struts wear again by now) | Inspect First — partial renewal likely | 🟠 | 0–10,000 |
+| **Rear shocks (no record — likely original)** | Inspect First (Likely) | 🟠 | 2,000–4,500 |
+| Wheel bearings (one done? بلي العجل 800 in ledger — confirm which) | Inspect First | 🟡 | 0–4,000 |
+| Steering rack | ✅ replaced @140k Dec 2025 | 🟢 | 0 |
 | EPS column | Confirmed only | 🟡 | 0–8,000 |
-| Alignment | Must Do | 🟠 | 400–800 |
+| Alignment (after any parts) | Must Do | 🟠 | 300–800 (ledger: 300) |
 
 **Buy-once-buy-right note:** this is the system where cheap Egyptian-market copies are most common and most dangerous. Insist on TRW / Lemförder / SKF / SNR / Sachs / KYB in original packaging; counterfeits exist — buy from reputable suppliers and check holograms/QR.

@@ -2,33 +2,30 @@
 
 Pipeline: `NEED → QUOTED → ORDERED → PURCHASED → DELIVERED → INSTALLED → CLOSED`
 
-## Active pipeline
+## Active pipeline (revised 2026-07-12 after service history)
 
 | Item | Need | Quoted | Ordered | Purchased | Delivered | Installed | Invoice # | Supplier | Price (EGP) | Warranty |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Baseline inspection (labor) | ✅ | ⬜ | ⬜ | ⬜ | — | ⬜ | | | | |
-| Timing kit + pump (Gates) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Coolant Paraflu UP | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Thermostat housing | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Oil + oil/air/cabin filters | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Spark plugs NGK ×4 | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
+| Catch-up inspection (labor) | ✅ | ⬜ | ⬜ | ⬜ | — | ⬜ | | | | |
+| Oil + oil/air/cabin filters | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,350 (ledger) | |
+| Spark plugs NGK ×4 (overdue) | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~1,900 | |
 | Brake fluid + flush | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Gearbox oil | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Expansion cap | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
-| Wiper blades | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | | |
+| Wiper blades | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | | | ~300 | |
 
-## Waiting on diagnosis (do not order)
+## Waiting on confirmation/diagnosis (do not order)
 
 | Item | Blocker |
 |---|---|
-| Coils, cam cover, boost parts | Baseline engine tests |
-| Suspension parts (arms, struts, links, rods) | Shake-down inspection |
-| Front discs/pads | Thickness measurement + disc size check (284 vs 257 mm) |
-| Clutch kit | Slip road test + gearbox code |
+| Coolant Paraflu UP | Owner to confirm: changed at 112k water pump job? |
+| Gearbox oil | Owner to confirm: renewed at 125k clutch / 140k flywheel job? |
+| Rear shocks + front suspension items | Shake-down inspection (front overhaul now 53k km old) |
+| Rear discs | Thickness measurement (owner already had quotes) |
 | Battery | CCA test |
 | Tires | DOT date check |
-| A/C parts | Leak test |
-| Turbo / EPS column | Confirmed-failure evidence only |
+| A/C compressor clutch + leak parts | A/C diagnosis (ledger hints at compressor clutch issue) |
+| Coils / boost solenoid | Engine tests + boost log |
+| Brake hoses | Visual/pressure inspection |
+| Timing belt kit (next cycle) | Scheduled ~172–180k km / Oct 2027 — do not buy early, rubber ages on the shelf |
 
 ## Completed
 

@@ -10,11 +10,9 @@ CCA test at baseline. Egyptian heat kills batteries in 2–3 years — if >2 yrs
 Spec: ~60 Ah / 540+ CCA (confirm tray size L2). Brands: Varta ★★★★★ · Bosch ★★★★★ · ACDelco ★★★★☆ · Chloride Egypt ★★★☆☆ (acceptable budget).
 Pricing (MEDIUM): 3,500–5,500. Risk: weak battery causes phantom BSI/EPS faults on this platform — replace before chasing electrical ghosts.
 
-## 2. Alternator & Starter — 🟡 · **Inspect First**
+## 2. Alternator & Starter — 🟢 alternator done / 🟡 starter inspect
 
-Test first (13.8–14.5 V loaded, ripple, starter draw). Only Confirmed failure → replace/rebuild.
-Brands: Denso/Bosch/Magneti Marelli ★★★★★ (per OE fitment) · local rebuild ★★★☆☆ (with warranty).
-Pricing (LOW): rebuild 1,500–3,000 · new/exchange 6,000–12,000 · Estirad 2,000–4,500.
+✅ **Alternator replaced @ 128,000 km (EGP 3,300 per ledger)** — 27k km old, verify charging voltage at baseline anyway. Starter: original — test draw/engagement, replace only on Confirmed failure (rebuild 1,500–3,000 · Estirad 2,000–4,500).
 
 ## 3. Grounds, Scuttle Drains & Wiring — 🟠 · **Must Do (cheap, prevents chaos)**
 
@@ -34,6 +32,7 @@ Scan only; repair on evidence. Note for any module replacement: needs **proxi al
 
 | Item | Detail |
 |---|---|
+| Ledger clue | Owner's price list includes "كباس كومبرسور" A/C compressor clutch/piston (EGP 1,000) — suggests a suspected compressor-clutch issue. Diagnose engagement first |
 | Symptoms to check | Vent temp >10–12 °C, compressor cycling too fast, no engagement, smell |
 | Root causes ranked | 1) Low charge from slow leak (condenser stone/sand damage most common) 2) Condenser fan/resistor 3) Blocked cabin filter/evaporator 4) Compressor wear (last) |
 | Inspection | UV dye + electronic sniffer FIRST — never repeat-regas a leaking system |

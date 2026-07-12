@@ -8,13 +8,14 @@ Rule: a phase does not open until the previous phase's 🔴/🟠 items are close
 **Cost:** EGP 1,500–3,500 · **Time:** 1–2 days · **Dependencies:** none
 Full inspection per [`01-baseline-inspection.md`](01-baseline-inspection.md). Deliverable: measured facts replacing every "Unknown" in this project.
 
-## Phase 1 — Safety 🔴
-**Cost:** EGP 25,000–50,000 · **Time:** 1–2 weeks · **Labor:** ~12–18 h · **Depends on:** Phase 0
-- Timing belt + tensioner + water pump + accessory belt + coolant + thermostat + cap
-- Brake fluid flush; front brakes if measurement demands; caliper service
-- Tires if DOT-expired/worn; alignment
-- Any Confirmed ball joint / track rod / brake hose failure
-- Battery if CCA test fails
+## Phase 1 — Safety 🔴 (revised — timing belt & front brakes already done per history)
+**Cost:** EGP 8,000–40,000 (tires dominate) · **Time:** ~1 week · **Labor:** ~6–10 h · **Depends on:** Phase 0
+- Brake fluid flush (never recorded) + caliper service + hose inspection
+- Spark plugs (overdue at 43k km)
+- Oil + all filters (no date on record)
+- Tires if DOT-expired/worn; battery if CCA test fails
+- Confirm-or-replace: coolant, gearbox oil
+- Any Confirmed suspension failure from shake-down (front overhaul is 53k km old; rear shocks unrecorded)
 
 ## Phase 2 — Mechanical Reliability 🟠
 **Cost:** EGP 20,000–45,000 · **Time:** 2–4 weeks · **Labor:** ~10–16 h · **Depends on:** Phase 1

@@ -1,64 +1,66 @@
-# 05 — Master Budget
+# 05 — Master Budget (revised 2026-07-12 after service history)
 
-**Currency: EGP. Confidence: LOW–MEDIUM.** Egyptian parts prices track the exchange rate and import channel — every line must be re-quoted at purchase time. Ranges assume quality aftermarket (Gates/SKF/TRW class), not genuine-dealer pricing (add 40–80% for genuine) and not no-name (which this project forbids on safety parts).
+**Currency: EGP. Confidence: LOW–MEDIUM** — re-quote at purchase. The owner's own ledger prices ([`08-service-history.md`](08-service-history.md)) are used as the local benchmark where available; they run cheaper than my earlier generic estimates, so ranges were revised down.
 
-## A. Committed (Must Do — independent of inspection results)
+## A. Committed — immediate catch-up service (independent of inspection)
 
 | Item | Parts (EGP) | Labor (EGP) | Total |
 |---|---|---|---|
-| Baseline inspection + OBD + compression | — | 1,500–3,500 | 1,500–3,500 |
-| Timing belt kit + water pump + acc. belt | 4,500–7,500 | 1,200–2,000 | 5,700–9,500 |
-| Coolant + thermostat + expansion cap | 2,200–4,200 | (bundled) | 2,200–4,200 |
-| Oil + 3 filters service | 2,400–3,800 | 150–300 | 2,600–4,100 |
-| Spark plugs | 1,800–3,000 | 300–500 | 2,100–3,500 |
-| Brake fluid flush | 250–500 | 300–600 | 550–1,100 |
-| Gearbox oil | 800–1,500 | 200–400 | 1,000–1,900 |
-| Grounds + scuttle drains + caliper service | 200–500 | 700–1,400 | 900–1,900 |
-| Alignment + balance | — | 600–1,100 | 600–1,100 |
-| **Committed subtotal** | | | **≈ 17,000–31,000** |
+| Engine oil + oil filter + flush (ledger: 820+130+110) | 1,060–1,500 | 150–300 | 1,200–1,800 |
+| Air filter + cabin filter (ledger: 250+150) | 400–600 | — | 400–600 |
+| Spark plugs — overdue (ledger last time: 1,900) | 1,900–3,000 | 300–500 | 2,200–3,500 |
+| Brake fluid DOT4 flush (no record ever) | 250–500 | 300–600 | 550–1,100 |
+| Coolant Paraflu UP — if owner can't confirm | 800–1,500 | 300–500 | 0 or 1,100–2,000 |
+| Gearbox oil — if not done at clutch job | 800–1,500 | 200–400 | 0 or 1,000–1,900 |
+| Baseline checks: suspension shake-down + battery CCA + tire DOT + A/C vent temp + OBD scan | — | 800–2,000 | 800–2,000 |
+| Grounds + scuttle drains + wipers | 300–500 | 300–600 | 600–1,100 |
+| **Committed subtotal** | | | **≈ 8,000–14,000** |
 
-## B. Probable (statistically expected at 155k — confirm first)
+## B. Probable near-term (inspection decides — history-informed)
 
-| Item | Total range |
-|---|---|
-| Front brakes (discs + pads) | 5,800–10,000 |
-| Front lower arms + links + rod ends | 7,000–13,000 |
-| Front struts + mounts | 8,500–13,500 |
-| Battery | 3,500–5,500 |
-| Tires ×4 | 14,000–26,000 |
-| Cam cover (PCV) | 4,000–7,000 |
-| A/C leak fix + regas | 1,100–10,000 |
-| **Probable subtotal** | **≈ 44,000–85,000** |
+| Item | Total range | Why probable |
+|---|---|---|
+| Front suspension refresh (shocks/mounts/links as found) | 4,000–10,000 | Overhaul is 53k km old (ledger benchmark: full job was 4,195 in 2021 — prices have risen) |
+| Rear shocks (never recorded; owner quote 1,500) | 2,000–4,500 | Likely original at 155k |
+| Rear discs (quoted 1,200–1,500, never bought) + pads if needed | 2,000–3,500 | Owner was already pricing them |
+| Battery | 3,500–5,500 | No record; Egypt heat |
+| Tires ×4 (only if DOT >5 yr or <3 mm) | 14,000–26,000 | No record |
+| A/C leak path (compressor clutch quoted 1,000 in ledger) | 1,100–6,000 | Test first |
+| Alignment after suspension work | 400–800 | Mandatory finisher |
+| **Probable subtotal** | **≈ 13,000–56,000** | Tires dominate the spread |
 
-## C. Contingency / Emergency reserve (Confirmed-failure items)
+## C. Scheduled + contingency reserve
 
-| Item | Reserve |
-|---|---|
-| Clutch kit installed | 9,000–14,500 |
-| Coils ×4 | up to 8,000 |
-| Turbo path (solenoid→actuator→turbo) | 1,500–45,000 |
-| EPS column repair | up to 8,000 |
-| Radiator/fans | up to 9,000 |
-| Recommended cash reserve | **20,000–30,000** |
+| Item | Reserve | When |
+|---|---|---|
+| **Next timing belt + tensioner + WP + acc. belt + coolant** | 5,500–8,000 (ledger benchmark 5,400 in 2023) | ~172–180k km or Oct 2027 |
+| Coils ×4 (if misfires appear) | up to 8,000 | Evidence only |
+| Turbo/boost small parts | 1,500–4,000 | Evidence only (turbo itself had work — confirm ❓) |
+| EPS/steering — rack is new (Dec 2025) | minimal | — |
+| Clutch — done at 125k + flywheel 140k | not needed this cycle | — |
+| Recommended cash reserve | **12,000–18,000** | |
 
 ## D. Comfort & Cosmetic (Phases 4–7)
 
-Interior + exterior + audio envelope: **20,000–55,000** (see JC-07).
+Interior + exterior + audio envelope: **20,000–55,000** (see JC-07). Ledger shows owner already invests here (leather 3,000, accessories).
 
 ---
 
-## Budget Tiers
+## Budget Tiers (revised)
 
 | Tier | Scope | Total (EGP) |
 |---|---|---|
-| **Minimum (safety-only)** | A + brakes + tires-if-needed + battery-if-needed | **≈ 45,000–65,000** |
-| **Recommended (full mechanical)** | A + B + reserve C | **≈ 120,000–170,000** |
-| **Premium (concours daily)** | A + B + C + D | **≈ 220,000–300,000** |
+| **Minimum (catch-up + safety)** | A + battery/tires/brakes as tests demand | **≈ 15,000–40,000** |
+| **Recommended (full mechanical)** | A + B + reserve C | **≈ 60,000–100,000** |
+| **Premium (concours daily)** | A + B + C + D | **≈ 130,000–200,000** |
+
+Previous (no-history) estimate was 120–170k recommended — **the verified history roughly halved the required budget.**
 
 ## Running total tracker
 
 | Date | Item | Spent (EGP) | Running total |
 |---|---|---|---|
-| — | _(nothing spent yet)_ | 0 | 0 |
+| pre-project | Historical spend per ledger (2021–2025, major items) | ~55,000+ | (baseline, not counted) |
+| — | _(nothing spent under this project yet)_ | 0 | 0 |
 
-**Financial rules:** spend nothing from tier B/C without a job-card diagnosis note · re-quote everything >30 days old · keep 15% of each phase budget unallocated for surprises · genuine parts only where the job card says so (PCV cover, coolant, seals).
+**Financial rules:** spend nothing from tier B/C without a job-card diagnosis note · re-quote everything >30 days old · keep 15% of each phase unallocated · genuine parts where job cards say so.

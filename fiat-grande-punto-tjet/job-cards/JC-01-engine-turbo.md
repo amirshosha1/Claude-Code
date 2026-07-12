@@ -1,13 +1,17 @@
 # JC-01 — Engine, Turbo, Ignition & Fuel
 
-**Engine:** 1.4 T-Jet 16v (198A4000, 120 HP) · **Mileage:** 155,000 km · **Status:** Awaiting baseline inspection
+**Engine:** 1.4 T-Jet 16v (198A4000, 120 HP) · **Mileage:** 155,000 km
+**Status (rev. 2026-07-12):** service history received — see [`../08-service-history.md`](../08-service-history.md). Timing belt/pump/PCV/fuel pump/mounts already done; plugs overdue.
 All OEM numbers: **verify by VIN in ePER before ordering** — Type 199 had running changes.
 
 ---
 
-## 1. Timing Belt System — 🔴 CRITICAL · **Must Replace**
+## 1. Timing Belt System — 🟡 SCHEDULED (done @112k Oct 2023 → next ~172–180k km or Oct 2027)
 
-The single most important job on this car. Interference engine: belt failure = bent valves ≈ EGP 35,000–60,000 head rebuild.
+✅ **Done 08-Oct-2023 @ 112,000 km** (belt+tensioner kit 2,200 · acc. belt 200 · acc. tensioner 300 · water pump 800 — per ledger). Currently 43,000 km / 33 months old.
+**Next due: whichever comes first — ~172–180k km or Oct 2027** (hot-climate 60–70k/4yr rule). Not an emergency; budget reserved in [`../05-budget.md`](../05-budget.md) §C. The reference info below stays for that next job.
+
+Interference engine: belt failure = bent valves ≈ EGP 35,000–60,000 head rebuild — do not stretch the interval.
 
 | # | Item | Detail |
 |---|---|---|
@@ -38,9 +42,10 @@ Genuine kit+pump 8,000–12,000 · Gates/SKF kit+pump 4,500–7,500 · Estirad: 
 | Category | Ignition |
 | Component | 4× spark plugs, 4× pencil coils |
 | Current symptoms | TBD at inspection — T-Jet classics: misfire under boost, flashing MIL, hesitation 3,000+ rpm |
+| History | Plugs fitted 08-Oct-2023 @ 112,000 km (EGP 1,900) → now **43,000 km old, past the 30–40k turbo interval** |
 | Root cause | Coils crack from engine-bay heat; wrong/old plugs foul under turbo load; low-octane fuel worsens knock retard |
-| Recommended inspection | Pull plugs (read color/gap/type), read misfire counters live, swap-test suspect coil |
-| Decision | Plugs: **Must Replace** (unknown age, turbo engine, 30–40k interval). Coils: **Inspect First** — replace only failed ones unless ≥2 failed, then do all 4 |
+| Recommended inspection | Pull plugs (read color/gap/type — reveals mixture/oil state too), read misfire counters live, swap-test suspect coil |
+| Decision | Plugs: **Must Replace — overdue**. Coils: **Inspect First** — replace only failed ones unless ≥2 failed, then do all 4 |
 | OEM part names | Candela accensione / Bobina |
 | OEM numbers (verify ePER) | Plug **55212466** (NGK IKR9F8-type iridium, gap ~0.8) — do NOT fit generic heat range. Coil **55200486** (Eldor/Bosch) — confidence Medium-High |
 | Quantity | 4 + 4 |
@@ -52,7 +57,9 @@ Genuine kit+pump 8,000–12,000 · Gates/SKF kit+pump 4,500–7,500 · Estirad: 
 
 ---
 
-## 3. PCV / Cam Cover Membrane — 🟠 HIGH · **Inspect First (Likely at this mileage)**
+## 3. PCV / Cam Cover Membrane — 🟢 DONE · verify only
+
+✅ **Oil separator (مبخر زيت) replaced ~Oct 2023 @ ~122,000 km (EGP 1,000 — km entry has a ❓ in the ledger).** Now ~33k km old — should be healthy. At each oil change: quick oil-cap vacuum check + listen for whistle; no purchase planned. Reference below kept for the future.
 
 | # | Item | Detail |
 |---|---|---|
@@ -68,6 +75,8 @@ Genuine kit+pump 8,000–12,000 · Gates/SKF kit+pump 4,500–7,500 · Estirad: 
 ---
 
 ## 4. Turbocharger & Boost Control — 🟡 MEDIUM · **Inspect First — do NOT pre-buy**
+
+> ❓ **Ledger shows turbo work (EGP 3,000) + exhaust manifold (EGP 3,000) with no date/km.** Owner to confirm: when, repair vs. replacement, new/used/rebuilt, brand. EGP 3,000 suggests a repair/rebuild or used unit, not a new turbo — a boost log at baseline will show whether it performs to spec.
 
 | # | Item | Detail |
 |---|---|---|
@@ -95,35 +104,35 @@ Genuine kit+pump 8,000–12,000 · Gates/SKF kit+pump 4,500–7,500 · Estirad: 
 
 ---
 
-## 6. Engine Mounts — 🟡 MEDIUM · **Inspect First**
+## 6. Engine Mounts — 🟢 mostly done · **Inspect remaining**
 
-Symptoms: clunk on take-off/reverse, vibration at idle in gear. 3 mounts (RH hydraulic, LH gearbox, rear torque rod — rear fails first).
+✅ 2 mounts replaced @ 125,000 km with clutch job (EGP 1,700); one more mount entry @ 103k (EGP 120 ❓). Identify which of the 3 (RH hydraulic, LH gearbox, rear torque rod) was NOT replaced and rock-test it — rear torque rod fails first.
 OEM numbers via ePER by VIN. Brands: Corteco ★★★★★ · Febi ★★★★☆ · Magneti Marelli ★★★★☆ · unbranded ☆.
 Pricing (LOW): rear torque mount 900–1,800; side mounts 1,500–3,000 each; labor 400–900.
 Risk if ignored: drivetrain shunt loads crack exhaust flex pipe and stress driveshafts.
 
 ---
 
-## 7. Fuel System — 🟡 MEDIUM · **Inspect First**
+## 7. Fuel System — 🟢 healthy · **Inspect only**
 
-- Fuel pump module (in-tank): test rail pressure before condemning. OEM via ePER. Brands: Bosch ★★★★★ · Magneti Marelli ★★★★★ (often OE) · VDO ★★★★☆.
+- ✅ Fuel pump replaced @ 115,000 km (EGP 2,100) — 40k km old, fine. Test rail pressure only if symptoms appear. Brands: Bosch ★★★★★ · Magneti Marelli ★★★★★ (often OE) · VDO ★★★★☆.
 - Injectors: clean/flow-test first (EGP 800–1,500 for 4) — almost never need replacement on T-Jet.
 - Purge valve: cheap, rattles/vacuum leak — Bosch ★★★★★.
 - ⚠️ Egypt fuel note: use 95 RON. Persistent 92 use on a turbo = knock retard, heat, long-term piston damage.
 
 ---
 
-## Job Card Summary
+## Job Card Summary (rev. 2026-07-12)
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Timing belt + tensioner + WP + coolant | Must Replace | 🔴 | 6,000–9,500 |
-| Oil + filters service | Must Replace | 🟠 | 2,600–4,100 |
-| Spark plugs | Must Replace | 🟠 | 2,100–3,500 |
-| Coils | Inspect First | 🟠 | 0–8,000 |
-| PCV/cam cover | Inspect First (Likely) | 🟠 | 0–7,000 |
-| Boost system small parts | Inspect First | 🟡 | 0–5,000 |
-| Turbo itself | Confirmed Failure only | 🟡 | 0–45,000 |
-| Engine mounts | Inspect First | 🟡 | 0–6,000 |
+| Oil + filters service (no date on record) | Must Replace now | 🔴 | 1,600–2,400 |
+| Spark plugs (43k km old) | Must Replace — overdue | 🟠 | 2,200–3,500 |
+| Coils | Inspect First | 🟡 | 0–8,000 |
+| Timing belt + WP + coolant | ✅ done @112k → next ~172–180k / Oct 2027 | 🟡 scheduled | 5,500–8,000 reserved |
+| PCV/oil separator | ✅ done ~122k — verify only | 🟢 | 0 |
+| Fuel pump | ✅ done @115k | 🟢 | 0 |
+| Engine mounts | ✅ 2 done @125k — check 3rd | 🟢 | 0–1,800 |
+| Boost system small parts | Inspect First (+ boost log; turbo history ❓) | 🟡 | 0–5,000 |
 
 All prices EGP, confidence Low–Medium, re-quote at purchase.

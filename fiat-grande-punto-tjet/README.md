@@ -67,24 +67,26 @@ Diagnosis confidence classes: **Confirmed Failure / Likely Failure / Possible Fa
 | [`05-budget.md`](05-budget.md) | Master budget (min / recommended / premium) |
 | [`06-roadmap.md`](06-roadmap.md) | Phases 1–7 with costs, time, dependencies |
 | [`07-workshop-log.md`](07-workshop-log.md) | Workshop visits, invoices, warranties |
+| [`08-service-history.md`](08-service-history.md) | **Verified service history** from owner's ledger (Car.pdf) |
 
 ---
 
-## Executive Summary (current state)
+## Executive Summary (revised 2026-07-12 — service history received)
 
-At **155,000 km with no verified service history in hand**, the plan assumes nothing. The project starts with a **baseline diagnostic inspection** (Phase 0/1) — compression + leak-down, boost pressure, OBD scan, suspension shake-down, brake measurement — before any expensive part is bought.
+The owner's maintenance ledger ([`08-service-history.md`](08-service-history.md)) proves this car is **well maintained, not neglected** — the restoration scope shrank dramatically:
 
-Known statistical weak points of the 1.4 T-Jet that this plan watches closely:
+**Already done (verified):** timing belt + tensioner + water pump + plugs @ 112k (Oct 2023) · PCV/oil separator @ ~122k · fuel pump @ 115k · clutch (LuK) + engine mounts @ 125k · alternator @ 128k · rear pads @ 135k (Nov 2025) · flywheel + front discs/pads + steering rack @ 140k (Dec 2025) · full front suspension overhaul @ 102k (Sep 2021) · turbo + exhaust manifold work (date unconfirmed ❓).
 
-1. **Timing belt system** — belt-driven engine; a snapped belt destroys valves/pistons. Unknown history = 🔴 Must Replace immediately (belt + tensioner + water pump).
-2. **Ignition coils & spark plugs** — classic T-Jet misfire source, aggravated by heat and low-octane fuel.
-3. **PCV membrane in cam cover** — causes oil consumption, rough idle, whistling.
-4. **Turbo wastegate actuator & boost solenoid (Pierburg)** — limp mode / low boost.
-5. **Thermostat housing & plastic cooling parts** — brittle at this age in hot climate.
-6. **Front suspension wear** (control arm bushes, drop links, top mounts) — universal at 155k on Egyptian roads.
-7. **Dualdrive electric power steering** — column motor faults (do NOT buy before diagnosis; expensive).
+**What actually needs attention now (155k km):**
 
-**Budget snapshot** (see [`05-budget.md`](05-budget.md)): Minimum (safety only) ≈ **EGP 45–65k** · Recommended full mechanical restoration ≈ **EGP 120–170k** · Premium incl. cosmetic ≈ **EGP 220–300k**. Confidence: **Low–Medium** — Egyptian parts prices move with exchange rate; re-quote everything at purchase time.
+1. 🟠 **Spark plugs — overdue** (43k km on them; turbo interval is 30–40k).
+2. 🔴 **Fluids with no record**: engine oil (date unknown), brake fluid (never logged), coolant + gearbox oil (confirm if done during pump/clutch jobs).
+3. 🟠 **Front suspension re-inspection** — the Sep-2021 overhaul is now 53k Egyptian-road km old; rear shocks have no record at all.
+4. 🟠 Battery CCA test, tire DOT check, A/C leak test — no records.
+5. 🟡 **Next timing belt due ~172–180k km or Oct 2027** — a scheduled event, not an emergency.
+6. ❓ Rear discs were price-quoted but never purchased — measure them.
+
+**Budget snapshot (revised)** (see [`05-budget.md`](05-budget.md)): Immediate catch-up service ≈ **EGP 8–14k** · Probable near-term (suspension refresh + battery + tires as tests demand) ≈ **EGP 25–55k** · Full recommended incl. next belt + comfort ≈ **EGP 60–100k** · Premium incl. cosmetic ≈ **EGP 130–200k**. Confidence: **Low–Medium** — re-quote at purchase; the owner's own ledger prices are the best local benchmark.
 
 ---
 

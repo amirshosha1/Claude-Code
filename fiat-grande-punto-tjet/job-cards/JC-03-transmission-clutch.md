@@ -1,11 +1,13 @@
 # JC-03 — Transmission, Clutch & Driveshafts
 
 **Gearbox:** manual (confirm C510 5-sp vs C635 6-sp — stamped on case / ePER by VIN; changes clutch kit number).
-**Status:** Awaiting baseline road test.
+**Status (rev. 2026-07-12):** ✅ Clutch done @ 125k (LuK disc + pressure plate 8,000 · release bearing 6,500 · 2 engine mounts 1,700) · ✅ **Flywheel replaced @ 140k Dec 2025 (11,000)**. Drivetrain is fresh — 30k km on clutch, 15k on flywheel.
 
 ---
 
-## 1. Clutch Kit — 🟡 · **Inspect First (Possible at 155k)**
+## 1. Clutch Kit — 🟢 DONE @ 125k · monitor only
+
+No action this cycle; typical remaining life 60–100k km. Reference below kept for the next replacement.
 
 | Item | Detail |
 |---|---|
@@ -18,7 +20,7 @@
 | Pricing (EGP, LOW) | Kit Valeo/LuK 6,000–10,000 · Labor (box out) 2,500–4,500 · **Total ≈ 9,000–14,500** |
 | Risk if ignored | Slipping clutch glazes flywheel (+EGP 2–4k machining/replacement) and can strand you mid-traffic. Worst case: friction material disintegrates, car immobile |
 
-## 2. Gearbox Oil — 🟠 HIGH · **Must Replace** (almost certainly never done)
+## 2. Gearbox Oil — 🟠 · **Confirm with owner/workshop** — was it renewed during the 125k clutch or 140k flywheel job (box was out both times)? If unconfirmed → replace.
 
 Tutela Car Matryx / 75W-85 GL-4 (spec per handbook — verify). ~2 L.
 Brands: Tutela ★★★★★ (OE) · Motul Gear 300 / Castrol Syntrans ★★★★★.
@@ -45,11 +47,11 @@ Covered in JC-01 §6 (they act as one system for drivetrain shunt).
 
 ---
 
-## Job Card Summary
+## Job Card Summary (rev. 2026-07-12)
 
 | Task | Decision | Priority | Est. total (EGP) |
 |---|---|---|---|
-| Gearbox oil change | Must Replace | 🟠 | 1,000–1,900 |
-| CV boots/joints | Inspect First | 🟠 | 0–7,000 |
-| Clutch kit | Inspect First (budget reserved) | 🟡 | 0–14,500 |
+| Gearbox oil | Confirm history → replace if unknown | 🟠 | 0–1,900 |
+| CV boots/joints | Inspect First (owner's ledger quotes: outer 2,000 / inner 2,500) | 🟠 | 0–7,000 |
+| Clutch + flywheel | ✅ done @125k/@140k | 🟢 | 0 |
 | Linkage bushes | Inspect First | 🟡 | 0–1,400 |
