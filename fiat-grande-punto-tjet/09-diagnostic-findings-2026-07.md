@@ -22,7 +22,7 @@ Owner's full symptom report, converted to official baseline findings. Classifica
 
 | Finding | Class | Action |
 |---|---|---|
-| **Air intake hose (filter → turbo) torn** خرطوم السحب مقطوع | **Confirmed** | **Replace immediately.** This hose feeds the ORIGINAL 155k-km turbo — a tear here lets **unfiltered dusty Egyptian air straight into the compressor wheel = turbo killer**, and unmetered air wrecks fueling |
+| **Air intake hose (filter → turbo) torn** خرطوم السحب مقطوع | **Confirmed** — **OEM `51822558`** (read off the part in owner's photo; adjacent hose stamped `5180472`) | **Replace immediately.** This hose feeds the ORIGINAL 155k-km turbo — a tear here lets **unfiltered dusty Egyptian air straight into the compressor wheel = turbo killer**, and unmetered air wrecks fueling. Buy genuine — shaped hose, aftermarket rarely fits |
 | All boost hoses + clamps | Inspection Needed | With hose replacement — smoke test ideally |
 | Boost leak | Possible | Boost log after hose fix |
 | PCV system | Inspection Needed | Separator was replaced @~122k — verify no whistle at oil cap |

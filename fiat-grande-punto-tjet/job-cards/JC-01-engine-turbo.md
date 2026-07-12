@@ -2,7 +2,7 @@
 
 **Engine:** 1.4 T-Jet 16v (198A4000, 120 HP) · **Mileage:** 155,000 km
 **Status (rev. 2026-07-12):** diagnostic report received — see [`../09-diagnostic-findings-2026-07.md`](../09-diagnostic-findings-2026-07.md).
-🔴 **CONFIRMED: air-intake hose (filter → turbo) torn — replace immediately** (dust ingestion risk to the original turbo; prime suspect for 10 L/100km consumption).
+🔴 **CONFIRMED: air-intake hose (filter → turbo) torn — replace immediately.** OEM **`51822558`** (confirmed off the part in owner's photo; adjacent hose `5180472`). Buy genuine. Dust ingestion risk to the original turbo; prime suspect for 10 L/100km consumption.
 🟠 **Idle whistle** (disappears on throttle) → replace accessory belt + tensioner + idler as a set (43k km old); smoke-test for vacuum leaks.
 🟠 Fuel consumption 10 L/100km → fix hose + plugs + air filter FIRST, then read fuel trims via MultiECUScan before touching O2/coils. **T-Jet is MAP-based — there is no MAF sensor.**
 All OEM numbers: **verify by VIN in ePER before ordering** — Type 199 had running changes.

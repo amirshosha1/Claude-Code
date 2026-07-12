@@ -26,6 +26,13 @@ Statuses: `NEEDS ORDERING` · `WAITING QUOTE` · `ORDERED` · `PURCHASED` · `IN
 | 17 | A/C compressor clutch/piston | via ePER | ⬜ | Denso · Valeo | TBD | TBD | 0–1 | owner quote 1,000 | ON HOLD (A/C diagnosis) | | | |
 | 18 | Brake hoses ×4 (original 2010 rubber) | via ePER | ⬜ | TRW · ATE | TBD | TBD | 0–4 | 350–700 ea | ON HOLD (inspection) | | | |
 | 19 | Timing belt kit + water pump (NEXT cycle) | 71771499 fam. | ⬜ | Gates KP15646XS · SKF VKMC 02390 · INA | Gates | TBD | 1 | ledger 2023: 5,400 all-in | SCHEDULED ~172–180k / Oct 2027 | | | |
+| 20 | **Air intake hose (filter→turbo)** | **51822558** | ✅ **confirmed on part (photo)** | genuine (shaped) · adjacent hose stamped 5180472 | Genuine | TBD | 1 | TBD | **NEEDS ORDERING — CONFIRMED TORN** | | | |
+| 21 | Expansion tank + cap | 51718005 / cap 55700508 | ⬜ | Behr/Metalcaucho | Genuine | TBD | 1 | TBD | **NEEDS ORDERING — leak CONFIRMED** | | | |
+| 22 | Accessory belt + tensioner + idler set | via ePER (measure) | ⬜ | Gates · SKF · INA · Contitech | Gates/SKF | TBD | 1 | TBD | NEEDS ORDERING (idle whistle) | | | |
+| 23 | Cowl / scuttle panel (فبرة المساحات) | via ePER | ⬜ | genuine or clean used (plastic — Estirad OK) | Genuine/used | TBD | 1 | TBD | **NEEDS ORDERING — CONFIRMED broken (photo)** | | | |
+| 24 | Radiator (TURBO version) | 51780659 | ⬜ | Valeo · Denso · Behr · Nissens | TBD | TBD | 0–1 | TBD | ON HOLD (pressure test) | | | |
+| 25 | Complete driveshaft RH / inner CV | ePER SGR.21220 item 1; boot clamp item 2 | ⬜ | GKN/Löbro · SKF · Metelli | TBD | TBD | 0–1 | TBD | ON HOLD (load-noise tests) | | | |
+| 26 | Rear engine mount (torque rod) | 51782714 | ⬜ | Corteco · Febi · Magneti Marelli | TBD | TBD | 0–1 | TBD | ON HOLD (load-noise tests) | | | |
 
 ## Installed (from verified history — see [`08-service-history.md`](08-service-history.md))
 
