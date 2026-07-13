@@ -444,7 +444,10 @@ App.config = (function () {
       obdLive: false, aiAdvisor: false, expenseForecast: false, vinDecoder: false,
       ocrInvoice: false, barcodeScanner: false, cloudSync: false, multiUser: false
     },
-    backup: { autoKeep: 5 }
+    backup: { autoKeep: 5 },
+    /* cloud sync (Supabase) — filled in Settings; anon key is public by
+       design, so keep the hosted site behind Cloudflare Access */
+    cloud: { provider: 'supabase', url: '', anonKey: '', table: 'garage_state', rowId: 'gp-tjet-2010' }
   };
 
   let cfg = null;
@@ -452,7 +455,7 @@ App.config = (function () {
     try { cfg = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(KEY)) || {}); }
     catch (e) { cfg = Object.assign({}, DEFAULTS); }
     // deep-merge nested defaults so new keys appear after upgrades
-    ['locale', 'units', 'currency', 'theme', 'icons', 'reminders', 'features', 'backup'].forEach(k =>
+    ['locale', 'units', 'currency', 'theme', 'icons', 'reminders', 'features', 'backup', 'cloud'].forEach(k =>
       cfg[k] = Object.assign({}, DEFAULTS[k], cfg[k] || {}));
     return cfg;
   }
@@ -714,6 +717,11 @@ App.store = (function () {
   function veh() { return activeVehicle(); }
   function setVeh(patch) { Object.assign(activeVehicle(), patch); persist(); }
 
+  /* adopt remote state (from cloud sync) into local cache + UI,
+     WITHOUT bumping savedAt (preserves the remote timestamp so we
+     don't treat the pulled copy as "newer" and echo it back). */
+  function adopt(data) { state = migrate(data); adapter.save(state); subs.forEach(fn => fn(state)); }
+
   function exportJSON() { return JSON.stringify(state, null, 2); }
   function importJSON(txt) { const parsed = JSON.parse(txt); state = migrate(parsed); persist(); }
   function reset() { state = clone(App.seed); persist(); }
@@ -734,7 +742,7 @@ App.store = (function () {
   }
 
   return { load, persist, subscribe, state: () => state, vehicles, activeVehicle, setActiveVehicle, addVehicle,
-    all, add, update, remove, veh, setVeh, exportJSON, importJSON, reset, search,
+    all, add, update, remove, veh, setVeh, adopt, exportJSON, importJSON, reset, search,
     backups, snapshot, restoreBackup, useAdapter: a => { adapter = adapters[a] || adapter; } };
 })();
 
@@ -1042,6 +1050,86 @@ App.notify = (function () {
 
   function count() { return evaluate().length; }
   return { evaluate, count, daysUntil };
+})();
+
+</script>
+<script>
+/* ==== js/core/sync.js ==== */
+/* ============================================================
+   App.sync — Supabase cloud sync (localStorage-first, background).
+   - Pure REST via fetch(); no external library, so the offline
+     build stays dependency-free and degrades gracefully offline.
+   - Whole app state is stored as one JSONB row (id,data,updated_at).
+     Trivial to normalize into per-collection tables later.
+   - Config (url, anon key, table, rowId) comes from App.config.cloud
+     and the `cloudSync` feature flag — never hardcoded.
+   Security: the anon key is PUBLIC by design; keep the hosted site
+   behind Cloudflare Access + enable RLS on the table (see HOSTING.md).
+   ============================================================ */
+window.App = window.App || {};
+App.sync = (function () {
+  let enabled = false, timer = null, busy = false;
+
+  function conf() { return App.config.get().cloud || {}; }
+  function ready() { const c = conf(); return !!(c.url && c.anonKey); }
+  function base() { return conf().url.replace(/\/+$/, '') + '/rest/v1/'; }
+  function headers(extra) {
+    const c = conf();
+    return Object.assign({ apikey: c.anonKey, Authorization: 'Bearer ' + c.anonKey, 'Content-Type': 'application/json' }, extra || {});
+  }
+
+  async function pull() {
+    if (!ready()) return { ok: false, reason: 'not configured' };
+    const c = conf();
+    const url = base() + encodeURIComponent(c.table) + '?id=eq.' + encodeURIComponent(c.rowId) + '&select=data,updated_at';
+    const r = await fetch(url, { headers: headers() });
+    if (!r.ok) return { ok: false, reason: 'HTTP ' + r.status };
+    const rows = await r.json();
+    if (!rows.length) return { ok: true, empty: true };
+    return { ok: true, data: rows[0].data, updatedAt: rows[0].updated_at };
+  }
+
+  async function push(state) {
+    if (!ready()) return { ok: false, reason: 'not configured' };
+    const c = conf();
+    const url = base() + encodeURIComponent(c.table) + '?on_conflict=id';
+    const body = [{ id: c.rowId, data: state || App.store.state(), updated_at: new Date().toISOString() }];
+    const r = await fetch(url, { method: 'POST', headers: headers({ Prefer: 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(body) });
+    return { ok: r.ok, reason: r.ok ? '' : 'HTTP ' + r.status };
+  }
+
+  function schedulePush() {
+    if (!enabled) return;
+    clearTimeout(timer);
+    timer = setTimeout(async () => { try { await push(); } catch (e) { /* offline: keep local */ } }, 1500);
+  }
+
+  async function init() {
+    enabled = ready() && !!App.config.get().features.cloudSync;
+    if (!enabled) return;
+    try {
+      const res = await pull();
+      if (res.ok && res.data) {
+        const localAt = new Date((App.store.state().meta || {}).savedAt || 0).getTime();
+        const remoteAt = new Date(res.updatedAt || 0).getTime();
+        if (remoteAt > localAt) {
+          App.store.adopt(res.data);
+          App.util.toast('Synced from cloud ↓');
+          if (App.router) App.router.go((location.hash || '').replace('#/', '') || 'command', true);
+        } else {
+          schedulePush(); // local is newer → upload
+        }
+      } else if (res.ok && res.empty) {
+        schedulePush(); // first upload
+      }
+    } catch (e) { /* offline: silently stay on localStorage */ }
+    App.store.subscribe(() => schedulePush());
+  }
+
+  async function test() { try { return await pull(); } catch (e) { return { ok: false, reason: e.message || 'network' }; } }
+  function status() { return { enabled, ready: ready() }; }
+
+  return { init, pull, push, test, status, schedulePush };
 })();
 
 </script>
@@ -2005,6 +2093,9 @@ App.router = (function () {
       ]);
       view.appendChild(section('Backup & Restore', backupUI));
 
+      /* cloud sync (Supabase) */
+      view.appendChild(section('Cloud Sync — Supabase', cloudForm()));
+
       /* future extension points */
       const flags = c.features;
       const fl = el('div', { class: 'grid-2' });
@@ -2017,6 +2108,37 @@ App.router = (function () {
       view.appendChild(section('Extension Points (roadmap)', el('div', {}, [el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:10px', text: 'Feature flags — flip on as each module is built. Data layer + UI hooks already exist.' }), fl])));
     }
   });
+
+  function cloudForm() {
+    const c = cfg.get(); const cl = c.cloud;
+    const fields = [['url', 'Supabase Project URL', 'https://xxxx.supabase.co'], ['anonKey', 'Anon public key', 'eyJ...'], ['table', 'Table name', 'garage_state'], ['rowId', 'Row id', 'gp-tjet-2010']];
+    const body = el('div', { class: 'grid-2' });
+    fields.forEach(f => body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: f[1] }), el('input', { class: 'inp', value: cl[f[0]] || '', placeholder: f[2], data: { key: f[0] } })])));
+    const status = el('div', { class: 'mono muted', style: 'font-size:11px;margin:6px 0' , text: 'Status: ' + (App.sync.status().enabled ? 'ENABLED' : (App.sync.status().ready ? 'configured (flag off)' : 'not configured')) });
+    const toggle = el('label', { class: 'fld', style: 'display:flex;gap:8px;align-items:center' }, [
+      (function () { const cb = el('input', { type: 'checkbox', checked: c.features.cloudSync ? 'checked' : null, data: { key: '_enable' } }); return cb; })(),
+      el('span', { class: 'lb', style: 'margin:0', text: 'Enable cloud sync (feature flag)' })
+    ]);
+    const wrap = el('div', {}, [
+      el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-bottom:10px', html: 'Free Supabase + Cloudflare. Paste your project URL & anon key, run the SQL in <b>HOSTING.md</b>, enable the flag, Save. Data then syncs across devices. Anon key is public — keep the site behind Cloudflare Access.' }),
+      body, toggle, status,
+      el('div', { class: 'qa' }, [
+        el('button', { class: 'btn sm rosso', onclick: save }, 'Save cloud config'),
+        el('button', { class: 'btn sm ghost', onclick: doTest }, '🔌 Test connection'),
+        el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.push(); App.util.toast(r.ok ? 'Pushed to cloud ↑' : 'Push failed: ' + r.reason); } }, '↑ Push now'),
+        el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.pull(); if (r.ok && r.data) { App.store.adopt(r.data); App.util.toast('Pulled ↓'); App.router.go('settings', true); } else App.util.toast('Pull: ' + (r.reason || (r.empty ? 'no cloud row yet' : 'ok'))); } }, '↓ Pull now')
+      ])
+    ]);
+    function save() {
+      const patch = {};
+      body.querySelectorAll('[data-key]').forEach(i => patch[i.dataset.key] = i.value.trim());
+      cfg.set({ cloud: Object.assign({}, cl, patch) });
+      cfg.setPath('features', 'cloudSync', toggle.querySelector('input').checked);
+      App.util.toast('Cloud config saved'); App.sync.init(); App.router.go('settings', true);
+    }
+    async function doTest() { const r = await App.sync.test(); App.util.toast(r.ok ? (r.empty ? 'Connected ✓ (no row yet)' : 'Connected ✓ cloud row found') : 'Failed: ' + (r.reason || 'check URL/key/RLS')); }
+    return wrap;
+  }
 
   function section(title, node) {
     return el('details', { class: 'exp', open: 'open' }, [el('summary', { text: title }), el('div', { class: 'exp-body' }, [node])]);
@@ -2073,6 +2195,9 @@ App.router = (function () {
 
   App.router.start();
   wireBell();
+
+  // cloud sync (no-op unless configured + enabled in Settings)
+  try { App.sync.init(); } catch (e) { }
 
   App.store.subscribe(() => updateBell());
 

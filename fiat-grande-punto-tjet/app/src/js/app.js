@@ -12,6 +12,9 @@
   App.router.start();
   wireBell();
 
+  // cloud sync (no-op unless configured + enabled in Settings)
+  try { App.sync.init(); } catch (e) { }
+
   App.store.subscribe(() => updateBell());
 
   function wireBell() {

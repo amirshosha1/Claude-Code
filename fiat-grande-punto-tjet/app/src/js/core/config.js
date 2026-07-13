@@ -31,7 +31,10 @@ App.config = (function () {
       obdLive: false, aiAdvisor: false, expenseForecast: false, vinDecoder: false,
       ocrInvoice: false, barcodeScanner: false, cloudSync: false, multiUser: false
     },
-    backup: { autoKeep: 5 }
+    backup: { autoKeep: 5 },
+    /* cloud sync (Supabase) — filled in Settings; anon key is public by
+       design, so keep the hosted site behind Cloudflare Access */
+    cloud: { provider: 'supabase', url: '', anonKey: '', table: 'garage_state', rowId: 'gp-tjet-2010' }
   };
 
   let cfg = null;
@@ -39,7 +42,7 @@ App.config = (function () {
     try { cfg = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(KEY)) || {}); }
     catch (e) { cfg = Object.assign({}, DEFAULTS); }
     // deep-merge nested defaults so new keys appear after upgrades
-    ['locale', 'units', 'currency', 'theme', 'icons', 'reminders', 'features', 'backup'].forEach(k =>
+    ['locale', 'units', 'currency', 'theme', 'icons', 'reminders', 'features', 'backup', 'cloud'].forEach(k =>
       cfg[k] = Object.assign({}, DEFAULTS[k], cfg[k] || {}));
     return cfg;
   }

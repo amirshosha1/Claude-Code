@@ -35,6 +35,9 @@
       ]);
       view.appendChild(section('Backup & Restore', backupUI));
 
+      /* cloud sync (Supabase) */
+      view.appendChild(section('Cloud Sync — Supabase', cloudForm()));
+
       /* future extension points */
       const flags = c.features;
       const fl = el('div', { class: 'grid-2' });
@@ -47,6 +50,37 @@
       view.appendChild(section('Extension Points (roadmap)', el('div', {}, [el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:10px', text: 'Feature flags — flip on as each module is built. Data layer + UI hooks already exist.' }), fl])));
     }
   });
+
+  function cloudForm() {
+    const c = cfg.get(); const cl = c.cloud;
+    const fields = [['url', 'Supabase Project URL', 'https://xxxx.supabase.co'], ['anonKey', 'Anon public key', 'eyJ...'], ['table', 'Table name', 'garage_state'], ['rowId', 'Row id', 'gp-tjet-2010']];
+    const body = el('div', { class: 'grid-2' });
+    fields.forEach(f => body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: f[1] }), el('input', { class: 'inp', value: cl[f[0]] || '', placeholder: f[2], data: { key: f[0] } })])));
+    const status = el('div', { class: 'mono muted', style: 'font-size:11px;margin:6px 0' , text: 'Status: ' + (App.sync.status().enabled ? 'ENABLED' : (App.sync.status().ready ? 'configured (flag off)' : 'not configured')) });
+    const toggle = el('label', { class: 'fld', style: 'display:flex;gap:8px;align-items:center' }, [
+      (function () { const cb = el('input', { type: 'checkbox', checked: c.features.cloudSync ? 'checked' : null, data: { key: '_enable' } }); return cb; })(),
+      el('span', { class: 'lb', style: 'margin:0', text: 'Enable cloud sync (feature flag)' })
+    ]);
+    const wrap = el('div', {}, [
+      el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-bottom:10px', html: 'Free Supabase + Cloudflare. Paste your project URL & anon key, run the SQL in <b>HOSTING.md</b>, enable the flag, Save. Data then syncs across devices. Anon key is public — keep the site behind Cloudflare Access.' }),
+      body, toggle, status,
+      el('div', { class: 'qa' }, [
+        el('button', { class: 'btn sm rosso', onclick: save }, 'Save cloud config'),
+        el('button', { class: 'btn sm ghost', onclick: doTest }, '🔌 Test connection'),
+        el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.push(); App.util.toast(r.ok ? 'Pushed to cloud ↑' : 'Push failed: ' + r.reason); } }, '↑ Push now'),
+        el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.pull(); if (r.ok && r.data) { App.store.adopt(r.data); App.util.toast('Pulled ↓'); App.router.go('settings', true); } else App.util.toast('Pull: ' + (r.reason || (r.empty ? 'no cloud row yet' : 'ok'))); } }, '↓ Pull now')
+      ])
+    ]);
+    function save() {
+      const patch = {};
+      body.querySelectorAll('[data-key]').forEach(i => patch[i.dataset.key] = i.value.trim());
+      cfg.set({ cloud: Object.assign({}, cl, patch) });
+      cfg.setPath('features', 'cloudSync', toggle.querySelector('input').checked);
+      App.util.toast('Cloud config saved'); App.sync.init(); App.router.go('settings', true);
+    }
+    async function doTest() { const r = await App.sync.test(); App.util.toast(r.ok ? (r.empty ? 'Connected ✓ (no row yet)' : 'Connected ✓ cloud row found') : 'Failed: ' + (r.reason || 'check URL/key/RLS')); }
+    return wrap;
+  }
 
   function section(title, node) {
     return el('details', { class: 'exp', open: 'open' }, [el('summary', { text: title }), el('div', { class: 'exp-body' }, [node])]);

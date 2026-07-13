@@ -92,6 +92,11 @@ App.store = (function () {
   function veh() { return activeVehicle(); }
   function setVeh(patch) { Object.assign(activeVehicle(), patch); persist(); }
 
+  /* adopt remote state (from cloud sync) into local cache + UI,
+     WITHOUT bumping savedAt (preserves the remote timestamp so we
+     don't treat the pulled copy as "newer" and echo it back). */
+  function adopt(data) { state = migrate(data); adapter.save(state); subs.forEach(fn => fn(state)); }
+
   function exportJSON() { return JSON.stringify(state, null, 2); }
   function importJSON(txt) { const parsed = JSON.parse(txt); state = migrate(parsed); persist(); }
   function reset() { state = clone(App.seed); persist(); }
@@ -112,6 +117,6 @@ App.store = (function () {
   }
 
   return { load, persist, subscribe, state: () => state, vehicles, activeVehicle, setActiveVehicle, addVehicle,
-    all, add, update, remove, veh, setVeh, exportJSON, importJSON, reset, search,
+    all, add, update, remove, veh, setVeh, adopt, exportJSON, importJSON, reset, search,
     backups, snapshot, restoreBackup, useAdapter: a => { adapter = adapters[a] || adapter; } };
 })();
