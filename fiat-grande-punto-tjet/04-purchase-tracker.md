@@ -36,6 +36,16 @@ Pipeline: `NEED → QUOTED → ORDERED → PURCHASED → DELIVERED → INSTALLED
 
 ✅ Resolved by owner (2026-07-12): gearbox oil done @125k · coolant done (Mannol, flush-and-switch deferred to belt job) · rear discs confirmed worn (moved up) · turbo/manifold original.
 
+## Dealer quotes received — ELKHLANY (+20 10 26840287), 2026-07
+
+| Item | Quote (EGP) | Verdict |
+|---|---|---|
+| Front shocks مساعدين قدام | 4,800 Turkish / 3,800 Chinese | ⏸️ **HOLD — do NOT buy yet** (front overhauled 2021; inspect first). If bought later: avoid Chinese; prefer KYB/Sachs over Turkish |
+| Rear shocks مساعدين ورا | 3,800 "original" | ⏸️ Inspect first (likely needed — no record). Confirm it's really OE (KYB/Sachs) at that price |
+| Accessory belt سير المجموعة | 650 | ✅ **OK to buy** (confirmed — idle whistle). Gates/Contitech |
+| Tensioner/idler بلية | 450 | ✅ **OK to buy** — get belt + tensioner + idler as a set |
+| Brake master master فرامل | 3,500 | 🛑 **DO NOT BUY** — brakes fault is rear discs + fluid flush + caliper service; master is the LAST suspect, not first |
+
 ## Completed
 
 | Item | Installed date | Km | Invoice | Warranty until |
