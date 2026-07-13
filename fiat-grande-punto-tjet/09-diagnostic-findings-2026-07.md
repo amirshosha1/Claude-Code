@@ -140,6 +140,32 @@ This is an **auto-electrical / wiring repair job**, not a parts-cannon. Chase it
 ### Safety status
 🔴 Airbag light on = airbags may not deploy. 🔴 ESP intermittently unavailable. 🔴 History of real stalling. This is a Phase-1 safety item — but a **wiring fix, not an expensive module**. Drive cautiously until the rear harness is repaired.
 
+## 13. Water in Driver Footwell — A/C Evaporator Drain (NEW) — 🟠 (🔴 electrical link)
+
+**Symptom (owner):** water pooling in the **driver-side footwell under the pedals**, appeared **after running the A/C for a long time**. Owner suspects the A/C overflow (فايض التكييف).
+
+**Diagnosis: almost certainly a BLOCKED A/C evaporator drain tube.** The A/C evaporator makes condensation that normally drains out under the car through a rubber tube. When that tube blocks (dirt/mold/kinked), the water backs up and **overflows into the cabin footwell** — classic, and matches "only after long A/C use." **Confirmed Failure (high confidence).**
+
+**⚠️ IMPORTANT — this ties to the electrical fault (§12):** water under the carpet on this platform can reach the **Body Computer (BSI), connectors and grounds**, and worsen the intermittent CAN faults / airbag-node dropouts. So this is not just comfort — **it can be feeding the electrical gremlins.** Fix it early and dry the carpet + check connectors underneath.
+
+**Fix (cheap):**
+1. Locate + **clear the evaporator drain tube** (blow it out / poke gently) — usually on the bulkhead/firewall, drains under the car. EGP ~200–500 labor.
+2. **Dry the carpet + underlay fully** (lift it) — mold + wet BSI/wiring risk.
+3. While there: check the connectors/grounds under the driver carpet for corrosion (helps §12).
+4. Rule out the other water path: the **broken cowl/scuttle panel** can also let water in — fix both.
+
+**Note:** distinguish "water" (clear, A/C condensation, no smell) from "coolant" (sweet smell, colored, greasy → would point to a heater-matrix leak instead). Owner's description (after A/C use) = condensation, so drain blockage, not heater matrix. Sniff/colour-check to be sure.
+
+## 14. Bodywork · السمكرة والفيبر واللحام — 🟢 Phase 3 (owner scope)
+
+- **Panel beating (سمكرة)** on damaged areas + **spot painting / touch-up (تلقيط)**.
+- **Both bumpers (الاكصدامين): fiberglass + welding repair** — rear bumper from the impact (pushed in), front bumper too. Plastic/fiber weld + reshape, then paint.
+- **Headlights: repair + welding of broken tabs/mounts (لحام الفوانيس)** + polish/UV. If a headlight lens/housing is cracked, plastic-weld or replace.
+- **Full polish (تلميع)** — compound → polish → wax.
+- **Front-end panel alignment (ضبط الوش)** + **door adjustments** + trunk/clips (كلبسات).
+- Order: do **structural/impact fiber + weld FIRST** (also lets the auto-electrician reach the damaged rear harness from §12), then paint, then polish last.
+- All cosmetic → Phase 3, **after** the mechanical + electrical safety items. Shop: "Smakri" (سمكري) per owner's task list.
+
 ## 11. Age-Based Inspection List (16 years) — merged into workshop checklist
 
 Engine mounts (3rd one!) · gearbox mounts · exhaust hangers · catalytic converter rattle · O2 sensor (via fuel trims) · EVAP purge valve · radiator mounts · A/C compressor + serpentine (single belt drives alternator+AC) · all rubber bushes.
