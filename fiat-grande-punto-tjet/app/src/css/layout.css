@@ -1,0 +1,77 @@
+/* ============================================================
+   LAYOUT — app shell, sidebar, topbar, responsive, print
+   ============================================================ */
+.app{display:grid; grid-template-columns:250px 1fr; min-height:100vh; position:relative; z-index:1}
+
+/* sidebar */
+.side{border-right:3px solid var(--ink); background:var(--card); position:sticky; top:0; height:100vh;
+  overflow-y:auto; padding:0 0 20px}
+.brand{padding:18px 16px 14px; border-bottom:3px solid var(--ink)}
+.brand .dno{font-family:var(--mono); font-size:9px; letter-spacing:.22em; text-transform:uppercase; color:var(--rosso)}
+.brand h1{font-family:var(--disp); font-weight:700; text-transform:uppercase; font-size:26px; line-height:.9; margin-top:6px; letter-spacing:.01em}
+.brand h1 em{font-style:normal; color:var(--rosso)}
+.brand .veh{font-family:var(--mono); font-size:10px; color:var(--ink-soft); margin-top:6px}
+.veh-switch{margin:12px 16px 0; width:calc(100% - 32px)}
+
+.nav-group{margin-top:14px}
+.nav-group .gt{font-family:var(--mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); padding:0 16px 6px}
+.nav-item{display:flex; align-items:center; gap:10px; padding:9px 16px; cursor:pointer; font-size:13.5px;
+  border-left:3px solid transparent; transition:background .12s, border-color .12s; color:var(--ink)}
+.nav-item:hover{background:var(--card2)}
+.nav-item.active{background:var(--card2); border-left-color:var(--rosso); font-weight:700}
+.nav-item .ic{width:18px; text-align:center; font-size:15px}
+.nav-item .soon{margin-left:auto; font-family:var(--mono); font-size:8px; color:var(--ink-soft); border:1px solid var(--line-strong); padding:1px 4px; border-radius:3px}
+
+/* main */
+.main{min-width:0; display:flex; flex-direction:column}
+.topbar{position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:12px 22px;
+  background:var(--paper); border-bottom:3px solid var(--ink)}
+.topbar .crumb{font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.08em; text-transform:uppercase}
+.topbar .crumb b{color:var(--ink)}
+.topbar .spacer{flex:1}
+.search-box{position:relative}
+.search-box input{width:210px; max-width:38vw}
+.icon-btn{background:var(--card); border:1.5px solid var(--line-strong); border-radius:6px; width:36px; height:36px;
+  cursor:pointer; font-size:15px; display:grid; place-items:center; color:var(--ink)}
+.icon-btn:hover{border-color:var(--ink)}
+.view{padding:24px 22px 70px; max-width:1180px; width:100%; animation:rise .4s}
+
+.hamb{display:none}
+
+/* search results dropdown */
+.search-results{position:absolute; top:44px; right:0; width:340px; max-width:80vw; background:var(--card);
+  border:1.5px solid var(--ink); border-radius:8px; box-shadow:0 14px 40px rgba(0,0,0,.25); max-height:60vh; overflow:auto; display:none; z-index:60}
+.search-results.open{display:block}
+.sr-item{padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:12.5px}
+.sr-item:hover{background:var(--card2)}
+.sr-item .t{font-weight:700}
+.sr-item .m{font-family:var(--mono); font-size:10px; color:var(--ink-soft)}
+
+/* grids */
+.grid-2{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:var(--gap)}
+.grid-3{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:var(--gap)}
+
+/* responsive */
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed; left:0; top:0; z-index:120; width:264px; transform:translateX(-100%); transition:transform .25s; box-shadow:6px 0 30px rgba(0,0,0,.3)}
+  .side.open{transform:none}
+  .hamb{display:grid}
+  .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:110; display:none}
+  .backdrop.open{display:block}
+  .view{padding:18px 15px 60px}
+  .search-box input{width:150px}
+}
+@media (max-width:560px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .topbar .crumb{display:none}
+}
+
+/* print */
+@media print{
+  .side,.topbar,.hamb,.no-print{display:none !important}
+  .app{grid-template-columns:1fr}
+  body{background:#fff; color:#000}
+  .card,.tile,.dial{box-shadow:none; border-color:#000}
+  .view{padding:0; max-width:100%}
+}
