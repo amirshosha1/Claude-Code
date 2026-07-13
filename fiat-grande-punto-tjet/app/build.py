@@ -48,6 +48,9 @@ html = re.sub(r'<!--\s*(build:css|endbuild|build:js|core.*|modules.*|bootstrap.*
 
 out = DIST / "dashboard.html"
 out.write_text(html, encoding="utf-8")
+# also emit index.html so a static host serving dist/ as web root
+# opens the app at the domain root (https://your-domain/).
+(DIST / "index.html").write_text(html, encoding="utf-8")
 
 kb = len(html.encode("utf-8")) / 1024
-print(f"Built {out.relative_to(ROOT)} ({kb:.0f} KB) — offline, self-contained.")
+print(f"Built {out.relative_to(ROOT)} + index.html ({kb:.0f} KB) — offline, self-contained.")
