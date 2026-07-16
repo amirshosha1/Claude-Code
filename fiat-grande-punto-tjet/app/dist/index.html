@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#b02418">
+<title>Grande Punto — Automotive OS</title>
+
+
+<style>
+/* ==== css/theme.css ==== */
+/* ============================================================
+   THEME — design tokens + base + paper texture (dossier look)
+   Shared across every module. Dark mode via [data-theme].
+   ============================================================ */
+:root{
+  --paper:#ece5d6; --card:#f6f1e6; --card2:#efe8d8;
+  --ink:#211c17; --ink-soft:#6c6355; --line:#c9bfa8; --line-strong:#a89b7d;
+  --rosso:#b02418; --rosso-deep:#7c1710; --amber:#c07a12; --olive:#5c6b3a;
+  --steel:#3f6377; --green:#4a6d2f; --violet:#6b4a8f;
+  --shadow:rgba(33,28,23,.10);
+  --mono:ui-monospace,'Roboto Mono','SF Mono',Menlo,Consolas,monospace;
+  --disp:'Arial Narrow','Roboto Condensed','Oswald',system-ui,sans-serif;
+  --sans:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:9px; --gap:16px;
+}
+:root[data-theme="dark"]{
+  --paper:#15130f; --card:#1e1a15; --card2:#242019;
+  --ink:#ece5d6; --ink-soft:#9a917f; --line:#3a3428; --line-strong:#52493a;
+  --rosso:#e2564a; --rosso-deep:#b03428; --amber:#e0a24a; --olive:#8aa05a;
+  --steel:#6ba3bd; --green:#8fc06a; --violet:#a98cd0;
+  --shadow:rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  background-image:
+    linear-gradient(rgba(120,110,85,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,110,85,.08) 1px,transparent 1px);
+  background-size:26px 26px;
+}
+body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.03;
+  background-image:radial-gradient(#000 .6px,transparent .6px); background-size:3px 3px; }
+:root[data-theme="dark"] body::after{ opacity:.06; background-image:radial-gradient(#fff .6px,transparent .6px); }
+
+a{color:inherit}
+::selection{background:var(--rosso); color:var(--paper)}
+:focus-visible{outline:2px solid var(--rosso); outline-offset:2px}
+
+.mono{font-family:var(--mono)}
+.disp{font-family:var(--disp)}
+.rtl{direction:rtl; text-align:right}
+.muted{color:var(--ink-soft)}
+.rosso{color:var(--rosso)}
+.hidden{display:none !important}
+
+/* headings shared */
+.h-disp{font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.04em; line-height:1}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+}
+
+</style>
+<style>
+/* ==== css/components.css ==== */
+/* ============================================================
+   COMPONENTS — reusable UI primitives
+   ============================================================ */
+
+/* cards */
+.card{background:var(--card); border:1.5px solid var(--ink); border-radius:var(--r);
+  box-shadow:4px 4px 0 var(--shadow); position:relative; overflow:hidden}
+.card .spine{height:6px}
+.card .pad{padding:14px 16px}
+.card-hover{transition:transform .16s, box-shadow .16s}
+.card-hover:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--shadow)}
+
+/* section heads */
+.sec-head{display:flex; align-items:baseline; gap:12px; margin:2px 0 20px; flex-wrap:wrap}
+.sec-head .fileno{font-family:var(--mono); font-size:11px; color:var(--rosso); letter-spacing:.2em;
+  border:1.5px solid var(--rosso); padding:3px 7px; border-radius:3px}
+.sec-head h2{font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:clamp(20px,3vw,28px)}
+.sec-head .rule{flex:1; height:2px; background:var(--line-strong); min-width:20px}
+.sec-head .ar{font-family:var(--sans); color:var(--ink-soft); font-size:14px; direction:rtl}
+
+/* badges / verdict stamps / chips */
+.badge{font-family:var(--mono); font-size:9.5px; font-weight:700; padding:3px 7px; border-radius:3px;
+  border:1px solid; letter-spacing:.04em; white-space:nowrap; display:inline-block}
+.b-crit{color:var(--rosso); border-color:var(--rosso); background:rgba(176,36,24,.08)}
+.b-high{color:var(--amber); border-color:var(--amber); background:rgba(192,122,18,.08)}
+.b-med{color:var(--steel); border-color:var(--steel); background:rgba(63,99,119,.08)}
+.b-plan{color:var(--violet); border-color:var(--violet); background:rgba(107,74,143,.08)}
+.b-done{color:var(--green); border-color:var(--green); background:rgba(74,109,47,.08)}
+.b-ink{color:var(--ink-soft); border-color:var(--line-strong); background:transparent}
+
+.vd{font-family:var(--mono); font-size:9px; font-weight:700; padding:2px 6px; border-radius:3px; border:1px solid; white-space:nowrap}
+.vd.buy{color:var(--green); border-color:var(--green); background:rgba(74,109,47,.08)}
+.vd.hold{color:var(--amber); border-color:var(--amber); background:rgba(192,122,18,.08)}
+.vd.stop{color:var(--rosso); border-color:var(--rosso); background:rgba(176,36,24,.09)}
+.vd.later{color:var(--violet); border-color:var(--violet); background:rgba(107,74,143,.08)}
+.vd.installed{color:var(--steel); border-color:var(--steel); background:rgba(63,99,119,.08)}
+
+/* buttons */
+.btn{font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:13px;
+  background:var(--ink); color:var(--paper); border:1.5px solid var(--ink); border-radius:6px;
+  padding:9px 15px; cursor:pointer; transition:transform .12s, filter .12s; display:inline-flex; align-items:center; gap:7px}
+.btn:hover{transform:translateY(-1px); filter:brightness(1.08)}
+.btn.ghost{background:transparent; color:var(--ink)}
+.btn.ghost:hover{background:var(--card2)}
+.btn.sm{font-size:11px; padding:6px 11px}
+.btn.rosso{background:var(--rosso); border-color:var(--rosso)}
+
+/* pill filters */
+.filters{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px}
+.fbtn{font-family:var(--mono); font-size:11px; cursor:pointer; background:var(--card); color:var(--ink-soft);
+  border:1.5px solid var(--line-strong); border-radius:4px; padding:7px 13px; transition:all .15s}
+.fbtn:hover{border-color:var(--ink); color:var(--ink)}
+.fbtn.active{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+
+/* tables */
+.tbl-scroll{overflow-x:auto; border:1.5px solid var(--ink); border-radius:8px}
+table.tbl{width:100%; border-collapse:collapse; background:var(--card)}
+table.tbl th{font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--paper);
+  text-align:left; padding:9px 10px; background:var(--ink); white-space:nowrap; position:sticky; top:0; z-index:1}
+table.tbl td{padding:9px 10px; border-bottom:1px solid var(--line); font-size:12px; vertical-align:top}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:nth-child(even) td{background:rgba(150,140,110,.09)}
+table.tbl tr.dim td{opacity:.5}
+
+/* inputs */
+.inp{font-family:var(--mono); font-size:12.5px; background:var(--paper); color:var(--ink);
+  border:1.5px solid var(--line-strong); border-radius:4px; padding:7px 9px; width:100%}
+.inp:focus{outline:none; border-color:var(--rosso); box-shadow:0 0 0 2px rgba(176,36,24,.14)}
+.inp.num{text-align:right}
+label.fld{display:block; margin-bottom:10px}
+label.fld .lb{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); display:block; margin-bottom:4px}
+
+/* stat tiles */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px}
+.tile{background:var(--card); border:1.5px solid var(--ink); border-radius:var(--r); padding:14px; box-shadow:3px 3px 0 var(--shadow)}
+.tile .k{font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft)}
+.tile .v{font-family:var(--disp); font-weight:700; font-size:30px; letter-spacing:.02em; margin-top:4px; line-height:1}
+.tile .v small{font-size:14px; color:var(--ink-soft)}
+.tile .sub{font-family:var(--mono); font-size:10px; color:var(--ink-soft); margin-top:5px}
+
+/* meters */
+.meter{height:12px; border:1.5px solid var(--ink); border-radius:3px; background:var(--paper); overflow:hidden}
+.meter .fill{height:100%; width:0; transition:width 1.2s cubic-bezier(.3,1,.3,1)}
+.f-red{background:repeating-linear-gradient(-45deg,var(--rosso-deep) 0 8px,var(--rosso) 8px 16px)}
+.f-amber{background:repeating-linear-gradient(-45deg,#8a5709 0 8px,var(--amber) 8px 16px)}
+.f-steel{background:repeating-linear-gradient(-45deg,#2c4756 0 8px,var(--steel) 8px 16px)}
+.f-violet{background:repeating-linear-gradient(-45deg,#4d3568 0 8px,var(--violet) 8px 16px)}
+.f-green{background:repeating-linear-gradient(-45deg,#33501f 0 8px,var(--green) 8px 16px)}
+
+/* dial gauge */
+.dial{background:var(--card); border:1.5px solid var(--ink); border-radius:var(--r); padding:18px 14px 14px;
+  text-align:center; box-shadow:4px 4px 0 var(--shadow)}
+.dial svg{width:100%; max-width:184px}
+.dial .lab{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft); margin-top:4px}
+.dial .val{font-family:var(--disp); font-weight:700; font-size:30px; margin-top:2px}
+.dial .sub{font-family:var(--mono); font-size:10px; color:var(--ink-soft); margin-top:5px; line-height:1.5}
+.needle{transform-origin:100px 100px; transition:transform 1.4s cubic-bezier(.22,1.2,.34,1)}
+.arc{transition:stroke-dashoffset 1.4s cubic-bezier(.3,1,.3,1)}
+
+/* modal */
+.modal-back{position:fixed; inset:0; background:rgba(20,16,12,.55); backdrop-filter:blur(3px);
+  display:none; align-items:center; justify-content:center; z-index:200; padding:18px}
+.modal-back.open{display:flex; animation:fade .2s}
+.modal{background:var(--card); border:2px solid var(--ink); border-radius:12px; max-width:560px; width:100%;
+  max-height:88vh; overflow:auto; box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.modal .m-head{display:flex; justify-content:space-between; align-items:center; padding:14px 18px;
+  border-bottom:2px solid var(--ink); position:sticky; top:0; background:var(--card)}
+.modal .m-head h3{font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:18px}
+.modal .m-body{padding:18px}
+.x-btn{background:none; border:none; font-size:22px; cursor:pointer; color:var(--ink-soft); line-height:1}
+.x-btn:hover{color:var(--rosso)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* tooltip */
+[data-tip]{position:relative}
+[data-tip]:hover::after{content:attr(data-tip); position:absolute; bottom:125%; left:50%; transform:translateX(-50%);
+  background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:10px; padding:5px 8px; border-radius:4px;
+  white-space:nowrap; z-index:50; pointer-events:none}
+
+/* empty state */
+.empty{border:1.5px dashed var(--line-strong); border-radius:var(--r); padding:26px; text-align:center;
+  color:var(--ink-soft); font-family:var(--mono); font-size:12px}
+
+/* toast */
+#toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(30px);
+  background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:12px; padding:10px 18px;
+  border-radius:6px; z-index:300; opacity:0; transition:all .3s; pointer-events:none}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+/* datatable */
+.dt-bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px}
+.dt-search{max-width:220px}
+.dt-filter{max-width:160px; width:auto}
+.dt-spacer{flex:1; min-width:8px}
+.dt-foot{display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px}
+.dt-pager{display:flex; align-items:center; gap:8px}
+.dt-pager .mono{font-size:12px}
+.btn[disabled]{opacity:.4; cursor:not-allowed}
+
+/* command center layout */
+.cc-grid{display:grid; grid-template-columns:2fr 1fr; gap:var(--gap)}
+@media (max-width:820px){.cc-grid{grid-template-columns:1fr}}
+.alert-row{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dashed var(--line)}
+.alert-row:last-child{border-bottom:none}
+.alert-dot{width:9px; height:9px; border-radius:2px; margin-top:5px; flex:0 0 9px; transform:rotate(45deg)}
+.alert-dot.crit{background:var(--rosso)} .alert-dot.warn{background:var(--amber)}
+.alert-row .at{font-weight:700; font-size:13px} .alert-row .ad{font-family:var(--mono); font-size:10.5px; color:var(--ink-soft)}
+.qa{display:flex; flex-wrap:wrap; gap:8px}
+
+/* notification bell */
+.bell{position:relative}
+.bell .dot{position:absolute; top:2px; right:2px; min-width:15px; height:15px; padding:0 3px; background:var(--rosso); color:#fff;
+  font-family:var(--mono); font-size:9px; border-radius:8px; display:grid; place-items:center; line-height:1}
+.notif-panel{position:absolute; top:44px; right:0; width:320px; max-width:82vw; background:var(--card); border:1.5px solid var(--ink);
+  border-radius:8px; box-shadow:0 14px 40px rgba(0,0,0,.25); max-height:60vh; overflow:auto; display:none; z-index:60}
+.notif-panel.open{display:block}
+
+/* expandable */
+.exp{border:1.5px solid var(--ink); border-radius:8px; background:var(--card); margin-bottom:10px; overflow:hidden}
+.exp>summary{padding:12px 14px; cursor:pointer; font-family:var(--disp); font-weight:700; text-transform:uppercase; letter-spacing:.03em; font-size:14px; list-style:none; display:flex; justify-content:space-between; align-items:center}
+.exp>summary::-webkit-details-marker{display:none}
+.exp>summary::after{content:'+'; font-family:var(--mono); color:var(--rosso)}
+.exp[open]>summary::after{content:'−'}
+.exp .exp-body{padding:0 14px 14px; border-top:1px solid var(--line)}
+
+/* misc */
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.tag{font-family:var(--mono); font-size:9.5px; background:var(--card2); border:1px solid var(--line-strong); border-radius:10px; padding:2px 8px; color:var(--ink-soft)}
+.kv{display:grid; grid-template-columns:auto 1fr; gap:4px 12px; font-size:12.5px}
+.kv .k{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft)}
+
+/* staggered reveal */
+.stagger>*{opacity:0; transform:translateY(12px); animation:rise .5s forwards}
+.stagger>*:nth-child(1){animation-delay:.03s}.stagger>*:nth-child(2){animation-delay:.07s}
+.stagger>*:nth-child(3){animation-delay:.11s}.stagger>*:nth-child(4){animation-delay:.15s}
+.stagger>*:nth-child(5){animation-delay:.19s}.stagger>*:nth-child(6){animation-delay:.23s}
+.stagger>*:nth-child(7){animation-delay:.27s}.stagger>*:nth-child(8){animation-delay:.31s}
+.stagger>*:nth-child(n+9){animation-delay:.34s}
+@keyframes rise{from{opacity:0; transform:translateY(12px)}to{opacity:1; transform:none}}
+
+</style>
+<style>
+/* ==== css/layout.css ==== */
+/* ============================================================
+   LAYOUT — app shell, sidebar, topbar, responsive, print
+   ============================================================ */
+.app{display:grid; grid-template-columns:250px 1fr; min-height:100vh; position:relative; z-index:1}
+
+/* sidebar */
+.side{border-right:3px solid var(--ink); background:var(--card); position:sticky; top:0; height:100vh;
+  overflow-y:auto; padding:0 0 20px}
+.brand{padding:18px 16px 14px; border-bottom:3px solid var(--ink)}
+.brand .dno{font-family:var(--mono); font-size:9px; letter-spacing:.22em; text-transform:uppercase; color:var(--rosso)}
+.brand h1{font-family:var(--disp); font-weight:700; text-transform:uppercase; font-size:26px; line-height:.9; margin-top:6px; letter-spacing:.01em}
+.brand h1 em{font-style:normal; color:var(--rosso)}
+.brand .veh{font-family:var(--mono); font-size:10px; color:var(--ink-soft); margin-top:6px}
+.veh-switch{margin:12px 16px 0; width:calc(100% - 32px)}
+
+.nav-group{margin-top:14px}
+.nav-group .gt{font-family:var(--mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); padding:0 16px 6px}
+.nav-item{display:flex; align-items:center; gap:10px; padding:9px 16px; cursor:pointer; font-size:13.5px;
+  border-left:3px solid transparent; transition:background .12s, border-color .12s; color:var(--ink);
+  /* button reset — .nav-item is a real <button> now for native keyboard support */
+  background:none; border-top:none; border-right:none; border-bottom:none; font:inherit; text-align:left; width:100%}
+.nav-item:hover{background:var(--card2)}
+.nav-item.active{background:var(--card2); border-left-color:var(--rosso); font-weight:700}
+.nav-item:focus-visible{outline:2px solid var(--rosso); outline-offset:-2px}
+.nav-item .ic{width:18px; text-align:center; font-size:15px}
+.nav-item .soon{margin-left:auto; font-family:var(--mono); font-size:8px; color:var(--ink-soft); border:1px solid var(--line-strong); padding:1px 4px; border-radius:3px}
+
+/* main */
+.main{min-width:0; display:flex; flex-direction:column}
+.topbar{position:sticky; top:0; z-index:30; display:flex; align-items:center; gap:12px; padding:12px 22px;
+  background:var(--paper); border-bottom:3px solid var(--ink)}
+.topbar .crumb{font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:.08em; text-transform:uppercase}
+.topbar .crumb b{color:var(--ink)}
+.topbar .spacer{flex:1}
+.search-box{position:relative}
+.search-box input{width:210px; max-width:38vw}
+.icon-btn{background:var(--card); border:1.5px solid var(--line-strong); border-radius:6px; width:36px; height:36px;
+  cursor:pointer; font-size:15px; display:grid; place-items:center; color:var(--ink)}
+.icon-btn:hover{border-color:var(--ink)}
+.view{padding:24px 22px 70px; max-width:1180px; width:100%; animation:rise .4s}
+
+.hamb{display:none}
+
+/* search results dropdown */
+.search-results{position:absolute; top:44px; right:0; width:340px; max-width:80vw; background:var(--card);
+  border:1.5px solid var(--ink); border-radius:8px; box-shadow:0 14px 40px rgba(0,0,0,.25); max-height:60vh; overflow:auto; display:none; z-index:60}
+.search-results.open{display:block}
+.sr-item{padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:12.5px;
+  /* button reset — real <button>, full-width, left-aligned, no browser chrome */
+  display:block; width:100%; background:none; border-left:none; border-right:none; border-top:none; font:inherit; text-align:left; color:inherit}
+.sr-item:hover{background:var(--card2)}
+.sr-item:focus-visible{outline:2px solid var(--rosso); outline-offset:-2px}
+.sr-item .t{font-weight:700}
+.sr-item .m{font-family:var(--mono); font-size:10px; color:var(--ink-soft)}
+
+/* grids */
+.grid-2{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:var(--gap)}
+.grid-3{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:var(--gap)}
+
+/* responsive */
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed; left:0; top:0; z-index:120; width:264px; transform:translateX(-100%); transition:transform .25s; box-shadow:6px 0 30px rgba(0,0,0,.3)}
+  .side.open{transform:none}
+  .hamb{display:grid}
+  .backdrop{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:110; display:none}
+  .backdrop.open{display:block}
+  .view{padding:18px 15px 60px}
+  .search-box input{width:150px}
+}
+@media (max-width:560px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .topbar .crumb{display:none}
+}
+
+/* print */
+@media print{
+  .side,.topbar,.hamb,.no-print{display:none !important}
+  .app{grid-template-columns:1fr}
+  body{background:#fff; color:#000}
+  .card,.tile,.dial{box-shadow:none; border-color:#000}
+  .view{padding:0; max-width:100%}
+}
+
+</style>
+
+</head>
+<body>
+<!-- App shell is built by App.router into <body>. -->
+
+
+
+<script>
+/* ==== js/core/util.js ==== */
+/* ============================================================
+   App.util — DOM + formatting helpers (namespaced, no ES imports
+   so the bundle works over file:// offline)
+   ============================================================ */
+window.App = window.App || {};
+App.util = (function () {
+  function el(tag, attrs, children) {
+    const n = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      if (k === 'class') n.className = attrs[k];
+      else if (k === 'html') n.innerHTML = attrs[k];
+      else if (k === 'text') n.textContent = attrs[k];
+      else if (k.startsWith('on') && typeof attrs[k] === 'function') n.addEventListener(k.slice(2), attrs[k]);
+      else if (k === 'data') for (const d in attrs[k]) n.dataset[d] = attrs[k][d];
+      else if (attrs[k] != null) n.setAttribute(k, attrs[k]);
+    }
+    (Array.isArray(children) ? children : [children]).forEach(c => {
+      if (c == null) return;
+      n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+
+  const EGP = n => 'EGP ' + Math.round(+n || 0).toLocaleString('en-US');
+  const num = n => (+n || 0).toLocaleString('en-US');
+  function shortDate(d) { if (!d) return '—'; const t = new Date(d); return isNaN(t) ? d : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
+
+  function countUp(node, to, opts) {
+    opts = opts || {}; const dur = opts.dur || 1100, dec = opts.dec || 0, pre = opts.pre || '', suf = opts.suf || '';
+    let t0 = null;
+    function step(ts) { if (!t0) t0 = ts; const p = Math.min((ts - t0) / dur, 1); const e = 1 - Math.pow(1 - p, 3);
+      node.textContent = pre + (to * e).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suf;
+      if (p < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+
+  function toast(msg) {
+    let t = $('#toast'); if (!t) { t = el('div', { id: 'toast' }); document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  /* Accessible modal: role=dialog + aria-modal, Escape closes, Tab is
+     trapped inside while open, and focus returns to whatever element
+     opened it (so keyboard/screen-reader users never lose their place). */
+  function modal(title, bodyNode) {
+    let back = $('#modalBack');
+    if (!back) { back = el('div', { id: 'modalBack', class: 'modal-back' }); document.body.appendChild(back); }
+    back.innerHTML = '';
+    const previouslyFocused = document.activeElement;
+    const titleId = 'modalTitle-' + Date.now();
+
+    function focusable() {
+      return Array.prototype.slice.call(box.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+        .filter(n => !n.disabled && n.offsetParent !== null);
+    }
+    function onKeydown(e) {
+      if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const items = focusable(); if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    function close() {
+      back.classList.remove('open');
+      document.removeEventListener('keydown', onKeydown, true);
+      if (previouslyFocused && typeof previouslyFocused.focus === 'function') previouslyFocused.focus();
+    }
+
+    const box = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId, tabindex: '-1' }, [
+      el('div', { class: 'm-head' }, [el('h3', { id: titleId, text: title }), el('button', { class: 'x-btn', type: 'button', 'aria-label': 'Close dialog', onclick: close }, '×')]),
+      el('div', { class: 'm-body' }, [bodyNode])
+    ]);
+    back.appendChild(box);
+    back.onclick = e => { if (e.target === back) close(); };
+    document.addEventListener('keydown', onKeydown, true);
+    back.classList.add('open');
+    setTimeout(() => { const items = focusable(); (items[0] || box).focus(); }, 30);
+    return { close };
+  }
+
+  function gaugeSVG(pct, color) {
+    color = color || 'var(--amber)';
+    const deg = -90 + (pct / 100) * 180, off = 251 - (pct / 100) * 251;
+    return `<svg viewBox="0 0 200 120" role="img" aria-label="${pct} percent">
+      <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="var(--line)" stroke-width="12" stroke-linecap="round"/>
+      <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="${off}" class="arc"/>
+      <line x1="100" y1="100" x2="100" y2="36" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="round" class="needle" style="transform:rotate(${deg}deg)"/>
+      <circle cx="100" cy="100" r="7" fill="var(--rosso)"/></svg>`;
+  }
+
+  /* Single source of truth for phase money: Budget Manager and Restoration
+     Roadmap both call this instead of storing their own totals, so the two
+     screens can never disagree. */
+  function phaseBudget(vehicleData, phase) {
+    const rows = (vehicleData.budget || []).filter(c => c.phase === phase);
+    return {
+      budget: rows.reduce((s, c) => s + (c.budget || 0), 0),
+      spent: rows.reduce((s, c) => s + (c.spent || 0), 0),
+      cats: rows
+    };
+  }
+  const PHASE_COLOR = { 1: 'var(--rosso)', 2: 'var(--amber)', 3: 'var(--violet)', 4: 'var(--steel)' };
+  const PHASE_FILL = { 1: 'f-red', 2: 'f-amber', 3: 'f-violet', 4: 'f-steel' };
+
+  return { el, $, $$, EGP, num, shortDate, countUp, toast, modal, gaugeSVG, phaseBudget, PHASE_COLOR, PHASE_FILL };
+})();
+
+</script>
+<script>
+/* ==== js/core/config.js ==== */
+/* ============================================================
+   App.config — central configuration (theme, units, currency,
+   language, icons, feature flags, notification rules).
+   Everything configurable lives here; modules read from it,
+   never hardcode. Persisted user overrides in localStorage.
+   ============================================================ */
+window.App = window.App || {};
+App.config = (function () {
+  const KEY = 'gp-os-config';
+  const DEFAULTS = {
+    version: '2.0',
+    locale: { language: 'en', rtlSupport: true },
+    units: { distance: 'km', volume: 'L', consumption: 'L/100km' },
+    currency: { code: 'EGP', symbol: 'EGP', locale: 'en-US' },
+    theme: { mode: 'light', accent: 'rosso' },
+    icons: {
+      command: '⌂', restoration: '🔧', parts: '⚙', diagnostics: '⚠', service: '📘', fuel: '⛽',
+      budget: '💰', planner: '🗓', workshops: '🏭', suppliers: '🚚', inventory: '📦', documents: '🗄',
+      analytics: '📊', value: '💎', photos: '🖼', roadmap: '🗺', assistant: '🧠', search: '🔎',
+      settings: '⚙️', notifications: '🔔'
+    },
+    /* notification rules (data-driven, evaluated by App.notify) */
+    reminders: {
+      oilChangeKm: 10000, oilChangeMonths: 12,
+      serviceDueKmWindow: 3000, serviceDueDaysWindow: 30,
+      warrantyWarnDays: 30, insuranceWarnDays: 30, licenseWarnDays: 45,
+      timingBeltKm: 70000, timingBeltYears: 4
+    },
+    /* feature flags — future modules become active by flipping to true */
+    features: {
+      obdLive: false, aiAdvisor: false, expenseForecast: false, vinDecoder: false,
+      ocrInvoice: false, barcodeScanner: false, cloudSync: false, multiUser: false
+    },
+    backup: { autoKeep: 5 },
+    /* cloud sync (Supabase) — filled in Settings; anon key is public by
+       design, so keep the hosted site behind Cloudflare Access */
+    cloud: { provider: 'supabase', url: '', anonKey: '', table: 'garage_state', rowId: 'gp-tjet-2010' }
+  };
+
+  let cfg = null;
+  function load() {
+    try { cfg = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(KEY)) || {}); }
+    catch (e) { cfg = Object.assign({}, DEFAULTS); }
+    // deep-merge nested defaults so new keys appear after upgrades
+    ['locale', 'units', 'currency', 'theme', 'icons', 'reminders', 'features', 'backup', 'cloud'].forEach(k =>
+      cfg[k] = Object.assign({}, DEFAULTS[k], cfg[k] || {}));
+    return cfg;
+  }
+  function get() { return cfg || load(); }
+  function set(patch) { cfg = Object.assign(get(), patch); localStorage.setItem(KEY, JSON.stringify(cfg)); }
+  function setPath(section, key, val) { const c = get(); c[section] = c[section] || {}; c[section][key] = val; localStorage.setItem(KEY, JSON.stringify(c)); }
+  function reset() { localStorage.removeItem(KEY); cfg = null; return load(); }
+  function icon(id) { return get().icons[id] || '•'; }
+  function money(n) { const c = get().currency; return c.symbol + ' ' + Math.round(+n || 0).toLocaleString(c.locale); }
+
+  return { DEFAULTS, load, get, set, setPath, reset, icon, money };
+})();
+
+</script>
+<script>
+/* ==== js/core/seed.js ==== */
+/* ============================================================
+   App.seed — initial data (multi-vehicle schema).
+   One vehicle now; the shape supports many. All values are the
+   real project data gathered in the dossier.
+   Every collection is an array of plain objects -> trivially
+   portable to SQLite/Supabase/Postgres tables later.
+   ============================================================ */
+window.App = window.App || {};
+App.seed = {
+  meta: { schema: 2, app: 'Grande Punto Automotive OS', savedAt: null },
+  activeVehicleId: 'gp-tjet-2010',
+  vehicles: [{
+    id: 'gp-tjet-2010',
+    vin: '', // owner to fill
+    make: 'Fiat', model: 'Grande Punto T-Jet', year: 2010, type: '199',
+    engine: '1.4 16v Turbo (198A4000, 120 hp)', transmission: 'Manual',
+    fuel: '95 RON', oilSpec: '5W-40 ACEA C3 / 9.55535-S2',
+    wheels: '4×98 · CB 58.1 · ET35–43 · 195/55 R16',
+    mileage: 155000, market: 'Egypt',
+    scores: { health: 55, safety: 42, reliability: 68 },
+    phase: 'Phase 1 — Safety',
+    data: {
+      /* ---- PARTS DATABASE ---- */
+      parts: [
+        { id: 'p-hose', name: 'Air intake hose (filter→turbo)', ar: 'خرطوم السحب', oem: '51822558', fiat: '51822558', alt: '5180472 (adjacent)', brand: 'Genuine', tier: 5, category: 'Turbo', priceNewEg: null, priceUsedEg: null, euRef: '€25–60', supplier: 'ELKHLANY', laborEg: null, warranty: '', status: 'to-order', priority: 'critical', vinOk: true, compat: 'GP T-Jet · Abarth GP', verdict: 'buy', notes: 'Confirmed torn; number read off the part. Buy genuine (shaped).' },
+        { id: 'p-tank', name: 'Expansion tank + cap', ar: 'قربة المياه + غطاء', oem: '51718005', fiat: '51718005', alt: 'cap 55700508', brand: 'Behr/Genuine', tier: 5, category: 'Cooling', priceNewEg: null, priceUsedEg: null, euRef: '€20–47', supplier: '', laborEg: null, warranty: '', status: 'to-order', priority: 'critical', vinOk: false, compat: 'GP 199 · Punto Evo', verdict: 'buy', notes: 'Leak confirmed.' },
+        { id: 'p-coolant', name: 'Coolant Paraflu UP (G12+)', ar: 'مية تبريد', oem: '', fiat: 'Paraflu UP', alt: 'any G12+/OAT', brand: 'Petronas', tier: 5, category: 'Cooling', euRef: '€8–12/L', status: 'to-order', priority: 'critical', vinOk: true, compat: '50/50 demin.', verdict: 'buy', qty: 4, notes: 'Switch from Mannol now (system open).' },
+        { id: 'p-belt', name: 'Accessory belt', ar: 'سير المجموعة', oem: '', fiat: 'via ePER', alt: 'Gates/Dayco/Contitech', brand: 'Gates', tier: 5, category: 'Engine', euRef: '€10–20', priceNewEg: 650, supplier: 'ELKHLANY', status: 'to-order', priority: 'high', vinOk: false, compat: 'Fiat 1.4 w/ AC', verdict: 'buy', notes: 'Dealer quote 650. Idle whistle.' },
+        { id: 'p-tens', name: 'Belt tensioner + idler', ar: 'شداد + بلي', oem: '55190813', fiat: '55190813', alt: 'INA/SKF/Gates', brand: 'INA', tier: 5, category: 'Engine', euRef: '€45–90', priceNewEg: 1150, supplier: 'El Asmar', laborEg: null, status: 'to-order', priority: 'high', vinOk: false, compat: 'Fiat 1.4 16v', verdict: 'buy', notes: 'El Asmar: full tensioner set 1,150 (idler pulley alone 450). ELKHLANY quoted idler-only at 450 — confirm which scope before ordering.' },
+        { id: 'p-plugs', name: 'Spark plugs iridium ×4', ar: 'بوجيهات', oem: '55212466', fiat: '55212466', alt: 'NGK IKR9F8', brand: 'NGK', tier: 5, category: 'Engine', euRef: '€10–16 ea', priceNewEg: 3100, supplier: 'El Asmar', laborEg: null, status: 'to-order', priority: 'high', vinOk: true, compat: 'all 1.4 T-Jet', verdict: 'buy', qty: 1, notes: 'El Asmar: 3,100 for the ORIGINAL/توكيل set of 4 — NGK not in their stock currently. Price is for the full set, not per plug.' },
+        { id: 'p-ofilt', name: 'Oil filter', ar: 'فلتر زيت', oem: '55223416', fiat: '55223416', alt: 'UFI/Mann/Mahle', brand: 'UFI', tier: 5, category: 'Engine', euRef: '€5–10', status: 'to-order', priority: 'high', vinOk: true, compat: '1.4 Fire/T-Jet', verdict: 'buy' },
+        { id: 'p-afilt', name: 'Air filter', ar: 'فلتر هواء', oem: '55192012', fiat: '55192012', alt: 'Mann/Mahle', brand: 'Mann', tier: 5, category: 'Engine', euRef: '€10–20', priceNewEg: 250, supplier: 'El Asmar', laborEg: null, status: 'to-order', priority: 'high', vinOk: false, compat: 'GP T-Jet (turbo airbox)', verdict: 'buy', notes: 'El Asmar quote: 250.' },
+        { id: 'p-cfilt', name: 'Cabin filter', ar: 'فلتر تكييف', oem: '77363370', fiat: '77363370', alt: 'Mann/Bosch', brand: 'Mann', tier: 4, category: 'Interior', euRef: '€8–15', status: 'to-order', priority: 'medium', vinOk: false, compat: 'GP · Evo', verdict: 'buy' },
+        { id: 'p-oil', name: 'Engine oil 5W-40 C3 (4L)', ar: 'زيت موتور', oem: '', fiat: '9.55535-S2', alt: 'Selenia/Motul/Mobil', brand: 'Selenia', tier: 5, category: 'Engine', euRef: '€30–45', status: 'to-order', priority: 'high', vinOk: true, compat: 'all T-Jet', verdict: 'buy' },
+        { id: 'p-bfluid', name: 'Brake fluid DOT4 (1L)', ar: 'زيت فرامل', oem: '', fiat: 'DOT4', alt: 'ATE/Bosch/TRW', brand: 'ATE', tier: 5, category: 'Brakes', euRef: '€8–15', status: 'to-order', priority: 'high', vinOk: true, compat: 'serves clutch master too', verdict: 'buy' },
+        { id: 'p-rdiscs', name: 'Rear discs pair', ar: 'دسكات ورا', oem: '51971354', fiat: '51971354', alt: 'Brembo/TRW/ATE', brand: 'Brembo', tier: 5, category: 'Brakes', euRef: '€25–45 ea', status: 'to-order', priority: 'high', vinOk: false, compat: 'GP/Evo/MiTo/Corsa D', verdict: 'buy', qty: 2, notes: 'Owner-confirmed worn. MEASURE size first.' },
+        { id: 'p-rpads', name: 'Rear pads set', ar: 'تيل ورا', oem: '', fiat: 'via ePER', alt: 'TRW/Ferodo/Brembo', brand: 'TRW', tier: 5, category: 'Brakes', euRef: '€20–40', status: 'to-order', priority: 'high', vinOk: false, compat: 'as rear discs', verdict: 'buy' },
+        { id: 'p-battery', name: 'Battery ~60Ah 540CCA', ar: 'بطارية', oem: 'L2', fiat: '', alt: 'Varta/Bosch', brand: 'Varta', tier: 5, category: 'Electrical', euRef: '€70–110', status: 'to-order', priority: 'critical', vinOk: true, compat: 'check tray', verdict: 'buy', notes: 'Weak: 12.0V rest / 10.3V cranking — drops CAN nodes.' },
+        { id: 'p-wipers', name: 'Wiper blades pair', ar: 'مساحات', oem: '', fiat: 'by length', alt: 'Bosch Aerotwin', brand: 'Bosch', tier: 4, category: 'Exterior', euRef: '€15–25', status: 'to-order', priority: 'medium', vinOk: true, compat: 'by length', verdict: 'buy' },
+        { id: 'p-cowl', name: 'Cowl / scuttle panel', ar: 'فبرة المساحات', oem: '', fiat: 'via ePER', alt: 'genuine/used', brand: '', tier: 3, category: 'Body', euRef: '€15–40', priceNewEg: 1500, supplier: 'Italians House', laborEg: null, status: 'to-order', priority: 'medium', vinOk: false, compat: 'GP · Evo', verdict: 'buy', notes: 'Confirmed broken; protects BSI from water. Italians House quote: 1,500.' },
+        { id: 'p-master', name: 'Brake master cylinder', ar: 'ماستر فرامل', oem: '', fiat: '', alt: 'LAST suspect', brand: '', tier: 0, category: 'Brakes', euRef: '—', priceNewEg: 3500, supplier: 'ELKHLANY', laborEg: null, status: 'hold', priority: 'low', vinOk: false, compat: '—', verdict: 'stop', notes: 'ELKHLANY quote 3,500; El Asmar ~3,000 (wants to see the Grande Punto specifically to confirm). DO NOT BUY — do rear brakes+fluid+calipers first.' },
+        { id: 'p-radiator', name: 'Radiator (TURBO version)', ar: 'ردياتير', oem: '51780659', fiat: '51780659', alt: 'Valeo/Denso/Nissens', brand: 'Valeo', tier: 5, category: 'Cooling', euRef: '€70–150', status: 'hold', priority: 'medium', vinOk: false, compat: 'GP 1.4 Turbo (NOT NA)', verdict: 'hold', notes: 'Only after pressure test.' },
+        { id: 'p-cv', name: 'Driveshaft RH / inner CV', ar: 'عمود إحليل يمين', oem: 'SGR.21220', fiat: 'via ePER', alt: 'GKN/Löbro/SKF', brand: 'GKN', tier: 5, category: 'Transmission', euRef: 'joint €40–90 / shaft €100–180', status: 'hold', priority: 'medium', vinOk: false, compat: 'by gearbox code', verdict: 'hold', notes: 'After load-noise tests.' },
+        { id: 'p-mount', name: 'Rear engine mount', ar: 'قاعدة موتور خلفية', oem: '51782714', fiat: '51782714', alt: 'Corteco/Febi', brand: 'Corteco', tier: 4, category: 'Engine', euRef: '€25–50', status: 'hold', priority: 'medium', vinOk: false, compat: 'GP 1.4 · Evo', verdict: 'hold' },
+        { id: 'p-rshock', name: 'Rear shocks pair', ar: 'مساعدين ورا', oem: '', fiat: 'via ePER', alt: 'KYB/Sachs/Monroe', brand: 'KYB', tier: 5, category: 'Suspension', euRef: '€35–60 ea', priceNewEg: 2500, supplier: 'Italians House', laborEg: null, status: 'hold', priority: 'medium', vinOk: false, compat: 'GP/Evo/Corsa D', verdict: 'hold', qty: 1, notes: 'Prices are per PAIR (both sides), qty=1. Italians House 2,500 · ELKHLANY 3,800 "original" (confirm brand) — inspect first before buying either.' },
+        { id: 'p-fshock', name: 'Front struts pair', ar: 'مساعدين قدام', oem: '', fiat: 'via ePER', alt: 'KYB/Sachs (avoid Chinese)', brand: 'KYB', tier: 5, category: 'Suspension', euRef: '€60–100 ea', priceNewEg: 4800, supplier: 'ELKHLANY', laborEg: null, status: 'hold', priority: 'medium', vinOk: false, compat: 'GP/Evo/Corsa D', verdict: 'hold', qty: 1, notes: 'Prices are per PAIR (both sides), qty=1. ELKHLANY 4,800 Turkish / 3,800 Chinese · El Asmar ~6,000 Turkish set · Italians House 6,000 — inspect first; avoid Chinese regardless of price.' },
+        { id: 'p-o2', name: 'O2 sensor front', ar: 'حساس أكسجين', oem: '', fiat: 'via ePER', alt: 'Bosch/NGK-NTK', brand: 'Bosch', tier: 5, category: 'Engine', euRef: '€50–100', status: 'hold', priority: 'low', vinOk: false, compat: '1.4 T-Jet pre-cat', verdict: 'hold', notes: 'Only if fuel trims confirm.' },
+        { id: 'p-acclutch', name: 'A/C compressor clutch', ar: 'كباس الكومبروسور', oem: '', fiat: 'Denso', alt: 'Denso kit', brand: 'Denso', tier: 5, category: 'Electrical', euRef: '€40–80', status: 'hold', priority: 'low', vinOk: false, compat: 'match comp. label', verdict: 'hold' },
+        { id: 'p-headunit', name: '9" Android head unit', ar: 'شاشة أندرويد', oem: '', fiat: '+canbus adapter', alt: 'X-max (ELHakim) / Winca / TS18', brand: 'X-max', tier: 4, category: 'Accessories', euRef: '€120–300', priceNewEg: 4750, supplier: 'ELHakim Car Hub', laborEg: 0, status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP 2-DIN + 199 canbus', verdict: 'later', notes: 'ELHakim X-max 2/32 = 4,750, price INCLUDES frame+camera+AHD+install+1yr warranty — no separate labor for this option. Alternatives: X-max 4/64=6,500 · SK Vision 2K=7,500 · Winca 2/32=6,500 (4/64=10,000) · TS18 varies 6,200–9,000 across sellers.' },
+        { id: 'p-ambient', name: 'Ambient light kit', ar: 'إضاءة أمبيينت', oem: '', fiat: '', alt: '', brand: '', tier: 3, category: 'Accessories', euRef: '', priceNewEg: 1850, supplier: 'Screens — Alexandria', laborEg: null, status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP interior trim', verdict: 'later', notes: 'Quote: 1,850 (+20 11 12336552).' },
+        { id: 'p-speakers', name: 'Door speakers ×4 (165mm)', ar: 'سماعات', oem: '', fiat: '6.5"', alt: 'Focal/JBL/Pioneer', brand: '', tier: 4, category: 'Accessories', euRef: '€40–120/pair', status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP doors', verdict: 'later', qty: 2, notes: 'No Egyptian dealer quote yet — EU reference only.' },
+        { id: 'p-ledlow', name: 'LED low beam (pair)', ar: 'LED واطي', oem: '', fiat: 'check base', alt: 'Philips Ultinon/Osram', brand: 'Philips', tier: 5, category: 'Exterior', euRef: '€60–130', status: 'later', priority: 'cosmetic', vinOk: false, compat: 'match reflector', verdict: 'later', notes: 'No Egyptian dealer quote yet — EU reference only. Verify beam pattern on a wall.' },
+        { id: 'p-leather', name: 'Leather seat covers (F+R)', ar: 'كسوة جلد', oem: '', fiat: 'upholstery', alt: 'local trimmer', brand: '', tier: 4, category: 'Interior', euRef: 'workshop', priceNewEg: 3700, supplier: 'Leather trim (+20 10 90421285)', laborEg: 0, status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP seats', verdict: 'later', notes: 'Quote 3,700 INSTALLED — labor is already included in this price, leave labor field at 0 for this item.' },
+        { id: 'p-frontbumper', name: 'Front bumper', ar: 'اكصدام أمامي', oem: '', fiat: 'via ePER', alt: 'black available', brand: '', tier: 3, category: 'Body', euRef: '', priceNewEg: 4500, supplier: 'Italians House', laborEg: null, status: 'hold', priority: 'cosmetic', vinOk: false, compat: 'GP', verdict: 'hold', notes: 'Quote: 4,500. Only if the existing bumper can\'t be fiber+weld repaired economically.' },
+        { id: 'p-rearbumper', name: 'Rear bumper (w/ lights)', ar: 'اكصدام خلفي بالفوانيس', oem: '', fiat: 'via ePER', alt: '', brand: '', tier: 3, category: 'Body', euRef: '', priceNewEg: 4000, supplier: 'Italians House', laborEg: null, status: 'hold', priority: 'high', vinOk: false, compat: 'GP', verdict: 'hold', notes: 'Quote: 4,000 incl. lights. This is the rear-impact panel — coordinate with the rear-harness CAN repair (§12), since that area needs to be opened anyway. Decide replace vs. fiber+weld once the electrician has assessed the damage.' }
+      ],
+      /* installed history parts (for reference) */
+      installed: [
+        { name: 'Front suspension overhaul', km: 102000, date: '2021-09-04', paid: 4195 },
+        { name: 'Timing belt + water pump + plugs', km: 112000, date: '2023-10-08', paid: 5400 },
+        { name: 'Fuel pump + PCV oil separator', km: 118000, date: '2023-10-30', paid: 3100 },
+        { name: 'Clutch (LuK) + 2 mounts + fluids', km: 125000, date: '2024-01-15', paid: 16200 },
+        { name: 'Alternator', km: 128000, date: '2024-03-01', paid: 3300 },
+        { name: 'Flywheel + front brakes + steering rack', km: 140000, date: '2025-12-10', paid: 15800 }
+      ],
+      /* ---- DIAGNOSTICS (real scan codes) ---- */
+      faults: [
+        { code: 'U0422', system: 'Engine ECU', desc: 'Fire Prevention (crash fuel-cut) data from BCM', symptom: '"fuel cut off" message', root: 'Latched crash flag from the ~144k impact', prob: 95, cost: 'clear + wiring', solved: false, priority: 'critical', state: 'present→intermittent' },
+        { code: 'U1711', system: 'Engine ECU', desc: 'CAN network (NCM–NCR)', symptom: 'stalling / assist drop', root: 'CAN bus disturbance', prob: 90, cost: 'wiring', solved: false, priority: 'critical', state: 'stored' },
+        { code: 'U0001', system: 'Engine ECU', desc: 'C-CAN line error', symptom: 'intermittent multi-module', root: 'Damaged CAN wiring (impact)', prob: 90, cost: 'wiring', solved: false, priority: 'critical', state: 'intermittent' },
+        { code: 'C1221', system: 'ABS/ESP', desc: 'Engine Control (NCM) signal not valid', symptom: 'ESP + Hill Holder unavailable', root: 'Loses engine node over CAN', prob: 90, cost: 'wiring', solved: false, priority: 'critical', state: 'intermittent→present' },
+        { code: 'U1726', system: 'Body Computer', desc: 'Airbag Node (NAB) — no node on B-CAN', symptom: 'airbag light (intermittent)', root: 'Airbag node drops off B-CAN (connection)', prob: 88, cost: 'connector/wiring', solved: false, priority: 'critical', state: 'intermittent (ctr 14→32)' },
+        { code: 'B1023', system: 'Body Computer', desc: 'Number-plate lights — short to ground/overload', symptom: 'lights fault', root: 'Rear harness damage in the impact zone', prob: 92, cost: 'rear harness repair', solved: false, priority: 'critical', state: 'PRESENT' },
+        { code: 'B1045', system: 'Body Computer', desc: 'Lights control — intermittent', symptom: 'light flicker', root: 'CAN/harness + weak battery', prob: 70, cost: 'wiring', solved: false, priority: 'high', state: 'intermittent' }
+      ],
+      scans: [
+        { date: '2026-07-11', tool: 'AlfaOBD', by: 'Owner', note: 'Full multi-module scan — 7+ CAN codes; battery 12.0V, dips 10.3V cranking' },
+        { date: '2025-12', tool: 'MultiECUScan', by: 'Eng. Louai', note: 'Proxi alignment — cleared fault, recurred later (milder)' },
+        { date: '2024-06-27', tool: 'MultiECUScan', by: 'Owner', note: 'car_report.pdf — scan (before cleaning)' },
+        { date: '2024-06-27', tool: 'MultiECUScan', by: 'Owner', note: 'car_report_after_cleaning.pdf — scan (after cleaning)' }
+      ],
+      /* ---- SERVICE BOOK ---- */
+      service: [
+        { date: '2021-09-04', km: 102000, workshop: '(ledger)', mechanic: '', work: 'Front suspension overhaul + alignment', parts: 'shocks, mounts, links, arms, inner rod', labor: null, paid: 4195, invoice: '', warranty: '' },
+        { date: '2023-10-08', km: 112000, workshop: '(ledger)', mechanic: '', work: 'Timing belt kit + water pump + spark plugs; coolant (Mannol)', parts: 'belt, tensioner, pump, plugs', labor: null, paid: 5400, invoice: '', warranty: '' },
+        { date: '2024-01-15', km: 125000, workshop: '(ledger)', mechanic: '', work: 'Clutch (LuK) + release brg + 2 engine mounts + gearbox oil + brake fluid', parts: 'clutch kit, mounts', labor: null, paid: 16200, invoice: '', warranty: '' },
+        { date: '2024-03-01', km: 128000, workshop: '(ledger)', mechanic: '', work: 'Alternator', parts: 'alternator', labor: null, paid: 3300, invoice: '', warranty: '' },
+        { date: '2025-11-10', km: 135000, workshop: '(ledger)', mechanic: '', work: 'Rear brake pads', parts: 'rear pads', labor: null, paid: 800, invoice: '', warranty: '' },
+        { date: '2025-12-10', km: 140000, workshop: '(ledger)', mechanic: '', work: 'Flywheel + front discs/pads + steering rack', parts: 'flywheel, discs, pads, rack', labor: null, paid: 15800, invoice: '', warranty: '' },
+        { date: '2026-05-01', km: 149000, workshop: '(ledger)', mechanic: '', work: 'Oil change 5W-40', parts: 'oil, filter', labor: null, paid: 1400, invoice: '', warranty: '' }
+      ],
+      /* ---- FUEL ---- */
+      fuel: [
+        { date: '2026-06-20', km: 154200, liters: 40, pricePerL: 12.5, station: 'Wataniya', type: '95' },
+        { date: '2026-07-01', km: 154650, liters: 42, pricePerL: 12.5, station: 'Misr', type: '95' },
+        { date: '2026-07-10', km: 155000, liters: 41, pricePerL: 12.5, station: 'Wataniya', type: '95' }
+      ],
+      /* ---- BUDGET (categories) ---- */
+      /* Real target: EGP 50-60k across ALL phases (not per-category padding).
+         `phase` ties each category to a Roadmap phase (1-4) so Budget and
+         Roadmap always agree — Roadmap SUMS these, it never hardcodes its
+         own totals. Turbo is folded into Engine: we are NOT rebuilding the
+         turbo, just the intake hose + a boost-log check (cheap), so it
+         doesn't deserve its own inflated category. */
+      budget: [
+        { cat: 'Engine', budget: 8000, spent: 0, phase: 2, note: 'plugs, oil+filters, belt/tensioner set, intake hose+clamps, throttle clean — includes the turbo intake fix, NOT a turbo rebuild' },
+        { cat: 'Cooling', budget: 4500, spent: 0, phase: 1, note: 'expansion tank+cap, pressure test, coolant switch to Paraflu UP' },
+        { cat: 'Electrical', budget: 8500, spent: 0, phase: 1, note: 'rear-harness repair (post-impact CAN fault), battery, airbag connector work' },
+        { cat: 'Brakes', budget: 6000, spent: 0, phase: 1, note: 'rear discs+pads, fluid flush, caliper service' },
+        { cat: 'Suspension', budget: 6000, spent: 0, phase: 2, note: 'rear shocks + front/rear shake-down labor' },
+        { cat: 'Steering', budget: 0, spent: 0, phase: 2, note: 'rack replaced Dec-2025 — nothing budgeted' },
+        { cat: 'Interior', budget: 7000, spent: 0, phase: 3, note: 'leather seat covers, deep clean' },
+        { cat: 'Accessories', budget: 3000, spent: 0, phase: 3, note: '9" Android screen + ambient light' },
+        { cat: 'Exterior', budget: 6000, spent: 0, phase: 4, note: 'polish, LED lighting, headlight restoration' },
+        { cat: 'Body', budget: 5000, spent: 0, phase: 4, note: 'cowl/scuttle panel, bumper fiber+weld repair' }
+      ],
+      /* ---- MAINTENANCE PLANNER ---- */
+      planner: [
+        { title: 'Catch-up service (oil+filters+plugs)', dueKm: 157000, dueDate: '2026-08-01', kind: 'service', done: false },
+        { title: 'Rear discs + pads', dueKm: 156000, dueDate: '2026-07-25', kind: 'brakes', done: false },
+        { title: 'Timing belt + water pump', dueKm: 176000, dueDate: '2027-10-01', kind: 'critical', done: false },
+        { title: 'Brake fluid flush (2yr)', dueKm: null, dueDate: '2027-01-15', kind: 'brakes', done: false }
+      ],
+      /* ---- WORKSHOPS ---- */
+      workshops: [
+        { name: 'Eng. Louai (Fiat CAN specialist)', spec: 'Electrical / MultiECUScan / proxi', phone: '', rating: 5, price: '$$', maps: '', notes: 'Did proxi alignment; best for the CAN fault.' },
+        { name: 'Mechanic (smoke-test)', spec: 'Engine / smoke test', phone: '01099520389', rating: 4, price: '$$', maps: '', notes: 'From task list — air/boost leak test.' },
+        { name: 'Smakri (bodywork)', spec: 'Panel beating / fiber / paint', phone: '', rating: 4, price: '$$', maps: 'https://goo.gl/maps/vckxcfmQ4wpbQWzm6', notes: 'Bumpers fiber+weld, polish, door adjust.' }
+      ],
+      /* ---- SUPPLIERS ---- */
+      suppliers: [
+        { name: 'ELKHLANY', contact: '+20 10 26840287', whatsapp: '+201026840287', website: '', brands: 'OEM + aftermarket', delivery: '', notes: 'belt 650, idler 450, front shock 4800TR/3800CN, rear 3800, master 3500.' },
+        { name: 'El Asmar Fiat spare parts', contact: '', whatsapp: '', website: '', brands: 'Fiat specialist', delivery: '', notes: 'plugs 3100 (original, no NGK), air filter 250, belt 450, tensioner set 1150/idler 450, master ~3000, front shock set Turkish ~6000.' },
+        { name: 'ELHakim Car Hub', contact: '', whatsapp: '', website: 'FB store', brands: 'X-max, SK Vision, Winca screens', delivery: '', notes: 'GP 9": X-max 2/32=4750, 4/64=6500, SK Vision 2K=7500 — incl frame+camera+AHD+install+1yr warranty. Best screen value.' },
+        { name: 'Screens — Alexandria', contact: '+20 11 12336552', whatsapp: '+201112336552', website: '', brands: 'Enjoying/Winca/Max + ambient', delivery: '', notes: 'Max 2/32=6000, Winca 2/32=6500 4/64=10000, ambient light=1850.' },
+        { name: 'el zaghal com.', contact: '', whatsapp: '', website: '', brands: 'TS18 screens', delivery: '', notes: 'TS18 2/64=6200, 7"=8000.' },
+        { name: 'Top Car (اولاد رزق)', contact: '', whatsapp: '', website: '', brands: 'TS18 screens', delivery: '', notes: 'TS18 2/32=7600, GP frame available.' },
+        { name: 'المعتز M7', contact: '01068666112', whatsapp: '', website: '', brands: 'screens/accessories', delivery: '', notes: 'TS18=9000 (expensive).' },
+        { name: 'Italians House', contact: '+20 12 26277620', whatsapp: '+201226277620', website: '', brands: 'body panels + suspension', delivery: '', notes: 'front bumper 4500, rear bumper 4000 w/lights, cowl 1500, front shocks 6000, rear 2500.' },
+        { name: 'Leather trim', contact: '+20 10 90421285', whatsapp: '+201090421285', website: '', brands: 'seat covers', delivery: '', notes: 'leather seat set 3700 installed, fits GP.' },
+        { name: 'Canadian Auto Service Center', contact: '01007766683', whatsapp: '', website: '12 شارع المنارة', brands: 'detailing', delivery: '', notes: 'base 200; headlight polish 300; A/C sanitize 200; wax 3mo 300.' }
+      ],
+      /* ---- GARAGE INVENTORY ---- */
+      inventory: [
+        { item: 'Injector cleaner (Liqui Moly)', category: 'Fluids', qty: 1, location: 'Garage', notes: '' },
+        { item: 'Silicone spray', category: 'Cleaning', qty: 1, location: 'Garage', notes: '' },
+        { item: 'Tire compressor', category: 'Tools', qty: 1, location: 'Boot', notes: '' },
+        { item: 'Jack + tools', category: 'Tools', qty: 1, location: 'Boot', notes: '' }
+      ],
+      /* ---- DOCUMENTS ---- */
+      documents: [
+        { name: 'Owner service ledger (Car.pdf)', type: 'Invoice/History', date: '2025-12-07', ref: 'Car.pdf', notes: '2021–2025 spend' },
+        { name: 'AlfaOBD scan screenshots', type: 'Diagnostics', date: '2026-07', ref: 'images', notes: 'CAN fault codes' }
+      ],
+      /* ---- ROADMAP ---- */
+      /* NOTE: budget/spent are NOT stored here — Roadmap computes them live
+         by summing budget[] entries whose `phase` matches (App.util.phaseBudget).
+         This file only carries what a phase IS, never its cost, so the two
+         screens can't drift apart. */
+      roadmap: [
+        { phase: 1, title: 'Safety', progress: 0, note: 'cooling leak · rear-harness CAN wiring · battery · rear brakes' },
+        { phase: 2, title: 'Reliability', progress: 0, note: 'catch-up service · intake hose · suspension shake-down' },
+        { phase: 3, title: 'Comfort', progress: 0, note: 'A/C drain fix · leather interior · screen + ambient' },
+        { phase: 4, title: 'Cosmetic', progress: 0, note: 'cowl panel · bumper repair · polish · LED lighting' }
+      ],
+      /* ---- PHOTO TIMELINE ---- */
+      photos: [
+        { stage: 'before', label: 'Torn intake hose (51822558)', date: '2026-07' },
+        { stage: 'before', label: 'Rear-impact zone / cowl panel', date: '2026-07' }
+      ],
+      /* ---- VALUE ---- */
+      value: { purchase: 72000, purchaseYear: 2013, invested: 12000, runningLogged: 36612, repairEstimate: 40000, modEstimate: 25000, estResale: 325000 }
+    }
+  }]
+};
+
+</script>
+<script>
+/* ==== js/core/store.js ==== */
+/* ============================================================
+   App.store — the data layer.
+   - Vehicle-scoped collections (array of records = future DB rows).
+   - Pluggable persistence ADAPTER so we can swap localStorage for
+     SQLite / Supabase / Postgres later WITHOUT touching the UI.
+     Any adapter must implement: load() -> parsed|undefined(corrupt)|null(empty),
+     loadRaw() -> string|null, save(state).
+   - Pub/sub so modules re-render on change.
+
+   DATA-SAFETY CONTRACT (read before touching load/migrate/import):
+   - A missing/empty store is the ONLY case that may install the seed
+     silently (first run — nothing existed to lose).
+   - Corrupt JSON or a payload that fails validateState() is NEVER
+     silently discarded. The raw bytes are preserved under a
+     'gp-os-corrupt-<ts>' key, a recoveryNotice is attached to the
+     in-memory state for the UI to surface loudly, and nothing is
+     written back to the primary key until the user acts.
+   - Only reset()/hardReset() (an explicit, user-confirmed action) may
+     replace existing good data with the seed.
+   ============================================================ */
+window.App = window.App || {};
+App.store = (function () {
+  const KEY = 'gp-os-v2';
+  const CORRUPT_PREFIX = 'gp-os-corrupt-';
+
+  /* ---- persistence adapters (swap here for a real DB) ---- */
+  const adapters = {
+    local: {
+      loadRaw() { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
+      // returns: null = nothing stored yet · undefined = stored but not valid JSON · object = parsed
+      load() {
+        const raw = this.loadRaw();
+        if (raw == null) return null;
+        try { return JSON.parse(raw); } catch (e) { return undefined; }
+      },
+      save(state) { localStorage.setItem(KEY, JSON.stringify(state)); }
+    }
+    /* Example future adapter (same signature, async-capable):
+       supabase: { async load(){...}, async loadRaw(){...}, async save(s){...} }
+       Only this object changes; modules keep calling App.store.* */
+  };
+  let adapter = adapters.local;
+
+  let state = null;
+  const subs = [];
+  const ARRAY_COLLECTIONS = ['parts', 'installed', 'faults', 'scans', 'service', 'fuel', 'budget',
+    'planner', 'workshops', 'suppliers', 'inventory', 'documents', 'roadmap', 'photos'];
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* ---- shape validation (also used to screen imports + cloud pulls) ---- */
+  function validateState(obj) {
+    const errors = [];
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) { errors.push('root is not an object'); return { valid: false, errors }; }
+    if (!obj.meta || typeof obj.meta.schema !== 'number') errors.push('missing meta.schema (number)');
+    if (!Array.isArray(obj.vehicles) || obj.vehicles.length === 0) {
+      errors.push('missing vehicles[] (non-empty array)');
+    } else {
+      obj.vehicles.forEach((v, i) => {
+        if (!v || typeof v !== 'object') { errors.push('vehicles[' + i + '] is not an object'); return; }
+        if (typeof v.id !== 'string' || !v.id) errors.push('vehicles[' + i + '].id missing');
+        if (!v.data || typeof v.data !== 'object') errors.push('vehicles[' + i + '].data missing');
+        else ARRAY_COLLECTIONS.forEach(c => {
+          if (v.data[c] != null && !Array.isArray(v.data[c])) errors.push('vehicles[' + i + '].data.' + c + ' must be an array');
+        });
+      });
+      if (typeof obj.activeVehicleId !== 'string' || !obj.activeVehicleId) errors.push('missing activeVehicleId');
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  /* ---- version-by-version migrations ----
+     Add one entry per released schema bump: MIGRATIONS[N] transforms a
+     state at schema N into schema N+1. Never skip versions — the
+     runner walks the chain step by step so nothing is silently lost
+     between releases. */
+  const MIGRATIONS = {
+    // Example scaffold for the first future bump (schema 2 -> 3).
+    // Replace/extend when the shape actually changes; keep old entries
+    // forever so old backups can still be replayed forward.
+    // 2: function migrate_2_to_3(s) { /* transform s in place, return s */ return s; }
+  };
+
+  function runMigrations(raw) {
+    const s = raw;
+    const current = App.seed.meta.schema;
+    if (typeof s.meta.schema !== 'number') s.meta.schema = 1;
+    if (s.meta.schema > current) {
+      // Data saved by a NEWER app version than this one understands.
+      // Do not guess a downgrade transform — pass it through untouched
+      // and flag it so the UI can warn instead of quietly mangling it.
+      s.meta.schemaAhead = true;
+      return s;
+    }
+    let steps = 0;
+    while (s.meta.schema < current) {
+      const fn = MIGRATIONS[s.meta.schema];
+      if (!fn) break; // no known path from here — stop rather than guess
+      const before = s.meta.schema;
+      fn(s);
+      s.meta.schema = before + 1;
+      if (++steps > 50) break; // guard against a buggy migration looping forever
+    }
+    return s;
+  }
+
+  function preserveCorrupt(rawStr) {
+    try { localStorage.setItem(CORRUPT_PREFIX + Date.now(), rawStr == null ? '' : rawStr); } catch (e) { /* best effort */ }
+  }
+  function corruptBackups() {
+    const out = [];
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf(CORRUPT_PREFIX) === 0) out.push(k); } } catch (e) { }
+    return out.sort().reverse();
+  }
+  function readCorruptBackup(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function discardCorruptBackup(key) { try { localStorage.removeItem(key); } catch (e) { } }
+
+  function load() {
+    const raw = adapter.load();
+    if (raw === null) { // nothing stored — legitimate first run, nothing to lose
+      state = clone(App.seed);
+      persistSafe();
+      return state;
+    }
+    if (raw === undefined) { // stored but not valid JSON at all
+      preserveCorrupt(adapter.loadRaw ? adapter.loadRaw() : null);
+      state = clone(App.seed);
+      state.meta.recoveryNotice = 'Saved data could not be parsed (corrupted). The raw file was preserved — see Settings → Backup & Restore → Recovered Data. Showing defaults; nothing was overwritten.';
+      return state;
+    }
+    const migrated = runMigrations(raw);
+    const { valid, errors } = validateState(migrated);
+    if (!valid) {
+      preserveCorrupt(JSON.stringify(raw));
+      state = clone(App.seed);
+      state.meta.recoveryNotice = 'Saved data did not match the expected format (' + errors.slice(0, 3).join('; ') + '). A copy was preserved — see Settings → Backup & Restore → Recovered Data. Showing defaults; nothing was overwritten.';
+      return state;
+    }
+    state = migrated;
+    return state;
+  }
+
+  function persistSafe() {
+    try {
+      state.meta.savedAt = new Date().toISOString();
+      adapter.save(state);
+      return true;
+    } catch (e) {
+      console.error('App.store: write failed —', e);
+      App.util && App.util.toast && App.util.toast('⚠ Could not save (storage full or blocked). Export a backup from Settings.');
+      return false;
+    }
+  }
+  function persist() { const ok = persistSafe(); subs.forEach(fn => fn(state)); return ok; }
+  function subscribe(fn) { subs.push(fn); return () => { const i = subs.indexOf(fn); if (i > -1) subs.splice(i, 1); }; }
+
+  /* ---- vehicle scope ---- */
+  function vehicles() { return state.vehicles; }
+  function activeVehicle() { return state.vehicles.find(v => v.id === state.activeVehicleId) || state.vehicles[0]; }
+  function setActiveVehicle(id) { state.activeVehicleId = id; persist(); }
+  function addVehicle(v) {
+    v.id = v.id || 'veh-' + Date.now();
+    v.data = v.data || emptyData();
+    state.vehicles.push(v); state.activeVehicleId = v.id; persist(); return v;
+  }
+  function emptyData() {
+    return { parts: [], installed: [], faults: [], scans: [], service: [], fuel: [], budget: [],
+      planner: [], workshops: [], suppliers: [], inventory: [], documents: [], roadmap: [], photos: [],
+      value: { purchase: 0, invested: 0, repairEstimate: 0, modEstimate: 0, estResale: 0 } };
+  }
+
+  /* ---- record normalization: every record gets id + audit fields ---- */
+  function normalize(coll, rec) {
+    const now = new Date().toISOString();
+    rec.id = rec.id || coll + '-' + Date.now() + '-' + Math.floor(Math.random() * 1e4);
+    if (!rec.createdAt) rec.createdAt = now;
+    rec.updatedAt = now;
+    if (rec.notes == null) rec.notes = rec.notes || '';
+    if (!Array.isArray(rec.tags)) rec.tags = rec.tags || [];
+    if (!Array.isArray(rec.attachments)) rec.attachments = rec.attachments || [];
+    return rec;
+  }
+
+  /* ---- generic collection CRUD (vehicle-scoped) ---- */
+  function all(coll) { const v = activeVehicle(); return (v.data[coll] = v.data[coll] || []); }
+  function add(coll, rec) { normalize(coll, rec); all(coll).unshift(rec); persist(); return rec; }
+  function update(coll, id, patch) { const r = all(coll).find(x => x.id === id); if (r) { Object.assign(r, patch); r.updatedAt = new Date().toISOString(); persist(); } return r; }
+  function remove(coll, id) { const a = all(coll); const i = a.findIndex(x => x.id === id); if (i > -1) { a.splice(i, 1); persist(); } }
+
+  /* ---- automatic backup / restore (rolling snapshots) ---- */
+  const BKEY = 'gp-os-backups';
+  function backups() { try { return JSON.parse(localStorage.getItem(BKEY)) || []; } catch (e) { return []; } }
+  function snapshot(label) {
+    try {
+      const keep = (App.config && App.config.get().backup.autoKeep) || 5;
+      const list = backups();
+      list.unshift({ at: new Date().toISOString(), label: label || 'auto', json: JSON.stringify(state) });
+      localStorage.setItem(BKEY, JSON.stringify(list.slice(0, keep)));
+      return true;
+    } catch (e) {
+      console.error('App.store.snapshot failed —', e);
+      App.util && App.util.toast && App.util.toast('⚠ Snapshot failed (storage full?)');
+      return false;
+    }
+  }
+  function clearBackups() { try { localStorage.removeItem(BKEY); } catch (e) { } }
+  function restoreBackup(at) {
+    const b = backups().find(x => x.at === at);
+    if (!b) return { ok: false, error: 'Backup not found' };
+    let parsed; try { parsed = JSON.parse(b.json); } catch (e) { return { ok: false, error: 'Backup is corrupted' }; }
+    const migrated = runMigrations(parsed);
+    const { valid, errors } = validateState(migrated);
+    if (!valid) return { ok: false, error: 'Backup failed validation: ' + errors.join('; ') };
+    state = migrated; persist(); return { ok: true };
+  }
+
+  /* ---- vehicle fields ---- */
+  function veh() { return activeVehicle(); }
+  function setVeh(patch) { Object.assign(activeVehicle(), patch); persist(); }
+
+  /* adopt remote state (from cloud sync). Validated exactly like an
+     import — a malformed or malicious cloud payload must never
+     silently corrupt or replace good local data. */
+  function adopt(data) {
+    const migrated = runMigrations(clone(data));
+    const { valid, errors } = validateState(migrated);
+    if (!valid) return { ok: false, error: 'Cloud data failed validation: ' + errors.join('; ') };
+    state = migrated;
+    persistSafe();
+    subs.forEach(fn => fn(state));
+    return { ok: true };
+  }
+
+  function exportJSON() { return JSON.stringify(state, null, 2); }
+
+  /* Import: parse -> migrate -> validate -> ONLY THEN commit. A safety
+     snapshot of the CURRENT state is taken first so a bad-but-valid
+     import can always be undone from Settings → Backup & Restore. */
+  function importJSON(txt) {
+    let parsed;
+    try { parsed = JSON.parse(txt); } catch (e) { throw new Error('That file is not valid JSON.'); }
+    const migrated = runMigrations(parsed);
+    const { valid, errors } = validateState(migrated);
+    if (!valid) throw new Error('This backup does not match the expected format:\n- ' + errors.join('\n- '));
+    snapshot('pre-import-safety');
+    state = migrated;
+    persist();
+  }
+
+  /* Explicit, user-confirmed destructive actions only. */
+  function reset() { state = clone(App.seed); persist(); }
+  function hardReset() { reset(); clearBackups(); }
+
+  /* ---- global search across collections ---- */
+  function search(q) {
+    q = (q || '').trim().toLowerCase(); if (!q) return [];
+    const out = []; const v = activeVehicle();
+    const map = { parts: ['name', 'ar', 'oem', 'fiat', 'alt', 'brand', 'category', 'notes'],
+      faults: ['code', 'system', 'desc', 'symptom', 'root'], service: ['work', 'workshop', 'parts', 'date'],
+      workshops: ['name', 'spec', 'phone'], suppliers: ['name', 'contact'], inventory: ['item', 'category'],
+      documents: ['name', 'type', 'ref'] };
+    Object.keys(map).forEach(coll => (v.data[coll] || []).forEach(rec => {
+      if (map[coll].some(f => (rec[f] || '').toString().toLowerCase().includes(q)))
+        out.push({ coll, rec, label: rec.name || rec.code || rec.work || rec.item || rec.title || '—' });
+    }));
+    return out.slice(0, 24);
+  }
+
+  return { load, persist, subscribe, state: () => state, vehicles, activeVehicle, setActiveVehicle, addVehicle,
+    all, add, update, remove, veh, setVeh, adopt, exportJSON, importJSON, reset, hardReset, search,
+    backups, snapshot, clearBackups, restoreBackup, validateState, runMigrations,
+    corruptBackups, readCorruptBackup, discardCorruptBackup,
+    useAdapter: a => { adapter = adapters[a] || adapter; } };
+})();
+
+</script>
+<script>
+/* ==== js/core/ui.js ==== */
+/* ============================================================
+   App.ui — reusable component builders shared by all modules
+   ============================================================ */
+window.App = window.App || {};
+App.ui = (function () {
+  const { el, EGP, num } = App.util;
+
+  function secHead(fileno, title, ar) {
+    return el('div', { class: 'sec-head' }, [
+      fileno ? el('span', { class: 'fileno', text: fileno }) : null,
+      el('h2', { text: title }),
+      el('div', { class: 'rule' }),
+      ar ? el('span', { class: 'ar', text: ar }) : null
+    ]);
+  }
+
+  /* NOTE: k/v/sub/label may ultimately originate from stored or imported
+     data (e.g. a vehicle's free-text `phase` field). Every value here is
+     set via textContent, never innerHTML, so a crafted backup can't
+     inject markup through a shared component used across every module. */
+  function tile(k, v, sub, opts) {
+    opts = opts || {};
+    const vNode = el('div', { class: 'v' });
+    const t = el('div', { class: 'tile' }, [
+      el('div', { class: 'k', text: k }), vNode, sub ? el('div', { class: 'sub', text: sub }) : null
+    ]);
+    if (opts.count != null) App.util.countUp(vNode, opts.count, opts);
+    else vNode.textContent = v;
+    if (opts.color) vNode.style.color = opts.color;
+    return t;
+  }
+
+  function dial(pct, label, sub, color) {
+    const d = el('div', { class: 'dial' });
+    // gaugeSVG's own inputs (pct/color) are always internal numbers/CSS
+    // vars from the call site, never stored text, so it alone stays HTML.
+    d.innerHTML = App.util.gaugeSVG(0, color);
+    d.appendChild(el('div', { class: 'val', style: 'color:' + (color || 'var(--amber)'), text: pct + '%' }));
+    d.appendChild(el('div', { class: 'lab', text: label }));
+    if (sub) d.appendChild(el('div', { class: 'sub', text: sub }));
+    // animate after mount
+    setTimeout(() => {
+      const deg = -90 + (pct / 100) * 180, off = 251 - (pct / 100) * 251;
+      const n = d.querySelector('.needle'), a = d.querySelector('.arc');
+      if (n) n.style.transform = 'rotate(' + deg + 'deg)';
+      if (a) a.style.strokeDashoffset = off;
+    }, 60);
+    return d;
+  }
+
+  function meter(pct, cls) {
+    const m = el('div', { class: 'meter' }); const f = el('div', { class: 'fill ' + (cls || 'f-amber') });
+    m.appendChild(f); setTimeout(() => f.style.width = Math.min(100, pct) + '%', 60); return m;
+  }
+
+  function badge(text, cls) { return el('span', { class: 'badge ' + (cls || 'b-ink'), text }); }
+  function verdict(v) {
+    const map = { buy: ['buy', '✓ BUY'], hold: ['hold', '⏸ HOLD'], stop: ['stop', '✕ STOP'], later: ['later', '◷ LATER'], installed: ['installed', '● IN'] };
+    const m = map[v] || map.buy; return el('span', { class: 'vd ' + m[0], text: m[1] });
+  }
+
+  function table(cols, rows) {
+    const wrap = el('div', { class: 'tbl-scroll' });
+    const t = el('table', { class: 'tbl' });
+    const thead = el('thead', {}, [el('tr', {}, cols.map(c => el('th', { text: c })))]);
+    const tb = el('tbody');
+    rows.forEach(r => tb.appendChild(el('tr', { class: r._cls || '' }, r.cells.map(c =>
+      el('td', typeof c === 'object' && c.nodeType ? {} : {}, [typeof c === 'object' && c && c.nodeType ? c : document.createTextNode(c == null ? '—' : c)])))));
+    t.appendChild(thead); t.appendChild(tb); wrap.appendChild(t); return wrap;
+  }
+
+  function empty(msg) { return el('div', { class: 'empty', text: msg || 'No records yet.' }); }
+
+  function priorityBadge(p) {
+    const m = { critical: 'b-crit', high: 'b-high', medium: 'b-med', low: 'b-med', cosmetic: 'b-plan' };
+    return badge((p || 'medium').toUpperCase(), m[p] || 'b-med');
+  }
+
+  return { secHead, tile, dial, meter, badge, verdict, table, empty, priorityBadge };
+})();
+
+</script>
+<script>
+/* ==== js/core/datatable.js ==== */
+/* ============================================================
+   App.DataTable — reusable production table:
+   search · column sort · filters · pagination · CSV export.
+   Config-driven; used by Parts, Service, Fuel, Inventory, etc.
+     cols:  [{key,label,render?(row)->node|string, sort?:true, filter?:[values]}]
+     rows:  array of records
+     opts:  {pageSize, searchKeys, title, onRow(row), actions:[{label,fn}]}
+   ============================================================ */
+window.App = window.App || {};
+App.DataTable = function (cols, rows, opts) {
+  const { el } = App.util;
+  opts = opts || {};
+  const pageSize = opts.pageSize || 12;
+  let q = '', sortKey = null, sortDir = 1, page = 1;
+  const filters = {};
+
+  const root = el('div', { class: 'dt' });
+  const bar = el('div', { class: 'dt-bar' });
+  const body = el('div');
+  root.appendChild(bar); root.appendChild(body);
+
+  function filtered() {
+    let data = rows.slice();
+    if (q) {
+      const keys = opts.searchKeys || cols.map(c => c.key);
+      const s = q.toLowerCase();
+      data = data.filter(r => keys.some(k => (r[k] == null ? '' : String(r[k])).toLowerCase().includes(s)));
+    }
+    Object.keys(filters).forEach(k => { if (filters[k]) data = data.filter(r => String(r[k]) === filters[k]); });
+    if (sortKey) data.sort((a, b) => {
+      let x = a[sortKey], y = b[sortKey];
+      if (typeof x === 'number' && typeof y === 'number') return (x - y) * sortDir;
+      return String(x == null ? '' : x).localeCompare(String(y == null ? '' : y)) * sortDir;
+    });
+    return data;
+  }
+
+  function exportCSV() {
+    const data = filtered();
+    const head = cols.map(c => '"' + c.label + '"').join(',');
+    const lines = data.map(r => cols.map(c => '"' + String(r[c.key] == null ? '' : r[c.key]).replace(/"/g, '""') + '"').join(','));
+    const csv = [head].concat(lines).join('\n');
+    const a = el('a', { href: 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv), download: (opts.title || 'export') + '.csv' });
+    document.body.appendChild(a); a.click(); a.remove();
+    App.util.toast('CSV exported (' + data.length + ' rows)');
+  }
+
+  function renderBar() {
+    bar.innerHTML = '';
+    const search = el('input', { class: 'inp dt-search', type: 'search', placeholder: 'Search…', value: q,
+      oninput: e => { q = e.target.value; page = 1; render(); } });
+    bar.appendChild(search);
+    cols.filter(c => c.filter).forEach(c => {
+      const sel = el('select', { class: 'inp dt-filter', onchange: e => { filters[c.key] = e.target.value; page = 1; render(); } });
+      sel.appendChild(el('option', { value: '', text: (c.filterLabel || c.label || 'Filter') + ': all' }));
+      c.filter.forEach(v => sel.appendChild(el('option', { value: v, text: v, selected: filters[c.key] === v ? 'selected' : null })));
+      bar.appendChild(sel);
+    });
+    const spacer = el('div', { class: 'dt-spacer' }); bar.appendChild(spacer);
+    (opts.actions || []).forEach(a => bar.appendChild(el('button', { class: 'btn sm ' + (a.cls || 'ghost'), onclick: a.fn }, a.label)));
+    bar.appendChild(el('button', { class: 'btn sm ghost', onclick: exportCSV, 'data-tip': 'Export CSV' }, '⇩ CSV'));
+  }
+
+  function render() {
+    renderBar();
+    const data = filtered();
+    const pages = Math.max(1, Math.ceil(data.length / pageSize));
+    if (page > pages) page = pages;
+    const slice = data.slice((page - 1) * pageSize, page * pageSize);
+
+    const wrap = el('div', { class: 'tbl-scroll' });
+    const t = el('table', { class: 'tbl' });
+    const thead = el('thead', {}, [el('tr', {}, cols.map(c => {
+      const arrow = sortKey === c.key ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
+      return el('th', { style: c.sort ? 'cursor:pointer' : '', onclick: c.sort ? () => { if (sortKey === c.key) sortDir *= -1; else { sortKey = c.key; sortDir = 1; } render(); } : null }, (c.label + arrow));
+    }))]);
+    const tb = el('tbody');
+    if (!slice.length) tb.appendChild(el('tr', {}, [el('td', { colspan: cols.length }, [App.ui.empty('No matching records.')])]));
+    slice.forEach(r => {
+      const tr = el('tr', { class: r._dim ? 'dim' : '', style: opts.onRow ? 'cursor:pointer' : '', onclick: opts.onRow ? () => opts.onRow(r) : null },
+        cols.map(c => {
+          const v = c.render ? c.render(r) : (r[c.key] == null ? '—' : r[c.key]);
+          return el('td', {}, [typeof v === 'object' && v && v.nodeType ? v : document.createTextNode(String(v))]);
+        }));
+      tb.appendChild(tr);
+    });
+    t.appendChild(thead); t.appendChild(tb); wrap.appendChild(t);
+
+    const foot = el('div', { class: 'dt-foot' }, [
+      el('span', { class: 'mono muted', text: data.length + ' record' + (data.length === 1 ? '' : 's') }),
+      el('div', { class: 'dt-pager' }, [
+        el('button', { class: 'btn sm ghost', disabled: page <= 1 ? 'disabled' : null, onclick: () => { page--; render(); } }, '‹'),
+        el('span', { class: 'mono', text: page + ' / ' + pages }),
+        el('button', { class: 'btn sm ghost', disabled: page >= pages ? 'disabled' : null, onclick: () => { page++; render(); } }, '›')
+      ])
+    ]);
+
+    body.innerHTML = ''; body.appendChild(wrap); body.appendChild(foot);
+  }
+
+  render();
+  return root;
+};
+
+</script>
+<script>
+/* ==== js/core/crud.js ==== */
+/* ============================================================
+   App.crud — factory that turns a field schema into a full
+   module (DataTable + add/edit/delete modal). Removes duplication
+   across the simpler collection modules. Records auto-get
+   id/createdAt/updatedAt/notes/tags/attachments from the store.
+     spec: { id,label,group,icon,coll,fileno,ar,
+             cols:[{key,label,sort,filter,render}],
+             fields:[{key,label,type:'text|number|date|select|textarea',options?}],
+             searchKeys:[], title }
+   ============================================================ */
+window.App = window.App || {};
+App.crud = function (spec) {
+  const { el } = App.util; const ui = App.ui;
+  App.router.register({
+    id: spec.id, label: spec.label, group: spec.group, icon: spec.icon, soon: spec.soon,
+    render(view) {
+      const rows = App.store.all(spec.coll);
+      view.appendChild(ui.secHead(spec.fileno || '', spec.label, spec.ar || ''));
+      if (spec.intro) { const c = el('div', { class: 'card', style: 'margin-bottom:16px' }, [el('div', { class: 'pad', html: spec.intro })]); view.appendChild(c); }
+      const cols = spec.cols.slice();
+      const dt = App.DataTable(cols, rows, {
+        title: spec.title || spec.coll, pageSize: spec.pageSize || 12,
+        searchKeys: spec.searchKeys || spec.fields.map(f => f.key),
+        onRow: r => openForm(r),
+        actions: [{ label: '+ Add', cls: 'rosso', fn: () => openForm(null) }].concat(spec.actions || [])
+      });
+      view.appendChild(dt);
+    }
+  });
+
+  function openForm(rec) {
+    const isNew = !rec; rec = rec || {};
+    const { el } = App.util;
+    const body = el('div');
+    spec.fields.forEach(fl => {
+      let input;
+      if (fl.type === 'select') input = App._selectFrom(fl.key, fl.options, rec[fl.key]);
+      else if (fl.type === 'textarea') input = el('textarea', { class: 'inp', rows: '2', data: { key: fl.key } }, rec[fl.key] || '');
+      else input = el('input', { class: 'inp', type: fl.type || 'text', value: rec[fl.key] == null ? '' : rec[fl.key], data: { key: fl.key } });
+      body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: fl.label }), input]));
+    });
+    body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Tags (comma)' }), el('input', { class: 'inp', value: (rec.tags || []).join(', '), data: { key: 'tags' } })]));
+    body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Notes' }), el('textarea', { class: 'inp', rows: '2', data: { key: 'notes' } }, rec.notes || '')]));
+    body.appendChild(el('div', { style: 'display:flex;gap:8px;margin-top:8px' }, [
+      el('button', { class: 'btn rosso', onclick: save }, isNew ? 'Add' : 'Save'),
+      isNew ? null : el('button', { class: 'btn ghost', onclick: () => { App.store.remove(spec.coll, rec.id); m.close(); App.router.go(spec.id, true); App.util.toast('Deleted'); } }, 'Delete')
+    ]));
+    const m = App.util.modal(isNew ? 'New ' + spec.label : (rec[spec.fields[0].key] || 'Edit'), body);
+    function save() {
+      const patch = {};
+      body.querySelectorAll('[data-key]').forEach(i => {
+        let val = i.value;
+        const fl = spec.fields.find(f => f.key === i.dataset.key);
+        if (i.dataset.key === 'tags') val = val.split(',').map(s => s.trim()).filter(Boolean);
+        else if (fl && fl.type === 'number') val = val === '' ? null : +val;
+        patch[i.dataset.key] = val;
+      });
+      if (isNew) App.store.add(spec.coll, patch); else App.store.update(spec.coll, rec.id, patch);
+      m.close(); App.router.go(spec.id, true); App.util.toast('Saved');
+    }
+  }
+};
+
+</script>
+<script>
+/* ==== js/core/notify.js ==== */
+/* ============================================================
+   App.notify — notification engine.
+   Evaluates data-driven rules (config.reminders) against the
+   active vehicle and returns a list of alerts. Pure/derived:
+   no state of its own, so it stays correct as data changes.
+   Rule kinds: maintenance · warranty · insurance · license ·
+   oil · mileage · critical-fault.
+   ============================================================ */
+window.App = window.App || {};
+App.notify = (function () {
+  function daysUntil(d) { if (!d) return null; return Math.round((new Date(d) - Date.now()) / 86400000); }
+
+  function evaluate() {
+    const v = App.store.veh(); const r = App.config.get().reminders; const out = [];
+    const km = v.mileage || 0;
+
+    // upcoming maintenance (planner)
+    (v.data.planner || []).forEach(p => {
+      if (p.done) return;
+      const dk = p.dueKm != null ? p.dueKm - km : null;
+      const dd = daysUntil(p.dueDate);
+      if ((dk != null && dk <= r.serviceDueKmWindow) || (dd != null && dd <= r.serviceDueDaysWindow)) {
+        out.push({ kind: p.kind === 'critical' ? 'critical' : 'maintenance', sev: dk != null && dk <= 0 ? 'crit' : 'warn',
+          title: p.title, detail: (dk != null ? (dk <= 0 ? 'Overdue by ' + Math.abs(dk) + ' km' : 'in ' + dk + ' km') : '') + (dd != null ? (dk != null ? ' · ' : '') + (dd <= 0 ? 'past due' : 'in ' + dd + ' days') : '') });
+      }
+    });
+
+    // open critical faults
+    (v.data.faults || []).filter(f => !f.solved && f.priority === 'critical').forEach(f =>
+      out.push({ kind: 'fault', sev: 'crit', title: 'Fault ' + f.code + ' — ' + f.system, detail: f.desc }));
+
+    // warranty expiries on parts / service
+    (v.data.parts || []).forEach(p => { const d = daysUntil(p.warrantyExpiry); if (d != null && d <= r.warrantyWarnDays)
+      out.push({ kind: 'warranty', sev: d <= 0 ? 'crit' : 'warn', title: 'Warranty: ' + p.name, detail: d <= 0 ? 'expired' : 'in ' + d + ' days' }); });
+
+    // vehicle documents: insurance / license
+    const ins = daysUntil(v.insuranceExpiry); if (ins != null && ins <= r.insuranceWarnDays)
+      out.push({ kind: 'insurance', sev: ins <= 0 ? 'crit' : 'warn', title: 'Insurance', detail: ins <= 0 ? 'expired' : 'in ' + ins + ' days' });
+    const lic = daysUntil(v.licenseExpiry); if (lic != null && lic <= r.licenseWarnDays)
+      out.push({ kind: 'license', sev: lic <= 0 ? 'crit' : 'warn', title: 'License renewal', detail: lic <= 0 ? 'overdue' : 'in ' + lic + ' days' });
+
+    // oil reminder (last service of type oil)
+    const oil = (v.data.service || []).filter(s => /oil/i.test(s.work)).sort((a, b) => (b.km || 0) - (a.km || 0))[0];
+    if (oil) { const since = km - (oil.km || 0); if (since >= r.oilChangeKm - 1500)
+      out.push({ kind: 'oil', sev: since >= r.oilChangeKm ? 'crit' : 'warn', title: 'Engine oil', detail: since + ' km since last change' }); }
+
+    return out;
+  }
+
+  function count() { return evaluate().length; }
+  return { evaluate, count, daysUntil };
+})();
+
+</script>
+<script>
+/* ==== js/core/auth.js ==== */
+/* ============================================================
+   App.auth — Supabase Auth (GoTrue) via plain fetch, no SDK.
+   Email one-time-code sign-in. The session's access_token is what
+   makes cloud sync SAFE: without it, sync.js refuses to run, because
+   an anon key alone cannot scope rows to a single owner (RLS needs
+   auth.uid(), which only exists once a user is signed in).
+   Session is cached in localStorage under its own key, separate from
+   both app state and app config, so a data-only reset never silently
+   signs the user out and a config wipe doesn't strand a live session.
+   ============================================================ */
+window.App = window.App || {};
+App.auth = (function () {
+  const KEY = 'gp-os-auth';
+  let session = load();
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+  function save(s) { session = s; try { if (s) localStorage.setItem(KEY, JSON.stringify(s)); else localStorage.removeItem(KEY); } catch (e) { } }
+
+  function conf() { return App.config.get().cloud || {}; }
+  function authBase() { return conf().url.replace(/\/+$/, '') + '/auth/v1/'; }
+  function apiKeyHeaders() { return { apikey: conf().anonKey, 'Content-Type': 'application/json' }; }
+
+  function isSignedIn() { return !!(session && session.access_token && session.expires_at > Date.now()); }
+  function getUser() { return session ? session.user : null; }
+
+  /* Step 1: request a 6-digit email code. */
+  async function requestCode(email) {
+    if (!conf().url || !conf().anonKey) return { ok: false, error: 'Configure the Supabase URL + anon key first.' };
+    try {
+      const r = await fetch(authBase() + 'otp', { method: 'POST', headers: apiKeyHeaders(), body: JSON.stringify({ email, create_user: true }) });
+      if (!r.ok) { const j = await safeJson(r); return { ok: false, error: (j && j.msg) || ('HTTP ' + r.status) }; }
+      return { ok: true };
+    } catch (e) { return { ok: false, error: e.message || 'Network error' }; }
+  }
+
+  /* Step 2: verify the code the user received by email. */
+  async function verifyCode(email, token) {
+    try {
+      const r = await fetch(authBase() + 'verify', { method: 'POST', headers: apiKeyHeaders(), body: JSON.stringify({ email, token, type: 'email' }) });
+      const j = await safeJson(r);
+      if (!r.ok || !j || !j.access_token) return { ok: false, error: (j && (j.msg || j.error_description)) || ('HTTP ' + r.status) };
+      save({ access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user: j.user });
+      return { ok: true, user: j.user };
+    } catch (e) { return { ok: false, error: e.message || 'Network error' }; }
+  }
+
+  /* Silent refresh; called by sync before any authenticated request if the token is near/past expiry. */
+  async function ensureFreshSession() {
+    if (!session || !session.refresh_token) return false;
+    if (session.expires_at > Date.now() + 30000) return true; // still fresh enough
+    try {
+      const r = await fetch(authBase() + 'token?grant_type=refresh_token', { method: 'POST', headers: apiKeyHeaders(), body: JSON.stringify({ refresh_token: session.refresh_token }) });
+      const j = await safeJson(r);
+      if (!r.ok || !j || !j.access_token) { save(null); return false; }
+      save({ access_token: j.access_token, refresh_token: j.refresh_token || session.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user: j.user || session.user });
+      return true;
+    } catch (e) { return false; }
+  }
+
+  async function signOut() {
+    if (session && session.access_token) {
+      try { await fetch(authBase() + 'logout', { method: 'POST', headers: Object.assign(apiKeyHeaders(), { Authorization: 'Bearer ' + session.access_token }) }); } catch (e) { /* best effort */ }
+    }
+    save(null);
+  }
+
+  function accessToken() { return session ? session.access_token : null; }
+  async function safeJson(r) { try { return await r.json(); } catch (e) { return null; } }
+
+  return { isSignedIn, getUser, requestCode, verifyCode, ensureFreshSession, signOut, accessToken, hardClear: () => save(null) };
+})();
+
+</script>
+<script>
+/* ==== js/core/sync.js ==== */
+/* ============================================================
+   App.sync — Supabase cloud sync (localStorage-first, background).
+   - Pure REST via fetch(); no external library, so the offline
+     build stays dependency-free and degrades gracefully offline.
+   - REQUIRES a signed-in Supabase Auth session (App.auth). Without one,
+     sync refuses to run — an anon key alone cannot scope a row to one
+     owner, so "logged out" must mean "no cloud read/write", full stop.
+   - Row-level security: the table's `owner` column defaults to
+     auth.uid() server-side and RLS restricts every policy to
+     owner = auth.uid(). See HOSTING.md for the exact SQL.
+   - Conflict handling: whole-state last-write-wins is replaced with a
+     timestamp check against the last successful sync. If BOTH the
+     local copy and the cloud copy changed since that point, sync stops
+     and asks the user which one to keep instead of guessing.
+     (This is still a whole-document compare, not a per-record 3-way
+     merge — a real per-record merge would need each collection in its
+     own table with row timestamps. That's a larger follow-up; this at
+     least turns silent overwrite into an explicit, informed choice.)
+   ============================================================ */
+window.App = window.App || {};
+App.sync = (function () {
+  let enabled = false, timer = null, resolvingConflict = false;
+  const LAST_SYNC_KEY = 'gp-os-sync-lastAt';
+
+  function conf() { return App.config.get().cloud || {}; }
+  function ready() { const c = conf(); return !!(c.url && c.anonKey); }
+  function base() { return conf().url.replace(/\/+$/, '') + '/rest/v1/'; }
+  async function authedHeaders(extra) {
+    await App.auth.ensureFreshSession();
+    const c = conf(); const token = App.auth.accessToken();
+    return Object.assign({ apikey: c.anonKey, Authorization: 'Bearer ' + (token || c.anonKey), 'Content-Type': 'application/json' }, extra || {});
+  }
+
+  function lastSyncedAt() { try { return localStorage.getItem(LAST_SYNC_KEY) || null; } catch (e) { return null; } }
+  function setLastSyncedAt(iso) { try { localStorage.setItem(LAST_SYNC_KEY, iso); } catch (e) { } }
+
+  async function pull() {
+    if (!ready()) return { ok: false, reason: 'not configured' };
+    if (!App.auth.isSignedIn()) return { ok: false, reason: 'not signed in' };
+    const c = conf();
+    const url = base() + encodeURIComponent(c.table) + '?id=eq.' + encodeURIComponent(c.rowId) + '&select=data,updated_at';
+    const r = await fetch(url, { headers: await authedHeaders() });
+    if (!r.ok) return { ok: false, reason: 'HTTP ' + r.status };
+    const rows = await r.json();
+    if (!rows.length) return { ok: true, empty: true };
+    return { ok: true, data: rows[0].data, updatedAt: rows[0].updated_at };
+  }
+
+  async function push(state) {
+    if (!ready()) return { ok: false, reason: 'not configured' };
+    if (!App.auth.isSignedIn()) return { ok: false, reason: 'not signed in' };
+    const c = conf();
+    const url = base() + encodeURIComponent(c.table) + '?on_conflict=owner,id';
+    const nowIso = new Date().toISOString();
+    // NOTE: no `owner` field sent — the column DEFAULTs to auth.uid()
+    // server-side; RLS then guarantees this can only ever touch the
+    // caller's own row regardless of what id/table values are supplied.
+    const body = [{ id: c.rowId, data: state || App.store.state(), updated_at: nowIso }];
+    const r = await fetch(url, { method: 'POST', headers: await authedHeaders({ Prefer: 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(body) });
+    if (r.ok) setLastSyncedAt(nowIso);
+    return { ok: r.ok, reason: r.ok ? '' : 'HTTP ' + r.status };
+  }
+
+  /* Ask the user which copy to keep. Resolves 'local' | 'remote' | 'cancel'. */
+  function confirmConflict(localAt, remoteAt) {
+    return new Promise(resolve => {
+      const { el } = App.util;
+      const body = el('div', {}, [
+        el('p', { style: 'font-size:13.5px;line-height:1.6;margin-bottom:12px', text:
+          'Both this device and the cloud have changes since the last sync. This device was last saved ' + new Date(localAt).toLocaleString() +
+          '; the cloud copy was last saved ' + new Date(remoteAt).toLocaleString() + '. Whole-state sync can only keep one — pick which to keep.' }),
+        el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, [
+          el('button', { class: 'btn rosso', onclick: () => { resolve('local'); m.close(); } }, 'Keep THIS device'),
+          el('button', { class: 'btn ghost', onclick: () => { resolve('remote'); m.close(); } }, 'Keep CLOUD copy'),
+          el('button', { class: 'btn ghost', onclick: () => { resolve('cancel'); m.close(); } }, 'Cancel (decide later)')
+        ])
+      ]);
+      const m = App.util.modal('Sync conflict', body);
+    });
+  }
+
+  function schedulePush() {
+    if (!enabled) return;
+    clearTimeout(timer);
+    timer = setTimeout(async () => { try { await syncNow(); } catch (e) { /* offline: keep local, retry next change */ } }, 1500);
+  }
+
+  /* Core sync decision: pull first, compare timestamps, act or ask. */
+  async function syncNow() {
+    if (!enabled || resolvingConflict) return;
+    const res = await pull();
+    if (!res.ok) return; // offline or misconfigured — stay on local silently, no data at risk
+    const localSavedAt = (App.store.state().meta || {}).savedAt || null;
+    const last = lastSyncedAt();
+    const localChangedSinceSync = !last || (localSavedAt && new Date(localSavedAt) > new Date(last));
+    const remoteChangedSinceSync = res.empty ? false : (!last || new Date(res.updatedAt) > new Date(last));
+
+    if (res.empty) { await push(); return; } // first upload ever
+    if (remoteChangedSinceSync && localChangedSinceSync) {
+      resolvingConflict = true;
+      const choice = await confirmConflict(localSavedAt, res.updatedAt);
+      resolvingConflict = false;
+      if (choice === 'local') await push();
+      else if (choice === 'remote') { const r = App.store.adopt(res.data); if (r.ok) { setLastSyncedAt(res.updatedAt); App.util.toast('Kept cloud copy ↓'); rerender(); } else App.util.toast('Cloud data rejected: ' + r.error); }
+      // 'cancel' — do nothing; will ask again on next change
+      return;
+    }
+    if (remoteChangedSinceSync) {
+      const r = App.store.adopt(res.data);
+      if (r.ok) { setLastSyncedAt(res.updatedAt); App.util.toast('Synced from cloud ↓'); rerender(); }
+      else App.util.toast('Cloud data rejected: ' + r.error);
+      return;
+    }
+    if (localChangedSinceSync) { await push(); return; }
+  }
+
+  function rerender() { if (App.router) App.router.go((location.hash || '').replace('#/', '') || 'command', true); }
+
+  async function init() {
+    enabled = ready() && !!App.config.get().features.cloudSync && App.auth.isSignedIn();
+    if (!enabled) return;
+    try { await syncNow(); } catch (e) { /* offline: silently stay on localStorage */ }
+    App.store.subscribe(() => schedulePush());
+  }
+
+  async function test() {
+    if (!App.auth.isSignedIn()) return { ok: false, reason: 'Sign in first (Settings → Cloud Sync)' };
+    try { return await pull(); } catch (e) { return { ok: false, reason: e.message || 'network' }; }
+  }
+  function status() { return { enabled, ready: ready(), signedIn: App.auth.isSignedIn() }; }
+
+  return { init, pull, push, test, status, schedulePush, syncNow };
+})();
+
+</script>
+<script>
+/* ==== js/core/router.js ==== */
+/* ============================================================
+   App.router — module registry + hash routing + app shell
+
+   Navigation model:
+   - go(id) is the app-internal "navigate to a section" call. It always
+     pushes a new history entry (history.pushState), so the Back/Forward
+     buttons step through the sections a user actually visited.
+   - popstate (fired only on Back/Forward, never by pushState itself) is
+     handled by re-rendering the target route WITHOUT touching history
+     again — otherwise Back would push yet another entry and trap you.
+   - An invalid or missing hash is normalized to '#/command' via
+     history.replaceState on first load, so a bad URL never lingers in
+     the address bar while a different screen is shown underneath it.
+   ============================================================ */
+window.App = window.App || {};
+App.router = (function () {
+  const { el, $ } = App.util;
+  const modules = [];
+  let current = null;
+
+  function register(mod) { modules.push(mod); } // {id,label,icon,group,soon,soonLabel,render(el)}
+  function get(id) { return modules.find(m => m.id === id); }
+
+  const GROUPS = ['Overview', 'Vehicle', 'Money', 'Logistics', 'Archive', 'Insights'];
+
+  function buildShell() {
+    const v = App.store.veh();
+    const app = el('div', { class: 'app' });
+
+    /* sidebar */
+    const side = el('aside', { class: 'side', id: 'side' });
+    const brand = el('div', { class: 'brand' }, [
+      el('div', { class: 'dno', text: '№ GP-2010-TJET · DOSSIER' }),
+      el('h1', { html: 'GRANDE PUNTO <em>T-JET</em>' }), // static developer literal, not stored data
+      el('div', { class: 'veh', id: 'brandVeh', text: v.year + ' · ' + v.engine.split('(')[0].trim() })
+    ]);
+    side.appendChild(brand);
+
+    // vehicle switcher (multi-vehicle ready)
+    const sel = el('select', { class: 'inp veh-switch', id: 'vehSwitch', 'aria-label': 'Switch vehicle',
+      onchange: e => { App.store.setActiveVehicle(e.target.value); go('command', true); } });
+    App.store.vehicles().forEach(x => sel.appendChild(el('option', { value: x.id, text: x.make + ' ' + x.model + ' ' + x.year })));
+    sel.value = App.store.state().activeVehicleId;
+    side.appendChild(sel);
+
+    GROUPS.forEach(g => {
+      const items = modules.filter(m => m.group === g);
+      if (!items.length) return;
+      const grp = el('div', { class: 'nav-group' }, [el('div', { class: 'gt', text: g })]);
+      items.forEach(m => grp.appendChild(el('button', {
+        class: 'nav-item', type: 'button', data: { id: m.id }, onclick: () => go(m.id)
+      }, [el('span', { class: 'ic', 'aria-hidden': 'true', text: m.icon || '•' }), el('span', { text: m.label }),
+        m.soon ? el('span', { class: 'soon', text: m.soonLabel || 'BETA' }) : null])));
+      side.appendChild(grp);
+    });
+
+    /* main */
+    const main = el('div', { class: 'main' });
+    const crumb = el('div', { class: 'crumb', id: 'crumb' }, ['GARAGE OS · ', el('b', { text: 'Command' })]);
+    const topbar = el('div', { class: 'topbar' }, [
+      el('button', { class: 'icon-btn hamb', type: 'button', 'aria-label': 'Toggle menu', onclick: toggleSide }, '≡'),
+      crumb,
+      el('div', { class: 'spacer' }),
+      searchBox(),
+      el('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Toggle light/dark theme', 'data-tip': 'Light / Dark', onclick: toggleTheme }, '◐'),
+      el('button', { class: 'icon-btn no-print', type: 'button', 'aria-label': 'Print', 'data-tip': 'Print', onclick: () => window.print() }, '⎙')
+    ]);
+    const view = el('main', { class: 'view', id: 'view', tabindex: '-1' });
+    main.appendChild(topbar); main.appendChild(view);
+
+    const backdrop = el('div', { class: 'backdrop', id: 'backdrop', onclick: toggleSide });
+
+    app.appendChild(side); app.appendChild(main);
+    document.body.appendChild(app); document.body.appendChild(backdrop);
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const results = $('#searchResults'); if (results && results.classList.contains('open')) results.classList.remove('open');
+      const s = $('#side'); if (s && s.classList.contains('open')) toggleSide();
+    });
+  }
+
+  function searchBox() {
+    const results = el('div', { class: 'search-results', id: 'searchResults', role: 'listbox' });
+    const input = el('input', { class: 'inp', type: 'search', placeholder: 'Search parts, codes, invoices…', 'aria-label': 'Search',
+      oninput: e => runSearch(e.target.value, results),
+      onblur: () => setTimeout(() => results.classList.remove('open'), 180) });
+    return el('div', { class: 'search-box' }, [input, results]);
+  }
+  function runSearch(q, box) {
+    const res = App.store.search(q);
+    box.innerHTML = '';
+    if (!q) { box.classList.remove('open'); return; }
+    if (!res.length) { box.appendChild(el('div', { class: 'sr-item' }, 'No matches')); box.classList.add('open'); return; }
+    const collToMod = { parts: 'parts', faults: 'diagnostics', service: 'service', workshops: 'workshops', suppliers: 'suppliers', inventory: 'inventory', documents: 'documents' };
+    res.forEach(r => box.appendChild(el('button', { class: 'sr-item', type: 'button', role: 'option',
+      // onmousedown (not onclick) fires before the input's onblur hides this dropdown
+      onmousedown: () => { go(collToMod[r.coll] || 'command'); } }, [
+      el('div', { class: 't', text: r.label }), el('div', { class: 'm', text: r.coll.toUpperCase() + (r.rec.oem ? ' · ' + r.rec.oem : '') })
+    ])));
+    box.classList.add('open');
+  }
+
+  function toggleSide() { $('#side').classList.toggle('open'); $('#backdrop').classList.toggle('open'); }
+  function toggleTheme() {
+    const root = document.documentElement;
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next); localStorage.setItem('gp-os-theme', next);
+  }
+
+  /* Renders a route into the shell WITHOUT touching browser history —
+     used for the initial load, popstate (Back/Forward), and anywhere
+     else history is already correct (e.g. after a hash the browser
+     itself just navigated to). */
+  function renderRoute(id, force) {
+    const mod = get(id) || get('command');
+    if (current === mod.id && !force) return;
+    current = mod.id;
+    App.util.$$('.nav-item').forEach(n => {
+      const active = n.dataset.id === mod.id;
+      n.classList.toggle('active', active);
+      if (active) n.setAttribute('aria-current', 'page'); else n.removeAttribute('aria-current');
+    });
+    const crumb = $('#crumb');
+    if (crumb) { crumb.textContent = ''; crumb.appendChild(document.createTextNode('GARAGE OS · ')); crumb.appendChild(el('b', { text: mod.label })); }
+    const view = $('#view'); view.innerHTML = ''; view.scrollTop = 0;
+    mod.render(view);
+    if (window.innerWidth <= 900) { $('#side').classList.remove('open'); $('#backdrop').classList.remove('open'); }
+  }
+
+  /* Public "navigate" entry point — always pushes history so Back/Forward
+     work between sections a user actually visited. */
+  function go(id, force) {
+    const mod = get(id) || get('command');
+    const target = '#/' + mod.id;
+    if (location.hash !== target) history.pushState(null, '', target);
+    renderRoute(mod.id, force);
+  }
+
+  function start() {
+    const saved = localStorage.getItem('gp-os-theme'); if (saved) document.documentElement.setAttribute('data-theme', saved);
+    buildShell();
+    const raw = (location.hash || '').replace('#/', '');
+    const isValid = !!(raw && get(raw));
+    if (!isValid) history.replaceState(null, '', '#/command'); // normalize bad/missing hash, no ghost entry
+    renderRoute(isValid ? raw : 'command', true);
+    window.addEventListener('popstate', () => {
+      const h = (location.hash || '').replace('#/', '');
+      renderRoute(get(h) ? h : 'command', true);
+    });
+    App.store.subscribe(() => { const b = $('#brandVeh'); const v = App.store.veh(); if (b) b.textContent = v.year + ' · ' + v.engine.split('(')[0].trim(); });
+  }
+
+  return { register, get, go, start, modules: () => modules };
+})();
+
+</script>
+
+<script>
+/* ==== js/modules/commandCenter.js ==== */
+/* Command Center — at-a-glance dashboard for the active vehicle */
+(function () {
+  const { el } = App.util; const ui = App.ui;
+  App.router.register({
+    id: 'command', label: 'Command Center', group: 'Overview', icon: App.config.icon('command'),
+    render(view) {
+      const v = App.store.veh(); const d = v.data;
+      const partsSpentPlan = d.parts.filter(p => p.verdict === 'buy').length;
+      const openFaults = d.faults.filter(f => !f.solved).length;
+      const critFaults = d.faults.filter(f => !f.solved && f.priority === 'critical').length;
+      const totalSpent = d.installed.reduce((s, x) => s + (x.paid || 0), 0);
+      const fuelAvg = avgConsumption(d.fuel);
+      const alerts = App.notify.evaluate();
+
+      view.appendChild(ui.secHead('01', 'Command Center', 'مركز القيادة'));
+
+      // score dials
+      const dials = el('div', { class: 'grid-3 stagger' }, [
+        ui.dial(v.scores.health, 'Health', 'overall condition', 'var(--amber)'),
+        ui.dial(v.scores.safety, 'Safety', 'airbag/ESP/CAN open', 'var(--rosso)'),
+        ui.dial(v.scores.reliability, 'Reliability', 'major items fresh', 'var(--green)')
+      ]);
+      view.appendChild(dials);
+
+      // stat tiles
+      const tiles = el('div', { class: 'tiles stagger', style: 'margin-top:16px' });
+      tiles.appendChild(ui.tile('Mileage', '', 'km', { count: v.mileage }));
+      tiles.appendChild(ui.tile('Open Repairs', '', critFaults + ' critical', { count: openFaults, color: 'var(--rosso)' }));
+      tiles.appendChild(ui.tile('To Buy', '', 'parts flagged BUY', { count: partsSpentPlan }));
+      tiles.appendChild(ui.tile('Fuel', fuelAvg ? fuelAvg.toFixed(1) : '—', 'L/100km', { color: 'var(--steel)' }));
+      tiles.appendChild(ui.tile('Invested', App.config.money(totalSpent), 'logged repairs'));
+      tiles.appendChild(ui.tile('Phase', v.phase.split('—')[0], v.phase.split('—')[1] || ''));
+      view.appendChild(tiles);
+
+      // two columns: alerts + quick actions/upcoming
+      const grid = el('div', { class: 'cc-grid', style: 'margin-top:16px' });
+
+      const alertsCard = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:var(--rosso)' })]);
+      const ab = el('div', { class: 'pad' }, [el('h3', { class: 'h-disp', style: 'font-size:16px;margin-bottom:8px', text: 'Critical Alerts' })]);
+      if (!alerts.length) ab.appendChild(ui.empty('No alerts — all clear.'));
+      alerts.slice(0, 8).forEach(a => ab.appendChild(el('div', { class: 'alert-row' }, [
+        el('div', { class: 'alert-dot ' + (a.sev === 'crit' ? 'crit' : 'warn') }),
+        el('div', {}, [el('div', { class: 'at', text: a.title }), el('div', { class: 'ad', text: a.detail })])
+      ])));
+      alertsCard.appendChild(ab);
+
+      const rightCard = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:var(--ink)' })]);
+      const rb = el('div', { class: 'pad' });
+      rb.appendChild(el('h3', { class: 'h-disp', style: 'font-size:16px;margin-bottom:8px', text: 'Quick Actions' }));
+      const qa = el('div', { class: 'qa' }, [
+        el('button', { class: 'btn sm', onclick: () => App.router.go('fuel') }, '⛽ Add Refill'),
+        el('button', { class: 'btn sm ghost', onclick: () => App.router.go('service') }, '📘 Log Service'),
+        el('button', { class: 'btn sm ghost', onclick: () => App.router.go('parts') }, '⚙ Parts'),
+        el('button', { class: 'btn sm ghost', onclick: () => App.router.go('diagnostics') }, '⚠ Faults')
+      ]);
+      rb.appendChild(qa);
+      rb.appendChild(el('h3', { class: 'h-disp', style: 'font-size:16px;margin:16px 0 8px', text: 'Upcoming' }));
+      const up = d.planner.filter(p => !p.done).slice(0, 4);
+      if (!up.length) rb.appendChild(ui.empty('Nothing scheduled.'));
+      up.forEach(p => rb.appendChild(el('div', { class: 'alert-row' }, [
+        el('div', { class: 'alert-dot warn' }),
+        el('div', {}, [el('div', { class: 'at', text: p.title }),
+          el('div', { class: 'ad', text: (p.dueKm ? p.dueKm.toLocaleString() + ' km' : '') + (p.dueDate ? ' · ' + App.util.shortDate(p.dueDate) : '') })])
+      ])));
+      rightCard.appendChild(rb);
+
+      grid.appendChild(alertsCard); grid.appendChild(rightCard);
+      view.appendChild(grid);
+    }
+  });
+
+  function avgConsumption(fuel) {
+    if (!fuel || fuel.length < 2) return null;
+    const s = fuel.slice().sort((a, b) => (a.km || 0) - (b.km || 0));
+    let dist = 0, liters = 0;
+    for (let i = 1; i < s.length; i++) { dist += (s[i].km - s[i - 1].km); liters += s[i].liters; }
+    return dist > 0 ? (liters / dist) * 100 : null;
+  }
+  App._avgConsumption = avgConsumption;
+})();
+
+</script>
+<script>
+/* ==== js/modules/restoration.js ==== */
+/* Restoration Dashboard — preserves 100% of V1: instrument cluster,
+   priority board, editable buying list, service timeline, budget bars,
+   phase-1 checklist. Buying-list prices + checklist persist under the
+   original localStorage keys so nothing the owner entered is lost. */
+(function () {
+  const { el, EGP } = App.util; const ui = App.ui;
+  const CK = 'gp-tjet-checklist-v2';
+  const CHECK = [
+    ['tank', 'Expansion tank + cap + pressure test → radiator verdict', 'leak confirmed · refill Paraflu UP/G12+'],
+    ['hose', 'Air-intake hose 51822558 + clamps', 'torn — protects the original turbo'],
+    ['beltset', 'Accessory belt + tensioner + idler set', 'idle whistle · dealer belt 650 + idler 450'],
+    ['rearwire', 'Repair REAR harness — B1023 plate-light short', 'impact zone · solder+heatshrink · start here'],
+    ['battxt', 'Battery replace (weak: 12.0V / 10.3V cranking)', 'drops CAN nodes — do early'],
+    ['airbagcon', 'Airbag ECU connector + ground — wiggle test', 'U1726 node drops · do NOT buy ECU'],
+    ['loadnoise', 'Load-noise tests: CV vs 3rd mount (NOT clutch)', 'circles · 4th-gear load · pry-bar'],
+    ['oil', 'Engine oil 5W-40 C3 + oil filter', 'last @149k → due ~157k'],
+    ['filters', 'Air filter + cabin filter', 'check airbox for dust'],
+    ['plugs', 'Spark plugs ×4 — NGK 55212466', 'overdue at 43k km'],
+    ['rearbrakes', 'Rear discs + new pads', 'owner-confirmed worn'],
+    ['fluid', 'Brake fluid flush + caliper service', 'NOT the master cylinder first'],
+    ['smoke', 'Smoke test for air/boost leaks', 'confirms consumption cause'],
+    ['acdrain', 'Clear A/C evaporator drain + dry carpet', 'water in driver footwell · also electrical risk'],
+    ['susp', 'Suspension shake-down: front + rear', 'thud symptom · rear shocks likely'],
+    ['tires', 'Tire DOT dates + tread', '>5 yrs Egypt heat = replace'],
+    ['ac', 'A/C vent temp + leak test', 'diagnose before parts'],
+    ['obd', 'Full OBD scan — clear crash flag after wiring fix', 'engine · ABS · airbag · BSI']
+  ];
+  const SUBS = ['Cluster', 'Priorities', 'Buying List', 'History', 'Budget', 'Checklist'];
+
+  App.router.register({
+    id: 'restoration', label: 'Restoration Dashboard', group: 'Overview', icon: App.config.icon('restoration'),
+    render(view) {
+      view.appendChild(ui.secHead('02', 'Restoration Dashboard', 'لوحة الترميم'));
+      const tabs = el('div', { class: 'filters' });
+      const body = el('div');
+      let active = 'Cluster';
+      SUBS.forEach(s => tabs.appendChild(el('button', { class: 'fbtn' + (s === active ? ' active' : ''), onclick: () => { active = s; sync(); } }, s)));
+      view.appendChild(tabs); view.appendChild(body);
+      function sync() {
+        App.util.$$('.fbtn', tabs).forEach(b => b.classList.toggle('active', b.textContent === active));
+        body.innerHTML = ''; body.appendChild(RENDER[active]());
+      }
+      sync();
+    }
+  });
+
+  const RENDER = {
+    Cluster() {
+      const v = App.store.veh();
+      const wrap = el('div', {}, [
+        el('div', { class: 'grid-3 stagger' }, [
+          ui.dial(v.scores.health, 'Health / Safety', 'CAN fault · coolant · hose', 'var(--amber)'),
+          ui.dial(61, 'Timing Belt Life Used', '43k of ~70k km', 'var(--amber)'),
+          ui.dial(checkPct(), 'Phase-1 Progress', 'from checklist', checkPct() >= 50 ? 'var(--amber)' : 'var(--rosso)')
+        ]),
+        alertCard(),
+        beltCard()
+      ]);
+      return wrap;
+    },
+    Priorities() {
+      const d = App.store.veh().data;
+      const cards = [];
+      d.faults.filter(f => !f.solved).slice(0, 4).forEach(f => cards.push(priCard('p-crit', f.code + ' · ' + f.system, f.symptom, '🔴 ' + (f.state || 'OPEN'), f.root)));
+      d.parts.filter(p => p.priority === 'high' && p.verdict === 'buy').slice(0, 6).forEach(p => cards.push(priCard('p-high', p.name, p.ar, '🟠 BUY', p.notes || '')));
+      d.parts.filter(p => p.verdict === 'hold').slice(0, 4).forEach(p => cards.push(priCard('p-med', p.name, p.ar, '🟡 HOLD', p.notes || '')));
+      return el('div', { class: 'tasks stagger' }, cards);
+    },
+    'Buying List'() {
+      const rows = App.store.all('parts');
+      let plan = 0, spent = 0;
+      const recalc = () => { plan = 0; spent = 0; rows.forEach(p => { if (p.priceNewEg) { const t = p.priceNewEg * (p.qty || 1); plan += t; if (p.status === 'bought') spent += t; } }); totNode.innerHTML = '<b>Plan</b> ' + EGP(plan) + ' &nbsp; <b>Bought</b> ' + EGP(spent) + ' &nbsp; <b>Left</b> ' + EGP(plan - spent); };
+      const cols = [
+        { key: 'status', label: '✔', render: p => { const c = el('input', { type: 'checkbox', checked: p.status === 'bought' ? 'checked' : null }); c.onchange = () => { App.store.update('parts', p.id, { status: c.checked ? 'bought' : p.verdict === 'buy' ? 'to-order' : 'hold' }); recalc(); }; return c; } },
+        { key: 'verdict', label: '', render: p => ui.verdict(p.verdict) },
+        { key: 'name', label: 'Part', sort: true, render: p => el('div', {}, [el('b', { text: p.name }), el('div', { class: 'mono muted', style: 'font-size:10px', text: p.ar || '' })]) },
+        { key: 'oem', label: 'OEM', render: p => el('span', { class: 'mono', style: 'color:var(--rosso-deep)', text: p.oem || '—' }) },
+        { key: 'euRef', label: '🌍 EU' },
+        { key: 'qty', label: 'Qty', render: p => { const i = el('input', { class: 'inp num', type: 'number', value: p.qty || 1, style: 'width:52px' }); i.onchange = () => { App.store.update('parts', p.id, { qty: +i.value || 1 }); recalc(); }; return i; } },
+        { key: 'priceNewEg', label: 'Your EGP', render: p => { const i = el('input', { class: 'inp num', type: 'number', value: p.priceNewEg == null ? '' : p.priceNewEg, placeholder: '—', style: 'width:92px' }); i.oninput = () => { App.store.update('parts', p.id, { priceNewEg: i.value === '' ? null : +i.value }); recalc(); }; return i; } },
+        { key: '_t', label: 'Total', render: p => el('span', { class: 'mono', text: p.priceNewEg ? EGP(p.priceNewEg * (p.qty || 1)) : '—' }) }
+      ];
+      const totNode = el('div', { class: 'mono', style: 'background:var(--ink);color:var(--paper);padding:12px 16px;border-radius:8px;margin-top:12px;font-size:13px' });
+      const dt = App.DataTable(cols, rows, { title: 'buying-list', pageSize: 30, searchKeys: ['name', 'ar', 'oem', 'brand'] });
+      setTimeout(recalc, 0);
+      return el('div', {}, [
+        el('div', { class: 'mono muted rtl', style: 'font-size:12px;margin-bottom:10px' }, 'اكتب سعرك في خانة Your EGP — بيتحفظ تلقائيًا. ⚠️ أكّد أرقام OEM بالشاسيه.'),
+        dt, totNode
+      ]);
+    },
+    History() {
+      const d = App.store.veh().data;
+      const line = el('div', { class: 'timeline stagger' });
+      const evs = d.service.slice().sort((a, b) => (a.km || 0) - (b.km || 0));
+      evs.forEach(s => line.appendChild(el('div', { class: 'ev' }, [
+        el('div', { class: 'ev-km', text: App.util.shortDate(s.date) + ' · ' + App.util.num(s.km) + ' KM' }),
+        el('h4', { text: s.work }), el('p', { text: s.parts || '' }),
+        s.paid ? el('div', { class: 'paid', html: 'PAID <span>' + App.config.money(s.paid) + '</span>' }) : null
+      ])));
+      line.appendChild(el('div', { class: 'ev now' }, [el('div', { class: 'ev-km', text: 'JUL 2026 · 155,000 KM — أنت هنا' }), el('h4', { text: 'Phase 1 in progress' }), el('p', { text: 'Coolant leak · torn intake hose · post-impact CAN fault · rear brakes · catch-up service.' })]));
+      return line;
+    },
+    Budget() { const el2 = App.util.el('div'); App.router.get('budget').render(el2); // reuse budget view
+      // strip its sec-head (first child) to avoid duplicate title
+      if (el2.firstChild) el2.removeChild(el2.firstChild); return el2; },
+    Checklist() {
+      const saved = load();
+      const done = CHECK.filter(c => saved[c[0]]).length;
+      const head = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-bottom:12px' }, [
+        el('h3', { class: 'h-disp', style: 'font-size:16px;min-width:0', text: 'Phase-1 Checklist' }),
+        el('span', { class: 'mono', style: 'white-space:nowrap;flex-shrink:0', html: '<b style="color:var(--green)">' + done + '</b>/' + CHECK.length + ' COMPLETE' })
+      ]);
+      const list = el('ul', { style: 'list-style:none;display:grid;gap:7px' });
+      CHECK.forEach(c => {
+        const li = el('li', { class: 'card', style: 'cursor:pointer;display:flex;gap:11px;align-items:flex-start;padding:10px 12px' + (saved[c[0]] ? ';opacity:.6' : '') }, [
+          el('span', { style: 'flex:0 0 20px;height:20px;border:2px solid var(--ink);border-radius:3px;display:grid;place-items:center;background:' + (saved[c[0]] ? 'var(--green)' : 'transparent') + ';color:#fff;font-size:13px', text: saved[c[0]] ? '✓' : '' }),
+          el('div', {}, [el('div', { style: 'font-size:13px' + (saved[c[0]] ? ';text-decoration:line-through' : ''), text: c[1] }), el('div', { class: 'mono muted', style: 'font-size:10px', text: c[2] })])
+        ]);
+        li.onclick = () => { saved[c[0]] = !saved[c[0]]; localStorage.setItem(CK, JSON.stringify(saved)); App.router.go('restoration', true); };
+        list.appendChild(li);
+      });
+      return el('div', {}, [head, list]);
+    }
+  };
+
+  function checkPct() { const s = load(); const d = CHECK.filter(c => s[c[0]]).length; return Math.round(d / CHECK.length * 100); }
+  function load() { try { return JSON.parse(localStorage.getItem(CK)) || {}; } catch (e) { return {}; } }
+
+  function priCard(cls, title, ar, badge, body) {
+    return el('div', { class: 'card card-hover ' + cls }, [
+      el('div', { class: 'spine', style: 'background:' + spineColor(cls) }),
+      el('div', { class: 'pad' }, [
+        el('div', { style: 'display:flex;justify-content:space-between;gap:8px;align-items:flex-start' }, [
+          el('span', { class: 'h-disp', style: 'font-size:15px', text: title }), el('span', { class: 'mono', style: 'font-size:9.5px;white-space:nowrap', text: badge })]),
+        ar ? el('div', { class: 'mono muted rtl', style: 'font-size:12px;margin-top:3px', text: ar }) : null,
+        body ? el('div', { style: 'font-size:12.5px;color:#413a30;line-height:1.6;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px', text: body }) : null
+      ])
+    ]);
+  }
+  function spineColor(c) { return { 'p-crit': 'var(--rosso)', 'p-high': 'var(--amber)', 'p-med': 'var(--steel)' }[c] || 'var(--ink)'; }
+
+  function alertCard() {
+    return el('div', { class: 'card', style: 'margin-top:16px;border-color:var(--rosso)' }, [
+      el('div', { style: 'background:var(--rosso);color:var(--paper);padding:8px 16px;font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:14px', text: 'عطل السلامة — الأسبوع ده' }),
+      el('div', { class: 'pad rtl', style: 'font-size:13px;line-height:1.75', html: '<b>١)</b> تسريب قربة المياه ← قربة+غطاء+اختبار ضغط+Paraflu. <b>٢)</b> خرطوم السحب 51822558 (خطر التيربو). <b>٣)</b> كهربا الصدمة (CAN) — إصلاح أسلاك + بطارية، <b>مش موديول</b>.' })
+    ]);
+  }
+  function beltCard() {
+    const c = el('div', { class: 'card', style: 'margin-top:16px' });
+    c.innerHTML = '<div class="pad"><div style="display:flex;justify-content:space-between;flex-wrap:wrap"><span class="h-disp" style="font-size:16px">⏱ Next Timing Belt</span><span class="mono" style="color:var(--amber);font-size:11px">DUE ~176,000 KM · OCT 2027</span></div>' +
+      '<div class="meter" style="margin-top:12px;height:22px"><div class="fill f-red" style="width:63%"></div></div>' +
+      '<div class="mono muted" style="font-size:11px;margin-top:8px">Done @112k. Bundle next: tensioner + water pump + accessory belt + coolant switch.</div></div>';
+    return c;
+  }
+})();
+
+</script>
+<script>
+/* ==== js/modules/parts.js ==== */
+/* Parts Database — full CRUD with searchable/sortable/exportable table */
+(function () {
+  const { el } = App.util; const ui = App.ui;
+  App.router.register({
+    id: 'parts', label: 'Parts Database', group: 'Vehicle', icon: App.config.icon('parts'),
+    render(view) {
+      const rows = App.store.all('parts');
+      view.appendChild(ui.secHead('03', 'Parts Database', 'قاعدة القطع'));
+
+      const cats = Array.from(new Set(rows.map(r => r.category))).sort();
+      const cols = [
+        { key: 'verdict', label: '', filterLabel: 'Verdict', render: r => ui.verdict(r.verdict), filter: ['buy', 'hold', 'stop', 'later'] },
+        { key: 'name', label: 'Part', sort: true, render: r => el('div', {}, [el('b', { text: r.name }), el('div', { class: 'mono muted', style: 'font-size:10px', text: r.ar || '' })]) },
+        { key: 'oem', label: 'OEM #', sort: true, render: r => el('span', { class: 'mono', style: 'color:var(--rosso-deep);font-weight:700', text: r.oem || '—' }) },
+        { key: 'brand', label: 'Brand', sort: true },
+        { key: 'category', label: 'Category', sort: true, filter: cats },
+        { key: 'priceNewEg', label: 'Part EGP', sort: true, render: r => r.priceNewEg ? App.util.num(r.priceNewEg) : '—' },
+        { key: 'laborEg', label: 'Labor EGP', sort: true, render: r => r.laborEg ? App.util.num(r.laborEg) : el('span', { class: 'mono muted', text: '— add' }) },
+        { key: '_total', label: 'Total', sort: false, render: r => partTotal(r) != null ? el('span', { class: 'mono', style: 'font-weight:700', text: App.util.num(partTotal(r)) }) : '—' },
+        { key: 'euRef', label: '🌍 EU' },
+        { key: 'priority', label: 'Priority', sort: true, render: r => ui.priorityBadge(r.priority), filter: ['critical', 'high', 'medium', 'low', 'cosmetic'] },
+        { key: 'vinOk', label: 'VIN', render: r => r.vinOk ? '✅' : el('span', { class: 'mono', style: 'color:var(--amber)', text: 'verify' }) }
+      ];
+      const dt = App.DataTable(cols, rows, {
+        title: 'parts', pageSize: 14, searchKeys: ['name', 'ar', 'oem', 'brand', 'alt', 'notes', 'category'],
+        onRow: r => openPart(r),
+        actions: [{ label: '+ Add Part', cls: 'rosso', fn: () => openPart(null) }]
+      });
+      view.appendChild(dt);
+
+      const grand = rows.reduce((s, r) => s + (partTotal(r) || 0), 0);
+      const missingLabor = rows.filter(r => r.priceNewEg && r.laborEg == null).length;
+      view.appendChild(el('div', { class: 'card', style: 'margin-top:14px' }, [el('div', { class: 'pad', style: 'display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center' }, [
+        el('span', { class: 'mono muted', style: 'font-size:11px', text: missingLabor ? missingLabor + ' item(s) still need a labor/installation price' : 'Labor filled in for all priced parts' }),
+        el('span', { class: 'h-disp', style: 'font-size:18px;color:var(--rosso)', text: 'Grand total (parts+labor): ' + App.config.money(grand) })
+      ])]));
+    }
+  });
+
+  /* (price × qty) + labor — the number to actually budget for this line */
+  function partTotal(r) {
+    if (r.priceNewEg == null && r.laborEg == null) return null;
+    return (r.priceNewEg || 0) * (r.qty || 1) + (r.laborEg || 0);
+  }
+
+  function openPart(rec) {
+    const isNew = !rec; rec = rec || { verdict: 'buy', priority: 'medium', category: 'Engine', vinOk: false };
+    const { el } = App.util;
+    const f = (lb, key, val, type) => el('label', { class: 'fld' }, [el('span', { class: 'lb', text: lb }),
+      el('input', { class: 'inp', type: type || 'text', value: rec[key] == null ? '' : rec[key], data: { key } })]);
+    const body = el('div', {}, [
+      f('Part name', 'name'), f('Arabic name', 'ar'), f('OEM number', 'oem'), f('Fiat number', 'fiat'),
+      f('Alternative numbers', 'alt'), f('Brand', 'brand'),
+      el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Category' }),
+        selectFrom('category', ['Engine', 'Cooling', 'Turbo', 'Suspension', 'Steering', 'Electrical', 'Brakes', 'Interior', 'Exterior', 'Body', 'Transmission', 'Accessories'], rec.category)]),
+      f('Price new (EGP)', 'priceNewEg', null, 'number'), f('Price used (EGP)', 'priceUsedEg', null, 'number'),
+      f('Labor / installation (EGP)', 'laborEg', null, 'number'), f('Quantity', 'qty', null, 'number'),
+      f('EU reference', 'euRef'), f('Supplier', 'supplier'), f('Compatibility', 'compat'), f('Warranty', 'warranty'),
+      el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Verdict' }), selectFrom('verdict', ['buy', 'hold', 'stop', 'later', 'installed'], rec.verdict)]),
+      el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Priority' }), selectFrom('priority', ['critical', 'high', 'medium', 'low', 'cosmetic'], rec.priority)]),
+      el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'VIN verified' }), selectFrom('vinOk', ['false', 'true'], String(rec.vinOk))]),
+      el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Tags (comma)' }), el('input', { class: 'inp', value: (rec.tags || []).join(', '), data: { key: 'tags' } })]),
+      el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Notes' }), el('textarea', { class: 'inp', rows: '2', data: { key: 'notes' } }, rec.notes || '')]),
+      el('div', { style: 'display:flex;gap:8px;margin-top:8px' }, [
+        el('button', { class: 'btn rosso', onclick: () => save() }, isNew ? 'Add Part' : 'Save'),
+        isNew ? null : el('button', { class: 'btn ghost', onclick: () => { App.store.remove('parts', rec.id); m.close(); App.router.go('parts', true); App.util.toast('Deleted'); } }, 'Delete')
+      ])
+    ]);
+    const m = App.util.modal(isNew ? 'New Part' : rec.name, body);
+    function save() {
+      const patch = {};
+      body.querySelectorAll('[data-key]').forEach(i => {
+        let val = i.value;
+        if (i.dataset.key === 'tags') val = val.split(',').map(s => s.trim()).filter(Boolean);
+        if (i.dataset.key === 'vinOk') val = val === 'true';
+        if (['priceNewEg', 'priceUsedEg', 'laborEg', 'qty'].includes(i.dataset.key)) val = val === '' ? null : +val;
+        patch[i.dataset.key] = val;
+      });
+      if (isNew) App.store.add('parts', patch); else App.store.update('parts', rec.id, patch);
+      m.close(); App.router.go('parts', true); App.util.toast('Saved');
+    }
+  }
+  function selectFrom(key, opts, cur) {
+    const { el } = App.util;
+    const s = el('select', { class: 'inp', data: { key } });
+    opts.forEach(o => s.appendChild(el('option', { value: o, text: o, selected: String(cur) === String(o) ? 'selected' : null })));
+    return s;
+  }
+  App._selectFrom = selectFrom;
+})();
+
+</script>
+<script>
+/* ==== js/modules/diagnostics.js ==== */
+/* Diagnostics Center — fault codes with root cause, probability, scan log */
+(function () {
+  const { el } = App.util; const ui = App.ui;
+  App.router.register({
+    id: 'diagnostics', label: 'Diagnostics Center', group: 'Vehicle', icon: App.config.icon('diagnostics'),
+    render(view) {
+      const d = App.store.veh().data;
+      view.appendChild(ui.secHead('04', 'Diagnostics Center', 'مركز الأعطال'));
+
+      // summary tiles
+      const open = d.faults.filter(f => !f.solved);
+      const crit = open.filter(f => f.priority === 'critical');
+      const tiles = el('div', { class: 'tiles', style: 'margin-bottom:16px' }, [
+        ui.tile('Open Faults', String(open.length), '', { color: 'var(--rosso)' }),
+        ui.tile('Critical', String(crit.length), '', { color: 'var(--rosso)' }),
+        ui.tile('Scans logged', String(d.scans.length), ''),
+        ui.tile('Root theme', 'CAN', 'post-impact wiring', { color: 'var(--steel)' })
+      ]);
+      view.appendChild(tiles);
+
+      // fault cards (expandable)
+      const list = el('div', { class: 'stagger' });
+      d.faults.forEach(f => {
+        const det = el('details', { class: 'exp' });
+        det.appendChild(el('summary', {}, [
+          el('span', {}, [el('span', { class: 'mono', style: 'color:var(--rosso);font-weight:700', text: f.code }), '  ', el('span', { text: f.system })]),
+          el('span', { class: 'chips' }, [ui.priorityBadge(f.priority), f.solved ? ui.badge('SOLVED', 'b-done') : ui.badge(f.state || 'OPEN', 'b-high')])
+        ]));
+        const kv = el('div', { class: 'kv', style: 'margin-top:6px' });
+        [['Description', f.desc], ['Symptom', f.symptom], ['Root cause', f.root], ['Probability', (f.prob || 0) + '%'], ['Est. fix', f.cost]].forEach(p =>
+          { kv.appendChild(el('div', { class: 'k', text: p[0] })); kv.appendChild(el('div', { text: p[1] || '—' })); });
+        const actions = el('div', { style: 'margin-top:10px;display:flex;gap:8px' }, [
+          el('button', { class: 'btn sm ' + (f.solved ? 'ghost' : 'rosso'), onclick: () => { App.store.update('faults', f.id, { solved: !f.solved }); App.router.go('diagnostics', true); } }, f.solved ? 'Mark unsolved' : 'Mark solved')
+        ]);
+        det.appendChild(el('div', { class: 'exp-body' }, [kv, actions]));
+        list.appendChild(det);
+      });
+      view.appendChild(list);
+
+      // scan history
+      view.appendChild(el('h3', { class: 'h-disp', style: 'font-size:16px;margin:20px 0 10px', text: 'Scan History' }));
+      view.appendChild(App.DataTable(
+        [{ key: 'date', label: 'Date', sort: true, render: r => App.util.shortDate(r.date) }, { key: 'tool', label: 'Tool' }, { key: 'by', label: 'By' }, { key: 'note', label: 'Note' }],
+        d.scans, { title: 'scans', pageSize: 6, actions: [{ label: '+ Add Scan', cls: 'rosso', fn: addScan }] }
+      ));
+
+      // extension point note
+      const ext = el('div', { class: 'card', style: 'margin-top:16px' }, [el('div', { class: 'pad mono muted', style: 'font-size:11.5px', html: '🔌 Extension point ready: <b>OBD-II Live Diagnostics</b> (feature flag <code>obdLive</code>) — will stream live PIDs into this module without UI changes.' })]);
+      view.appendChild(ext);
+    }
+  });
+
+  function addScan() {
+    const { el } = App.util;
+    const body = el('div', {}, [
+      lbl('Date', el('input', { class: 'inp', type: 'date', data: { key: 'date' } })),
+      lbl('Tool', el('input', { class: 'inp', value: 'AlfaOBD', data: { key: 'tool' } })),
+      lbl('By', el('input', { class: 'inp', data: { key: 'by' } })),
+      lbl('Note', el('textarea', { class: 'inp', rows: '2', data: { key: 'note' } })),
+      el('button', { class: 'btn rosso', style: 'margin-top:8px', onclick: save }, 'Add Scan')
+    ]);
+    const m = App.util.modal('New Scan', body);
+    function save() { const p = {}; body.querySelectorAll('[data-key]').forEach(i => p[i.dataset.key] = i.value); App.store.add('scans', p); m.close(); App.router.go('diagnostics', true); App.util.toast('Scan logged'); }
+    function lbl(t, n) { return el('label', { class: 'fld' }, [el('span', { class: 'lb', text: t }), n]); }
+  }
+})();
+
+</script>
+<script>
+/* ==== js/modules/directories.js ==== */
+/* Directory-style modules built from schemas via App.crud:
+   Service Book · Maintenance Planner · Workshops · Suppliers ·
+   Garage Inventory · Documents Vault. All share the data store. */
+(function () {
+  const num = App.util.num, money = App.config.money, sd = App.util.shortDate, ui = App.ui;
+
+  /* ---- Digital Service Book ---- */
+  App.crud({
+    id: 'service', label: 'Digital Service Book', group: 'Vehicle', icon: App.config.icon('service'), fileno: '05', ar: 'دفتر الصيانة',
+    coll: 'service', title: 'service-book', searchKeys: ['work', 'workshop', 'mechanic', 'parts', 'date'],
+    cols: [
+      { key: 'date', label: 'Date', sort: true, render: r => sd(r.date) },
+      { key: 'km', label: 'KM', sort: true, render: r => num(r.km) },
+      { key: 'work', label: 'Work', sort: true },
+      { key: 'workshop', label: 'Workshop' },
+      { key: 'paid', label: 'Paid', sort: true, render: r => r.paid ? money(r.paid) : '—' }
+    ],
+    fields: [
+      { key: 'date', label: 'Date', type: 'date' }, { key: 'km', label: 'Mileage (km)', type: 'number' },
+      { key: 'work', label: 'Work done' }, { key: 'workshop', label: 'Workshop' }, { key: 'mechanic', label: 'Mechanic' },
+      { key: 'parts', label: 'Parts used' }, { key: 'labor', label: 'Labor (EGP)', type: 'number' },
+      { key: 'paid', label: 'Total paid (EGP)', type: 'number' }, { key: 'invoice', label: 'Invoice #' },
+      { key: 'warranty', label: 'Warranty' }, { key: 'warrantyExpiry', label: 'Warranty expiry', type: 'date' }
+    ]
+  });
+
+  /* ---- Maintenance Planner ---- */
+  App.crud({
+    id: 'planner', label: 'Maintenance Planner', group: 'Vehicle', icon: App.config.icon('planner'), fileno: '08', ar: 'مخطط الصيانة',
+    coll: 'planner', title: 'planner', searchKeys: ['title', 'kind'],
+    cols: [
+      { key: 'title', label: 'Task', sort: true },
+      { key: 'dueKm', label: 'Due KM', sort: true, render: r => r.dueKm ? num(r.dueKm) : '—' },
+      { key: 'dueDate', label: 'Due Date', sort: true, render: r => sd(r.dueDate) },
+      { key: 'kind', label: 'Type', filter: ['service', 'brakes', 'critical', 'inspection'] },
+      { key: 'done', label: 'Done', render: r => r.done ? ui.badge('DONE', 'b-done') : ui.badge('OPEN', 'b-high') }
+    ],
+    fields: [
+      { key: 'title', label: 'Task' }, { key: 'dueKm', label: 'Due at km', type: 'number' },
+      { key: 'dueDate', label: 'Due date', type: 'date' },
+      { key: 'kind', label: 'Type', type: 'select', options: ['service', 'brakes', 'critical', 'inspection'] },
+      { key: 'done', label: 'Done', type: 'select', options: ['false', 'true'] }
+    ]
+  });
+
+  /* ---- Workshop Directory ---- */
+  App.crud({
+    id: 'workshops', label: 'Workshop Directory', group: 'Logistics', icon: App.config.icon('workshops'), fileno: '09', ar: 'دليل الورش',
+    coll: 'workshops', title: 'workshops', searchKeys: ['name', 'spec', 'phone'],
+    cols: [
+      { key: 'name', label: 'Workshop', sort: true }, { key: 'spec', label: 'Specialization' },
+      { key: 'phone', label: 'Phone', render: r => r.phone ? App.util.el('a', { class: 'mono', href: 'tel:' + r.phone, text: r.phone }) : '—' },
+      { key: 'rating', label: 'Rating', sort: true, render: r => '★'.repeat(r.rating || 0) },
+      { key: 'price', label: 'Price' },
+      { key: 'maps', label: 'Map', render: r => r.maps ? App.util.el('a', { href: r.maps, target: '_blank', text: '📍' }) : '—' }
+    ],
+    fields: [
+      { key: 'name', label: 'Workshop' }, { key: 'spec', label: 'Specialization' }, { key: 'phone', label: 'Phone' },
+      { key: 'rating', label: 'Rating (1-5)', type: 'number' }, { key: 'price', label: 'Price level ($/$$/$$$)' },
+      { key: 'maps', label: 'Google Maps URL' }
+    ]
+  });
+
+  /* ---- Suppliers ---- */
+  App.crud({
+    id: 'suppliers', label: 'Suppliers', group: 'Logistics', icon: App.config.icon('suppliers'), fileno: '10', ar: 'الموردون',
+    coll: 'suppliers', title: 'suppliers', searchKeys: ['name', 'contact', 'brands'],
+    cols: [
+      { key: 'name', label: 'Supplier', sort: true },
+      { key: 'contact', label: 'Contact', render: r => r.contact ? App.util.el('span', { class: 'mono', text: r.contact }) : '—' },
+      { key: 'whatsapp', label: 'WhatsApp', render: r => r.whatsapp ? App.util.el('a', { href: 'https://wa.me/' + r.whatsapp.replace(/\D/g, ''), target: '_blank', text: '💬' }) : '—' },
+      { key: 'brands', label: 'Brands' }
+    ],
+    fields: [
+      { key: 'name', label: 'Supplier' }, { key: 'contact', label: 'Contact / phone' }, { key: 'whatsapp', label: 'WhatsApp' },
+      { key: 'website', label: 'Website' }, { key: 'brands', label: 'Brands / OEM availability' }, { key: 'delivery', label: 'Delivery' }
+    ]
+  });
+
+  /* ---- Garage Inventory ---- */
+  App.crud({
+    id: 'inventory', label: 'Garage Inventory', group: 'Logistics', icon: App.config.icon('inventory'), fileno: '11', ar: 'مخزن الجراج',
+    coll: 'inventory', title: 'inventory', searchKeys: ['item', 'category', 'location'],
+    cols: [
+      { key: 'item', label: 'Item', sort: true }, { key: 'category', label: 'Category', sort: true, filter: ['Fluids', 'Filters', 'Tools', 'Bulbs', 'Fuses', 'Spare Parts', 'Cleaning'] },
+      { key: 'qty', label: 'Qty', sort: true }, { key: 'location', label: 'Location' }
+    ],
+    fields: [
+      { key: 'item', label: 'Item' }, { key: 'category', label: 'Category', type: 'select', options: ['Fluids', 'Filters', 'Tools', 'Bulbs', 'Fuses', 'Spare Parts', 'Cleaning'] },
+      { key: 'qty', label: 'Quantity', type: 'number' }, { key: 'location', label: 'Location' }
+    ]
+  });
+
+  /* ---- Documents Vault ---- */
+  App.crud({
+    id: 'documents', label: 'Documents Vault', group: 'Archive', icon: App.config.icon('documents'), fileno: '', ar: 'خزنة المستندات',
+    coll: 'documents', title: 'documents', searchKeys: ['name', 'type', 'ref'],
+    intro: '<div class="mono muted" style="font-size:12px">Offline vault: store registration, insurance, invoices, warranty, manuals & photo references. Attach files/links per record.</div>',
+    cols: [
+      { key: 'name', label: 'Document', sort: true }, { key: 'type', label: 'Type', sort: true, filter: ['Invoice/History', 'Diagnostics', 'Registration', 'Insurance', 'Warranty', 'Manual', 'Photo'] },
+      { key: 'date', label: 'Date', sort: true, render: r => sd(r.date) }, { key: 'ref', label: 'Reference' }
+    ],
+    fields: [
+      { key: 'name', label: 'Document name' }, { key: 'type', label: 'Type', type: 'select', options: ['Invoice/History', 'Diagnostics', 'Registration', 'Insurance', 'Warranty', 'Manual', 'Photo'] },
+      { key: 'date', label: 'Date', type: 'date' }, { key: 'ref', label: 'Reference / link' }
+    ]
+  });
+})();
+
+</script>
+<script>
+/* ==== js/modules/fuel.js ==== */
+/* Fuel Dashboard — refills, consumption, cost/km, trend chart (SVG) */
+(function () {
+  const { el } = App.util; const ui = App.ui; const money = App.config.money, num = App.util.num;
+  App.router.register({
+    id: 'fuel', label: 'Fuel Dashboard', group: 'Money', icon: App.config.icon('fuel'),
+    render(view) {
+      const d = App.store.veh().data;
+      const fuel = d.fuel.slice().sort((a, b) => (a.km || 0) - (b.km || 0));
+      view.appendChild(ui.secHead('06', 'Fuel Dashboard', 'لوحة البنزين'));
+
+      // compute per-fill consumption
+      const rows = [];
+      let totLiters = 0, totCost = 0, totDist = 0;
+      for (let i = 0; i < fuel.length; i++) {
+        const f = fuel[i]; const prev = fuel[i - 1];
+        const dist = prev ? f.km - prev.km : null;
+        const cons = dist ? (f.liters / dist) * 100 : null;
+        const total = f.liters * f.pricePerL;
+        totLiters += f.liters; totCost += total; if (dist) totDist += dist;
+        rows.push(Object.assign({}, f, { dist, cons, total }));
+      }
+      const avg = totDist ? (fuel.slice(1).reduce((s, x) => s + x.liters, 0) / totDist) * 100 : null;
+      const costPerKm = totDist ? totCost / totDist : null;
+
+      view.appendChild(el('div', { class: 'tiles', style: 'margin-bottom:16px' }, [
+        ui.tile('Avg Consumption', avg ? avg.toFixed(1) : '—', 'L/100km', { color: avg > 8.5 ? 'var(--rosso)' : 'var(--green)' }),
+        ui.tile('Cost / km', costPerKm ? money(costPerKm) : '—', ''),
+        ui.tile('Total spent', money(totCost), num(totLiters) + ' L'),
+        ui.tile('Target', '7–7.5', 'L/100km (spec)', { color: 'var(--steel)' })
+      ]));
+
+      // trend chart
+      view.appendChild(chart(rows.filter(r => r.cons != null)));
+
+      // table
+      view.appendChild(el('h3', { class: 'h-disp', style: 'font-size:16px;margin:18px 0 10px', text: 'Refill Log' }));
+      view.appendChild(App.DataTable([
+        { key: 'date', label: 'Date', sort: true, render: r => App.util.shortDate(r.date) },
+        { key: 'km', label: 'KM', sort: true, render: r => num(r.km) },
+        { key: 'liters', label: 'Liters', sort: true },
+        { key: 'pricePerL', label: '/L', render: r => money(r.pricePerL) },
+        { key: 'total', label: 'Total', render: r => money(r.liters * r.pricePerL) },
+        { key: 'cons', label: 'L/100km', sort: true, render: r => r.cons ? r.cons.toFixed(1) : '—' },
+        { key: 'station', label: 'Station' }
+      ], rows.slice().reverse(), { title: 'fuel', pageSize: 10, actions: [{ label: '+ Add Refill', cls: 'rosso', fn: addRefill }] }));
+    }
+  });
+
+  function chart(data) {
+    if (data.length < 2) return el('div', { class: 'card' }, [el('div', { class: 'pad' }, [ui.empty('Add at least 2 refills to see the consumption trend.')])]);
+    const w = 640, h = 180, pad = 30;
+    const vals = data.map(d => d.cons);
+    const min = Math.min.apply(null, vals) - 0.5, max = Math.max.apply(null, vals) + 0.5;
+    const x = i => pad + (i / (data.length - 1)) * (w - pad * 2);
+    const y = v => h - pad - ((v - min) / (max - min || 1)) * (h - pad * 2);
+    let path = '', dots = '';
+    data.forEach((d, i) => { path += (i ? 'L' : 'M') + x(i) + ' ' + y(d.cons) + ' '; dots += `<circle cx="${x(i)}" cy="${y(d.cons)}" r="3.5" fill="var(--rosso)"/>`; });
+    const target = y(7.25);
+    const card = el('div', { class: 'card' });
+    card.innerHTML = `<div class="pad"><div class="mono muted" style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px">Consumption trend · L/100km</div>
+      <div style="overflow-x:auto"><svg viewBox="0 0 ${w} ${h}" style="width:100%;min-width:420px">
+      <line x1="${pad}" y1="${target}" x2="${w - pad}" y2="${target}" stroke="var(--green)" stroke-dasharray="4 4" stroke-width="1.5"/>
+      <text x="${w - pad}" y="${target - 4}" text-anchor="end" font-family="monospace" font-size="9" fill="var(--green)">target 7.25</text>
+      <path d="${path}" fill="none" stroke="var(--rosso)" stroke-width="2.5"/>${dots}</svg></div></div>`;
+    return card;
+  }
+
+  function addRefill() {
+    const { el } = App.util; const lastKm = (App.store.veh().mileage) || '';
+    const body = el('div', {}, [
+      lbl('Date', el('input', { class: 'inp', type: 'date', value: new Date().toISOString().slice(0, 10), data: { key: 'date' } })),
+      lbl('Mileage (km)', el('input', { class: 'inp', type: 'number', value: lastKm, data: { key: 'km' } })),
+      lbl('Liters', el('input', { class: 'inp', type: 'number', data: { key: 'liters' } })),
+      lbl('Price / liter', el('input', { class: 'inp', type: 'number', value: '12.5', data: { key: 'pricePerL' } })),
+      lbl('Station', el('input', { class: 'inp', data: { key: 'station' } })),
+      lbl('Fuel type', el('input', { class: 'inp', value: '95', data: { key: 'type' } })),
+      el('button', { class: 'btn rosso', style: 'margin-top:8px', onclick: save }, 'Add Refill')
+    ]);
+    const m = App.util.modal('New Refill', body);
+    function save() {
+      const p = {}; body.querySelectorAll('[data-key]').forEach(i => p[i.dataset.key] = i.type === 'number' ? +i.value : i.value);
+      App.store.add('fuel', p);
+      if (p.km) App.store.setVeh({ mileage: p.km });
+      m.close(); App.router.go('fuel', true); App.util.toast('Refill added');
+    }
+    function lbl(t, n) { return el('label', { class: 'fld' }, [el('span', { class: 'lb', text: t }), n]); }
+  }
+})();
+
+</script>
+<script>
+/* ==== js/modules/budget.js ==== */
+/* Budget Manager — categories grouped by Roadmap phase, so the two
+   screens always tell the same story. Target: EGP 50-60k total, not
+   per-category padding. Click any category to edit budget/spent. */
+(function () {
+  const { el, phaseBudget, PHASE_COLOR, PHASE_FILL } = App.util; const ui = App.ui; const money = App.config.money;
+  const PHASE_NAME = { 1: 'Phase 1 · Safety', 2: 'Phase 2 · Reliability', 3: 'Phase 3 · Comfort', 4: 'Phase 4 · Cosmetic' };
+
+  App.router.register({
+    id: 'budget', label: 'Budget Manager', group: 'Money', icon: App.config.icon('budget'),
+    render(view) {
+      const d = App.store.veh().data;
+      const cats = d.budget;
+      const totalBudget = cats.reduce((s, c) => s + (c.budget || 0), 0);
+      const totalSpent = cats.reduce((s, c) => s + (c.spent || 0), 0);
+      const inTarget = totalBudget >= 50000 && totalBudget <= 60000;
+
+      view.appendChild(ui.secHead('07', 'Budget Manager', 'إدارة الميزانية'));
+
+      view.appendChild(el('div', { class: 'tiles stagger' }, [
+        ui.tile('Total Budget', money(totalBudget), inTarget ? '✓ within 50–60k target' : 'target 50–60k', { color: inTarget ? 'var(--green)' : 'var(--amber)' }),
+        ui.tile('Spent', money(totalSpent), Math.round((totalSpent / (totalBudget || 1)) * 100) + '% of budget', { color: 'var(--steel)' }),
+        ui.tile('Remaining', money(totalBudget - totalSpent), ''),
+        ui.tile('Phases', '4', 'Safety → Reliability → Comfort → Cosmetic')
+      ]));
+
+      // composition bar: one bar, segmented by phase, so Budget visually
+      // matches the Roadmap at a glance
+      view.appendChild(compositionBar(d));
+
+      // grouped-by-phase cards
+      [1, 2, 3, 4].forEach(ph => {
+        const { budget, spent, cats: rows } = phaseBudget(d, ph);
+        if (!rows.length) return;
+        const section = el('div', { style: 'margin-top:22px' });
+        section.appendChild(el('div', { style: 'display:flex;align-items:baseline;gap:10px;margin-bottom:10px' }, [
+          el('span', { style: 'width:10px;height:10px;border-radius:2px;background:' + PHASE_COLOR[ph] + ';display:inline-block;transform:rotate(45deg)' }),
+          el('h3', { class: 'h-disp', style: 'font-size:15px', text: PHASE_NAME[ph] }),
+          el('span', { class: 'mono muted', style: 'font-size:11px', text: money(spent) + ' / ' + money(budget) }),
+          el('button', { class: 'btn sm ghost', style: 'margin-left:auto', onclick: () => App.router.go('roadmap') }, 'View in Roadmap →')
+        ]));
+        const grid = el('div', { class: 'grid-2 stagger' });
+        rows.forEach(c => grid.appendChild(catCard(c, ph)));
+        section.appendChild(grid);
+        view.appendChild(section);
+      });
+    }
+  });
+
+  function compositionBar(d) {
+    const total = d.budget.reduce((s, c) => s + (c.budget || 0), 0) || 1;
+    const segs = [1, 2, 3, 4].map(ph => {
+      const { budget } = phaseBudget(d, ph);
+      return { ph, pct: (budget / total) * 100, budget };
+    }).filter(s => s.budget > 0);
+    const bar = el('div', { style: 'display:flex;height:16px;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin:14px 0 6px' });
+    segs.forEach(s => bar.appendChild(el('div', { style: 'width:' + s.pct + '%;background:' + PHASE_COLOR[s.ph], 'data-tip': PHASE_NAME[s.ph] + ' · ' + App.config.money(s.budget) })));
+    const legend = el('div', { class: 'chips', style: 'margin-bottom:4px' });
+    segs.forEach(s => legend.appendChild(el('span', { class: 'tag', style: 'border-color:' + PHASE_COLOR[s.ph] + ';color:' + PHASE_COLOR[s.ph], text: PHASE_NAME[s.ph].split('·')[1].trim() + ' ' + Math.round(s.pct) + '%' })));
+    return el('div', { class: 'card', style: 'margin-bottom:6px' }, [el('div', { class: 'pad' }, [
+      el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase', text: 'Budget composition by phase' }),
+      bar, legend
+    ])]);
+  }
+
+  function catCard(c, phase) {
+    const pct = c.budget ? Math.min(100, (c.spent / c.budget) * 100) : 0;
+    const over = c.spent > c.budget;
+    const card = el('div', { class: 'card card-hover' }, [el('div', { class: 'spine', style: 'background:' + (over ? 'var(--rosso)' : PHASE_COLOR[phase]) })]);
+    const pad = el('div', { class: 'pad', style: 'cursor:pointer' }, [
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 10px' }, [
+        el('span', { class: 'h-disp', style: 'font-size:15px;flex:1;min-width:0', text: c.cat }),
+        el('span', { class: 'mono', style: 'font-size:12px;white-space:nowrap;flex-shrink:0', text: App.config.money(c.spent) + ' / ' + App.config.money(c.budget) })
+      ]),
+      ui.meter(pct, over ? 'f-red' : PHASE_FILL[phase]),
+      c.note ? el('div', { style: 'font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5', text: c.note }) : null,
+      el('div', { class: 'mono muted', style: 'font-size:10.5px;margin-top:6px', text: over ? 'Over by ' + App.config.money(c.spent - c.budget) : App.config.money(c.budget - c.spent) + ' remaining' })
+    ]);
+    pad.addEventListener('click', () => edit(c));
+    card.appendChild(pad); return card;
+  }
+
+  function edit(c) {
+    const { el } = App.util;
+    const body = el('div', {}, [
+      lbl('Category', el('input', { class: 'inp', value: c.cat, disabled: 'disabled' })),
+      lbl('Budget (EGP)', el('input', { class: 'inp', type: 'number', value: c.budget, data: { key: 'budget' } })),
+      lbl('Spent (EGP)', el('input', { class: 'inp', type: 'number', value: c.spent, data: { key: 'spent' } })),
+      el('button', { class: 'btn rosso', style: 'margin-top:8px', onclick: save }, 'Save')
+    ]);
+    const m = App.util.modal('Budget · ' + c.cat, body);
+    function save() { const p = {}; body.querySelectorAll('[data-key]').forEach(i => p[i.dataset.key] = +i.value); Object.assign(c, p); App.store.persist(); m.close(); App.router.go('budget', true); App.util.toast('Saved'); }
+    function lbl(t, n) { return el('label', { class: 'fld' }, [el('span', { class: 'lb', text: t }), n]); }
+  }
+})();
+
+</script>
+<script>
+/* ==== js/modules/insights.js ==== */
+/* Insight modules — real screens bound to the shared data layer.
+   Analytics + Roadmap are fully data-driven; Value, Photos, Search,
+   AI Assistant have complete UI/data structure, expandable later. */
+(function () {
+  const { el } = App.util; const ui = App.ui; const money = App.config.money;
+
+  /* ---- Analytics ---- */
+  App.router.register({
+    id: 'analytics', label: 'Analytics', group: 'Insights', icon: App.config.icon('analytics'),
+    render(view) {
+      const d = App.store.veh().data;
+      view.appendChild(ui.secHead('15', 'Analytics', 'تحليلات'));
+      // spend by year (from service)
+      const byYear = {}; d.service.forEach(s => { const y = (s.date || '').slice(0, 4) || '?'; byYear[y] = (byYear[y] || 0) + (s.paid || 0); });
+      view.appendChild(barChart('Repair spend by year (EGP)', Object.keys(byYear).sort().map(k => ({ label: k, val: byYear[k] }))));
+      // spend by category (budget spent)
+      view.appendChild(barChart('Budget spent by category', d.budget.filter(c => c.spent).map(c => ({ label: c.cat, val: c.spent }))));
+      // most expensive repairs
+      view.appendChild(el('h3', { class: 'h-disp', style: 'font-size:16px;margin:18px 0 10px', text: 'Most expensive repairs' }));
+      const top = d.service.slice().sort((a, b) => (b.paid || 0) - (a.paid || 0)).slice(0, 6);
+      view.appendChild(App.DataTable([{ key: 'work', label: 'Work', sort: true }, { key: 'date', label: 'Date', render: r => App.util.shortDate(r.date) }, { key: 'paid', label: 'Paid', sort: true, render: r => money(r.paid) }], top, { title: 'top-repairs', pageSize: 6 }));
+    }
+  });
+
+  /* d.label here can originate from stored/imported data (a service
+     record's year, a budget category name) — everything is placed via
+     text:, never interpolated into a markup string, so a crafted
+     backup can't inject through this chart. */
+  function barChart(title, data) {
+    const card = el('div', { class: 'card', style: 'margin-bottom:16px' });
+    const max = Math.max.apply(null, data.map(d => d.val).concat([1]));
+    const pad = el('div', { class: 'pad' }, [
+      el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px', text: title })
+    ]);
+    if (!data.length) { pad.appendChild(ui.empty('No data yet.')); }
+    else data.forEach(d => {
+      const fill = el('div', { style: 'height:100%;width:' + ((d.val / max) * 100) + '%;background:repeating-linear-gradient(-45deg,var(--rosso-deep) 0 8px,var(--rosso) 8px 16px)' });
+      pad.appendChild(el('div', { style: 'display:flex;align-items:center;gap:10px;margin:6px 0' }, [
+        el('span', { class: 'mono', style: 'width:64px;font-size:10px;color:var(--ink-soft);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap', text: d.label }),
+        el('div', { style: 'flex:1;background:var(--paper);border:1.5px solid var(--ink);border-radius:3px;height:18px;overflow:hidden' }, [fill]),
+        el('span', { class: 'mono', style: 'width:78px;font-size:11px', text: App.util.num(d.val) })
+      ]));
+    });
+    card.appendChild(pad);
+    return card;
+  }
+
+  /* ---- Restoration Roadmap ---- */
+  const PHASE_COLOR = App.util.PHASE_COLOR, PHASE_FILL = App.util.PHASE_FILL;
+  App.router.register({
+    id: 'roadmap', label: 'Restoration Roadmap', group: 'Insights', icon: App.config.icon('roadmap'),
+    render(view) {
+      const d = App.store.veh().data;
+      const grandTotal = d.budget.reduce((s, c) => s + (c.budget || 0), 0);
+      view.appendChild(ui.secHead('13', 'Restoration Roadmap', 'خريطة الترميم'));
+      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:16px' }, [el('div', { class: 'pad', style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' }, [
+        el('span', { class: 'mono muted', style: 'font-size:11.5px', text: 'Full restoration, all 4 phases' }),
+        el('span', { class: 'h-disp', style: 'font-size:20px;color:var(--rosso)', text: money(grandTotal) }),
+        el('button', { class: 'btn sm ghost', onclick: () => App.router.go('budget') }, 'Edit in Budget Manager →')
+      ])]));
+      const grid = el('div', { class: 'grid-2 stagger' });
+      d.roadmap.forEach(p => {
+        const { budget, spent, cats } = App.util.phaseBudget(d, p.phase);
+        const pct = budget ? Math.min(100, (spent / budget) * 100) : 0;
+        const card = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:' + PHASE_COLOR[p.phase] })]);
+        const chips = el('div', { class: 'chips', style: 'margin-top:10px' });
+        cats.forEach(c => chips.appendChild(el('span', { class: 'tag', text: c.cat + ' ' + money(c.budget) })));
+        card.appendChild(el('div', { class: 'pad' }, [
+          el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 10px' }, [
+            el('span', { class: 'h-disp', style: 'font-size:16px;flex:1;min-width:0', text: 'Phase ' + p.phase + ' · ' + p.title }),
+            el('span', { class: 'mono', style: 'font-size:12px;white-space:nowrap;flex-shrink:0', text: money(spent) + ' / ' + money(budget) })]),
+          ui.meter(pct, PHASE_FILL[p.phase]),
+          el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:8px', text: p.note }),
+          chips
+        ]));
+        grid.appendChild(card);
+      });
+      view.appendChild(grid);
+    }
+  });
+
+  /* ---- Vehicle Value ---- */
+  App.router.register({
+    id: 'value', label: 'Vehicle Value', group: 'Insights', icon: App.config.icon('value'),
+    render(view) {
+      const v = App.store.veh(); const val = v.data.value;
+      const invested = v.data.installed.reduce((s, x) => s + (x.paid || 0), 0) + (val.invested || 0);
+      view.appendChild(ui.secHead('14', 'Vehicle Value', 'قيمة العربية'));
+      view.appendChild(el('div', { class: 'tiles stagger' }, [
+        ui.tile('Purchase (' + (val.purchaseYear || '') + ')', money(val.purchase), 'buy-in'),
+        ui.tile('Invested', money(invested), 'documented repairs', { color: 'var(--green)' }),
+        ui.tile('Repairs ahead', money(val.repairEstimate), 'Phase 1–2 est.', { color: 'var(--amber)' }),
+        ui.tile('Market value', money(val.estResale), 'today', { color: 'var(--steel)' })
+      ]));
+      const nominal = val.estResale - val.purchase;
+      // real-terms in USD: 2013 EGP≈6.9/USD, 2026≈48/USD
+      const usdThen = Math.round(val.purchase / 6.9), usdNow = Math.round(val.estResale / 48);
+      view.appendChild(el('div', { class: 'card', style: 'margin-top:16px' }, [el('div', { class: 'pad' }, [
+        el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase', text: 'Nominal change (EGP)' }),
+        el('div', { class: 'h-disp', style: 'font-size:26px;margin-top:4px;color:var(--green)', text: '+' + money(nominal) }),
+        el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-top:8px;line-height:1.7', html:
+          'Reality check: most of that "gain" is <b>EGP devaluation</b>, not real appreciation.<br>' +
+          'In USD: bought ≈ <b>$' + usdThen.toLocaleString() + '</b> (2013) → worth ≈ <b>$' + usdNow.toLocaleString() + '</b> today.<br>' +
+          'So in real terms it depreciated like a normal car. The win is <b>cheap, reliable motoring</b> if kept — restoration is for keeping, not profit.' })
+      ])]));
+    }
+  });
+
+  /* ---- Photo Timeline ---- */
+  App.router.register({
+    id: 'photos', label: 'Photo Timeline', group: 'Archive', icon: App.config.icon('photos'), soon: true,
+    render(view) {
+      const d = App.store.veh().data;
+      view.appendChild(ui.secHead('12', 'Photo Timeline', 'ألبوم قبل / بعد'));
+      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:16px' }, [el('div', { class: 'pad mono muted', style: 'font-size:11.5px', text: 'Before / during / after per repair. Attach images to any record (data model ready: record.attachments[]).' })]));
+      ['before', 'during', 'after'].forEach(stage => {
+        const items = d.photos.filter(p => p.stage === stage);
+        view.appendChild(el('h3', { class: 'h-disp', style: 'font-size:15px;margin:14px 0 8px', text: stage.toUpperCase() }));
+        const g = el('div', { class: 'grid-3' });
+        if (!items.length) g.appendChild(ui.empty('No ' + stage + ' photos linked.'));
+        items.forEach(p => g.appendChild(el('div', { class: 'card' }, [el('div', { class: 'pad' }, [el('div', { style: 'height:80px;border:1.5px dashed var(--line-strong);border-radius:6px;display:grid;place-items:center;color:var(--ink-soft)', text: '🖼' }), el('div', { style: 'font-size:12px;margin-top:6px', text: p.label }), el('div', { class: 'mono muted', style: 'font-size:10px', text: p.date })])])));
+        view.appendChild(g);
+      });
+    }
+  });
+
+  /* ---- Search (dedicated page) ---- */
+  App.router.register({
+    id: 'search', label: 'Search Engine', group: 'Archive', icon: App.config.icon('search'),
+    render(view) {
+      view.appendChild(ui.secHead('16', 'Global Search', 'بحث شامل'));
+      const out = el('div');
+      const input = el('input', { class: 'inp', type: 'search', placeholder: 'Search parts, OEM, fault codes, invoices, workshops…', style: 'max-width:420px', oninput: e => run(e.target.value) });
+      view.appendChild(input); view.appendChild(el('div', { style: 'height:14px' })); view.appendChild(out);
+      function run(q) {
+        const res = App.store.search(q); out.innerHTML = '';
+        if (!q) { out.appendChild(ui.empty('Type to search everything in this vehicle.')); return; }
+        if (!res.length) { out.appendChild(ui.empty('No matches.')); return; }
+        const collToMod = { parts: 'parts', faults: 'diagnostics', service: 'service', workshops: 'workshops', suppliers: 'suppliers', inventory: 'inventory', documents: 'documents' };
+        res.forEach(r => out.appendChild(el('div', { class: 'card card-hover', style: 'margin-bottom:8px;cursor:pointer', onclick: () => App.router.go(collToMod[r.coll]) }, [
+          el('div', { class: 'pad' }, [el('b', { text: r.label }), el('span', { class: 'mono muted', style: 'float:right;font-size:10px', text: r.coll.toUpperCase() }), r.rec.oem ? el('div', { class: 'mono', style: 'font-size:11px;color:var(--rosso)', text: r.rec.oem }) : null])
+        ])));
+      }
+      run('');
+    }
+  });
+
+  /* ---- Assistant — rule-based canned answers today, NOT a real AI.
+     Labeled and disclaimed honestly (issue: don't present a placeholder
+     as if it were live AI). Answer text is built via text:, never
+     innerHTML — a fault `code` or budget `cat` below can come from
+     imported/stored data, so it must never be interpolated as markup. */
+  App.router.register({
+    id: 'assistant', label: 'Assistant (rule-based)', group: 'Insights', icon: App.config.icon('assistant'), soon: true, soonLabel: 'DEMO',
+    render(view) {
+      view.appendChild(ui.secHead('17', 'Maintenance Assistant', 'مساعد الصيانة'));
+      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:14px;border-color:var(--amber)' }, [el('div', { class: 'pad', style: 'font-size:11.5px;color:var(--ink-soft)' }, [
+        el('b', { style: 'color:var(--amber)', text: '⚠ Not a real AI. ' }),
+        el('span', { text: 'These are fixed, rule-based answers written for this demo — nothing is sent to any AI model. A real "AI Maintenance Advisor" (flag ' }),
+        el('code', { text: 'aiAdvisor' }),
+        el('span', { text: ') is a planned extension point, not implemented yet.' })
+      ])]));
+      const qs = ['Why is fuel consumption increasing?', 'What should I repair first?', 'What can safely wait?', 'Am I over budget in any category?'];
+      const chat = el('div', { class: 'card' }, [el('div', { class: 'pad' })]);
+      const pad = chat.querySelector('.pad');
+      qs.forEach(q => pad.appendChild(el('button', { class: 'btn sm ghost', style: 'margin:0 6px 8px 0', onclick: () => answer(q) }, q)));
+      const ans = el('div', { style: 'margin-top:10px' }); pad.appendChild(ans);
+      view.appendChild(chat);
+      function answer(q) {
+        const d = App.store.veh().data; let txt = '';
+        if (/fuel/i.test(q)) txt = 'Top suspects from your data: torn intake hose (51822558), overdue plugs, then a smoke test + fuel-trim read. Fix the hose first and re-measure.';
+        else if (/first/i.test(q)) txt = 'Critical open faults: ' + (d.faults.filter(f => !f.solved && f.priority === 'critical').map(f => f.code).join(', ') || 'none') + '. Start with the rear-harness wiring (B1023) + coolant leak + intake hose.';
+        else if (/wait/i.test(q)) txt = 'Safe to defer: radiator (pending pressure test), front shocks (inspect first), all Phase 2–3 cosmetic items.';
+        else txt = 'Categories over budget: ' + (d.budget.filter(c => c.spent > c.budget).map(c => c.cat).join(', ') || 'none yet') + '.';
+        ans.innerHTML = '';
+        ans.appendChild(el('div', { class: 'card', style: 'border-color:var(--steel)' }, [
+          el('div', { class: 'pad', style: 'font-size:13px;line-height:1.6' }, [
+            el('b', { class: 'mono', style: 'color:var(--steel)', text: 'RULE-BASED · ' }),
+            el('span', { text: txt })
+          ])
+        ]));
+      }
+    }
+  });
+})();
+
+</script>
+<script>
+/* ==== js/modules/settings.js ==== */
+/* Settings — vehicle profile, preferences, backup/restore, cloud sync
+   sign-in, and an honest list of what's shipped vs. planned. */
+(function () {
+  const { el } = App.util; const ui = App.ui; const cfg = App.config;
+  App.router.register({
+    id: 'settings', label: 'Settings', group: 'Insights', icon: cfg.icon('settings'),
+    render(view) {
+      view.appendChild(ui.secHead('', 'Settings', 'الإعدادات'));
+
+      const notice = App.store.state().meta && App.store.state().meta.recoveryNotice;
+      if (notice) view.appendChild(el('div', { class: 'card', style: 'margin-bottom:16px;border-color:var(--rosso)' }, [
+        el('div', { class: 'pad', style: 'font-size:13px;line-height:1.6' }, [
+          el('b', { style: 'color:var(--rosso)', text: '⚠ Data recovery notice: ' }), el('span', { text: notice })
+        ])
+      ]));
+
+      const v = App.store.veh();
+      view.appendChild(section('Vehicle Profile', vehForm(v)));
+
+      const c = cfg.get();
+      const pref = el('div', { class: 'grid-3' }, [
+        prefSelect('Theme', ['light', 'dark'], c.theme.mode, val => { cfg.setPath('theme', 'mode', val); document.documentElement.setAttribute('data-theme', val); localStorage.setItem('gp-os-theme', val); }),
+        prefSelect('Language', ['en', 'ar'], c.locale.language, val => cfg.setPath('locale', 'language', val)),
+        prefSelect('Distance', ['km', 'mi'], c.units.distance, val => cfg.setPath('units', 'distance', val)),
+        prefText('Currency symbol', c.currency.symbol, val => cfg.setPath('currency', 'symbol', val)),
+        prefText('Oil interval (km)', c.reminders.oilChangeKm, val => cfg.setPath('reminders', 'oilChangeKm', +val)),
+        prefText('Timing belt (km)', c.reminders.timingBeltKm, val => cfg.setPath('reminders', 'timingBeltKm', +val))
+      ]);
+      view.appendChild(section('Preferences', pref));
+
+      view.appendChild(section('Backup & Restore', backupSection()));
+      view.appendChild(section('Cloud Sync — Supabase', cloudForm()));
+      view.appendChild(section('Shipped vs. Planned', featureList(c)));
+    }
+  });
+
+  /* ---------------- Backup & Restore ---------------- */
+  function backupSection() {
+    const actions = el('div', { class: 'qa', style: 'margin-bottom:12px' }, [
+      el('button', { class: 'btn sm', onclick: exportBackup }, '⇩ Export JSON backup'),
+      el('button', { class: 'btn sm ghost', onclick: importBackup }, '⇧ Import JSON'),
+      el('button', { class: 'btn sm ghost', onclick: () => { App.store.snapshot('manual'); App.util.toast('Snapshot saved'); App.router.go('settings', true); } }, '📸 Snapshot now'),
+      el('button', { class: 'btn sm rosso', onclick: factoryReset }, '⟲ Factory reset (clears everything)')
+    ]);
+    const corrupt = App.store.corruptBackups();
+    const corruptUI = corrupt.length ? el('div', { style: 'margin-top:14px' }, [
+      el('div', { class: 'h-disp', style: 'font-size:13px;color:var(--rosso);margin-bottom:6px', text: 'Recovered Data (' + corrupt.length + ')' }),
+      el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:8px', text: 'Data that failed to load safely was preserved here instead of being silently discarded. Export or discard each.' }),
+      el('div', { class: 'chips' }, corrupt.map(k => el('span', { class: 'tag' }, [
+        el('span', { text: k.replace('gp-os-corrupt-', 'backup @ ') + '  ' }),
+        el('button', { class: 'btn sm ghost', style: 'padding:1px 6px;font-size:9px', onclick: () => downloadCorrupt(k) }, '⇩'),
+        el('button', { class: 'btn sm ghost', style: 'padding:1px 6px;font-size:9px', onclick: () => { if (confirm('Permanently discard this recovered copy?')) { App.store.discardCorruptBackup(k); App.router.go('settings', true); } } }, '✕')
+      ])))
+    ]) : null;
+    return el('div', {}, [actions, backupList(), corruptUI].filter(Boolean));
+  }
+  function exportBackup() {
+    const a = el('a', { href: 'data:application/json;charset=utf-8,' + encodeURIComponent(App.store.exportJSON()), download: 'garage-os-backup-' + new Date().toISOString().slice(0, 10) + '.json' });
+    document.body.appendChild(a); a.click(); a.remove(); App.util.toast('Backup exported');
+  }
+  function downloadCorrupt(key) {
+    const raw = App.store.readCorruptBackup(key) || '';
+    const a = el('a', { href: 'data:application/json;charset=utf-8,' + encodeURIComponent(raw), download: key + '.json' });
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function importBackup() {
+    const inp = el('input', { type: 'file', accept: '.json', style: 'display:none' });
+    inp.onchange = () => {
+      const f = inp.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try { App.store.importJSON(r.result); App.util.toast('Restored — a snapshot of your previous data was kept.'); location.reload(); }
+        catch (e) { showError('Import failed', e.message || 'Unknown error'); }
+      };
+      r.readAsText(f);
+    };
+    document.body.appendChild(inp); inp.click(); inp.remove();
+  }
+  function factoryReset() {
+    const msg = 'Factory reset clears EVERYTHING on this device: vehicle data, all snapshots, preferences, and any saved Supabase URL/key. This cannot be undone by this app.\n\nA backup will be downloaded automatically first. Continue?';
+    if (!confirm(msg)) return;
+    exportBackup();
+    App.store.hardReset();
+    cfg.reset();
+    if (App.auth) App.auth.hardClear();
+    App.util.toast('Everything cleared — reloading…');
+    setTimeout(() => location.reload(), 400);
+  }
+  function backupList() {
+    const list = App.store.backups();
+    if (!list.length) return ui.empty('No snapshots yet.');
+    return App.DataTable([
+      { key: 'at', label: 'When', render: r => App.util.shortDate(r.at) + ' ' + new Date(r.at).toLocaleTimeString() },
+      { key: 'label', label: 'Label' },
+      { key: '_r', label: '', render: r => el('button', { class: 'btn sm ghost', onclick: () => {
+        if (!confirm('Restore this snapshot? Current data will be replaced (a safety snapshot of it will not be auto-taken — export a backup first if unsure).')) return;
+        const res = App.store.restoreBackup(r.at);
+        if (res.ok) location.reload(); else showError('Restore failed', res.error);
+      } }, 'Restore') }
+    ], list, { title: 'backups', pageSize: 5 });
+  }
+  function showError(title, msg) {
+    const body = el('div', {}, [el('pre', { style: 'white-space:pre-wrap;font-family:var(--mono);font-size:12px;background:var(--card2);padding:10px;border-radius:6px' }, msg)]);
+    App.util.modal(title, body);
+  }
+
+  /* ---------------- Cloud Sync (Supabase Auth + sync) ---------------- */
+  function cloudForm() {
+    const c = cfg.get(); const cl = c.cloud;
+    const fields = [['url', 'Supabase Project URL', 'https://xxxx.supabase.co'], ['anonKey', 'Anon public key', 'eyJ...'], ['table', 'Table name', 'garage_state'], ['rowId', 'Row id', 'gp-tjet-2010']];
+    const body = el('div', { class: 'grid-2' });
+    fields.forEach(f => body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: f[1] }), el('input', { class: 'inp', value: cl[f[0]] || '', placeholder: f[2], data: { key: f[0] } })])));
+
+    const signedIn = App.auth.isSignedIn(); const user = App.auth.getUser();
+    const authBox = el('div', { style: 'margin-top:10px' });
+    if (signedIn) {
+      authBox.appendChild(el('div', { style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' }, [
+        el('span', { class: 'mono', style: 'font-size:12px' }, ['Signed in as ', el('b', { text: (user && user.email) || '(unknown)' })]),
+        el('button', { class: 'btn sm ghost', onclick: async () => { await App.auth.signOut(); App.router.go('settings', true); } }, 'Sign out')
+      ]));
+    } else {
+      const emailInp = el('input', { class: 'inp', type: 'email', placeholder: 'you@email.com' });
+      const codeRow = el('div', { style: 'display:none;margin-top:8px;gap:8px', class: 'qa' });
+      const codeInp = el('input', { class: 'inp', style: 'max-width:140px', placeholder: '6-digit code' });
+      const sendBtn = el('button', { class: 'btn sm', onclick: async () => {
+        if (!emailInp.value) return App.util.toast('Enter an email first');
+        sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+        const r = await App.auth.requestCode(emailInp.value.trim());
+        sendBtn.disabled = false; sendBtn.textContent = 'Send code';
+        if (r.ok) { codeRow.style.display = 'flex'; App.util.toast('Code sent — check your email'); } else App.util.toast('Failed: ' + r.error);
+      } }, 'Send code');
+      const verifyBtn = el('button', { class: 'btn rosso', onclick: async () => {
+        const r = await App.auth.verifyCode(emailInp.value.trim(), codeInp.value.trim());
+        if (r.ok) { App.util.toast('Signed in ✓'); App.router.go('settings', true); } else App.util.toast('Failed: ' + r.error);
+      } }, 'Verify & sign in');
+      codeRow.appendChild(codeInp); codeRow.appendChild(verifyBtn);
+      authBox.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Sign in (required for sync — scopes your data to your account only)' }), emailInp]));
+      authBox.appendChild(el('div', { class: 'qa' }, [sendBtn]));
+      authBox.appendChild(codeRow);
+    }
+
+    const stat = App.sync.status();
+    const status = el('div', { class: 'mono muted', style: 'font-size:11px;margin:10px 0', text:
+      'Status: ' + (stat.enabled ? 'ENABLED & signed in' : (!stat.signedIn ? 'sign in required' : (stat.ready ? 'configured (flag off)' : 'not configured'))) });
+    const toggle = el('label', { class: 'fld', style: 'display:flex;gap:8px;align-items:center' }, [
+      (function () { const cb = el('input', { type: 'checkbox', checked: c.features.cloudSync ? 'checked' : null, data: { key: '_enable' } }); return cb; })(),
+      el('span', { class: 'lb', style: 'margin:0', text: 'Enable cloud sync' })
+    ]);
+    const wrap = el('div', {}, [
+      el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-bottom:10px', html:
+        'Free Supabase + Cloudflare. Paste your project URL &amp; anon key, run the SQL in <b>HOSTING.md</b> (creates the table with row-level security scoped to your account), sign in below, enable the flag, Save.' }),
+      body, authBox, toggle, status,
+      el('div', { class: 'qa' }, [
+        el('button', { class: 'btn sm rosso', onclick: save }, 'Save cloud config'),
+        el('button', { class: 'btn sm ghost', onclick: doTest }, '🔌 Test connection'),
+        el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.push(); App.util.toast(r.ok ? 'Pushed to cloud ↑' : 'Push failed: ' + r.reason); } }, '↑ Push now'),
+        el('button', { class: 'btn sm ghost', onclick: () => App.sync.syncNow() }, '↕ Sync now')
+      ])
+    ]);
+    function save() {
+      const patch = {};
+      body.querySelectorAll('[data-key]').forEach(i => patch[i.dataset.key] = i.value.trim());
+      cfg.set({ cloud: Object.assign({}, cl, patch) });
+      cfg.setPath('features', 'cloudSync', toggle.querySelector('input').checked);
+      App.util.toast('Cloud config saved'); App.sync.init(); App.router.go('settings', true);
+    }
+    async function doTest() { const r = await App.sync.test(); App.util.toast(r.ok ? (r.empty ? 'Connected ✓ (no row yet)' : 'Connected ✓ cloud row found') : 'Failed: ' + (r.reason || 'check URL/key/RLS/sign-in')); }
+    return wrap;
+  }
+  /* ---------------- Shipped vs. Planned (no fake stub toggles) ---------------- */
+  function featureList(c) {
+    const shipped = [
+      'Multi-vehicle data layer', 'Parts / Diagnostics / Service Book / Fuel / Budget / Planner',
+      'Workshops / Suppliers / Inventory / Documents', 'Global search', 'JSON backup + restore + rolling snapshots',
+      'Cloud sync with Supabase Auth + row-level security (once you sign in above)'
+    ];
+    const planned = ['OBD-II Live Diagnostics', 'AI Maintenance Advisor (currently: canned rule-based answers only, not a real AI)',
+      'Expense Forecasting', 'VIN Decoder', 'OCR Invoice Scanner', 'Barcode / QR Parts Scanner', 'Multi-user Collaboration'];
+    return el('div', {}, [
+      el('div', { class: 'h-disp', style: 'font-size:13px;margin-bottom:6px', text: '✓ Shipped' }),
+      el('ul', { style: 'margin:0 0 14px 18px;font-size:12.5px;line-height:1.7' }, shipped.map(s => el('li', { text: s }))),
+      el('div', { class: 'h-disp', style: 'font-size:13px;margin-bottom:6px;color:var(--ink-soft)', text: '◷ Planned — not implemented yet' }),
+      el('ul', { style: 'margin:0 0 0 18px;font-size:12.5px;line-height:1.7;color:var(--ink-soft)' }, planned.map(s => el('li', { text: s })))
+    ]);
+  }
+
+  function section(title, node) {
+    return el('details', { class: 'exp', open: 'open' }, [el('summary', { text: title }), el('div', { class: 'exp-body' }, [node])]);
+  }
+  function vehForm(v) {
+    const fields = [['make', 'Make'], ['model', 'Model'], ['year', 'Year'], ['vin', 'VIN'], ['engine', 'Engine'], ['transmission', 'Transmission'], ['mileage', 'Mileage (km)'], ['wheels', 'Wheels'], ['insuranceExpiry', 'Insurance expiry (date)'], ['licenseExpiry', 'License expiry (date)']];
+    const body = el('div', { class: 'grid-3' });
+    fields.forEach(f => body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: f[1] }), el('input', { class: 'inp', value: v[f[0]] == null ? '' : v[f[0]], data: { key: f[0] } })])));
+    const wrap = el('div', {}, [body, el('button', { class: 'btn rosso', style: 'margin-top:8px', onclick: () => { const p = {}; body.querySelectorAll('[data-key]').forEach(i => p[i.dataset.key] = i.dataset.key === 'mileage' || i.dataset.key === 'year' ? +i.value : i.value); App.store.setVeh(p); App.util.toast('Vehicle saved'); } }, 'Save Vehicle')]);
+    return wrap;
+  }
+  function prefSelect(label, opts, cur, fn) {
+    const s = App._selectFrom('x', opts, cur); s.onchange = () => fn(s.value);
+    return el('label', { class: 'fld' }, [el('span', { class: 'lb', text: label }), s]);
+  }
+  function prefText(label, cur, fn) {
+    const i = el('input', { class: 'inp', value: cur }); i.onchange = () => fn(i.value);
+    return el('label', { class: 'fld' }, [el('span', { class: 'lb', text: label }), i]);
+  }
+})();
+
+</script>
+
+<script>
+/* ==== js/app.js ==== */
+/* ============================================================
+   Bootstrap — load config + store, mount router, wire the
+   notification bell. Modules self-register on load (they run
+   before this file per the include order in index.html/build).
+   ============================================================ */
+(function () {
+  App.config.load();
+  App.store.load();
+  // auto-snapshot once per session for safety
+  try { App.store.snapshot('session-open'); } catch (e) { }
+
+  App.router.start();
+  wireBell();
+
+  // cloud sync (no-op unless configured + enabled in Settings)
+  try { App.sync.init(); } catch (e) { }
+
+  App.store.subscribe(() => updateBell());
+
+  function wireBell() {
+    const { el } = App.util;
+    const topbar = App.util.$('.topbar');
+    if (!topbar) return;
+    const panel = el('div', { class: 'notif-panel', id: 'notifPanel' });
+    const btn = el('button', { class: 'icon-btn bell', 'aria-label': 'Notifications', onclick: () => { renderPanel(panel); panel.classList.toggle('open'); } }, App.config.icon('notifications'));
+    const wrap = el('div', { style: 'position:relative' }, [btn, panel]);
+    // insert before theme button (after search)
+    const spacer = topbar.querySelector('.spacer');
+    topbar.insertBefore(wrap, spacer.nextSibling.nextSibling || null);
+    document.addEventListener('click', e => { if (!wrap.contains(e.target)) panel.classList.remove('open'); });
+    updateBell();
+  }
+  function updateBell() {
+    const btn = App.util.$('.bell'); if (!btn) return;
+    const n = App.notify.count();
+    let dot = btn.querySelector('.dot');
+    if (n > 0) { if (!dot) { dot = App.util.el('span', { class: 'dot' }); btn.appendChild(dot); } dot.textContent = n; }
+    else if (dot) dot.remove();
+  }
+  function renderPanel(panel) {
+    const { el } = App.util;
+    const alerts = App.notify.evaluate();
+    panel.innerHTML = '';
+    panel.appendChild(el('div', { style: 'padding:10px 12px;border-bottom:1.5px solid var(--ink)', class: 'h-disp', text: 'Notifications (' + alerts.length + ')' }));
+    if (!alerts.length) panel.appendChild(el('div', { class: 'pad muted mono', style: 'font-size:12px', text: 'All clear.' }));
+    alerts.forEach(a => panel.appendChild(el('div', { class: 'sr-item' }, [
+      el('div', { class: 't', text: a.title }), el('div', { class: 'm', text: (a.kind || '').toUpperCase() + ' · ' + a.detail })
+    ])));
+  }
+
+  // keyboard: '/' focuses search
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      const s = App.util.$('.search-box input'); if (s) { e.preventDefault(); s.focus(); }
+    }
+  });
+})();
+
+</script>
+
+</body>
+</html>

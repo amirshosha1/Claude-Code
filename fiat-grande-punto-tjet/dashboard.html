@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grande Punto T-Jet — Restoration Dossier</title>
+<style>
+  :root{
+    --paper:#ece5d6;
+    --card:#f6f1e6;
+    --card2:#efe8d8;
+    --ink:#211c17;
+    --ink-soft:#6c6355;
+    --line:#c9bfa8;
+    --line-strong:#a89b7d;
+    --rosso:#b02418;
+    --rosso-deep:#7c1710;
+    --amber:#c07a12;
+    --olive:#5c6b3a;
+    --steel:#3f6377;
+    --green:#4a6d2f;
+    --violet:#6b4a8f;
+    --stamp:#b02418;
+    --mono:ui-monospace,'Roboto Mono','SF Mono',Menlo,Consolas,monospace;
+    --disp:'Arial Narrow','Roboto Condensed','Oswald',system-ui,sans-serif;
+    --sans:system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);color:var(--ink);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:
+      linear-gradient(rgba(168,155,125,.10) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(168,155,125,.10) 1px,transparent 1px);
+    background-size:26px 26px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:radial-gradient(circle at 50% 0%,rgba(176,36,24,.06),transparent 55%);
+  }
+  /* grain */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;
+    background-image:radial-gradient(#000 0.6px,transparent 0.6px);background-size:3px 3px;
+  }
+  main{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 18px 80px}
+
+  /* ---------- MASTHEAD ---------- */
+  header{padding:30px 0 8px;position:relative}
+  .dossier-no{
+    font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--rosso);display:inline-flex;align-items:center;gap:8px;
+  }
+  .dossier-no::before{content:"";width:26px;height:2px;background:var(--rosso)}
+  h1{
+    font-family:var(--disp);font-weight:700;text-transform:uppercase;
+    font-size:clamp(38px,9vw,88px);line-height:.86;letter-spacing:.005em;margin:10px 0 4px;
+    color:var(--ink);
+  }
+  h1 em{font-style:normal;color:var(--rosso);position:relative}
+  .subtitle{font-family:var(--mono);font-size:12px;color:var(--ink-soft);letter-spacing:.04em}
+  .subtitle .ar{font-family:var(--sans);direction:rtl}
+  .masthead-rule{height:3px;background:var(--ink);margin:16px 0 0;position:relative}
+  .masthead-rule::after{content:"";position:absolute;left:0;top:0;height:3px;width:38%;background:var(--rosso)}
+
+  .spec-strip{display:flex;flex-wrap:wrap;gap:0;margin-top:16px;border:1.5px solid var(--ink);background:var(--card)}
+  .spec-cell{flex:1 1 120px;padding:9px 12px;border-right:1px solid var(--line);min-width:120px}
+  .spec-cell:last-child{border-right:none}
+  .spec-cell .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .spec-cell .v{font-family:var(--disp);font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.02em;margin-top:3px}
+  .spec-cell .v small{color:var(--rosso)}
+
+  /* odometer */
+  .odo-wrap{display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .odo{display:flex;gap:3px}
+  .odo .d{
+    font-family:var(--mono);font-weight:700;font-size:26px;color:#f1ead9;background:var(--ink);
+    padding:3px 7px;border-radius:3px;box-shadow:inset 0 -6px 8px rgba(0,0,0,.4),inset 0 6px 8px rgba(255,255,255,.06);
+  }
+  .odo-lab{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--ink-soft);text-transform:uppercase}
+
+  /* ---------- TABS ---------- */
+  nav.tabs{
+    position:sticky;top:0;z-index:40;display:flex;gap:0;flex-wrap:wrap;margin-top:22px;
+    background:var(--paper);border-bottom:3px solid var(--ink);padding-top:8px;
+  }
+  .tab-btn{
+    font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:13px;
+    background:transparent;color:var(--ink-soft);border:1.5px solid var(--line);border-bottom:none;
+    border-radius:7px 7px 0 0;padding:10px 15px 12px;cursor:pointer;transition:all .15s;
+    margin-right:5px;margin-bottom:-3px;position:relative;display:flex;align-items:center;gap:7px;
+  }
+  .tab-btn .n{font-family:var(--mono);font-size:9px;color:var(--rosso);letter-spacing:.1em}
+  .tab-btn:hover{color:var(--ink);background:var(--card2)}
+  .tab-btn.active{
+    background:var(--card);color:var(--ink);border-color:var(--ink);border-bottom:3px solid var(--card);
+    box-shadow:0 -3px 0 var(--rosso) inset;
+  }
+  .panel-wrap{margin-top:26px}
+  .tabpanel{display:none}
+  .tabpanel.active{display:block;animation:rise .45s cubic-bezier(.2,.7,.3,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:2px 0 20px}
+  .sec-head .fileno{font-family:var(--mono);font-size:11px;color:var(--rosso);letter-spacing:.2em;border:1.5px solid var(--rosso);padding:3px 7px;border-radius:3px}
+  .sec-head h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:clamp(20px,3vw,28px)}
+  .sec-head .rule{flex:1;height:2px;background:var(--line-strong)}
+  .sec-head .ar{font-family:var(--sans);color:var(--ink-soft);font-size:14px;direction:rtl}
+
+  /* staggered reveal helper */
+  .stagger>*{opacity:0;transform:translateY(12px);animation:rise .5s forwards}
+  .stagger>*:nth-child(1){animation-delay:.04s}.stagger>*:nth-child(2){animation-delay:.09s}
+  .stagger>*:nth-child(3){animation-delay:.14s}.stagger>*:nth-child(4){animation-delay:.19s}
+  .stagger>*:nth-child(5){animation-delay:.24s}.stagger>*:nth-child(6){animation-delay:.29s}
+  .stagger>*:nth-child(n+7){animation-delay:.33s}
+
+  /* ---------- GAUGES ---------- */
+  .gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+  .dial{
+    background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:18px 14px 14px;text-align:center;
+    position:relative;box-shadow:4px 4px 0 rgba(33,28,23,.10);
+  }
+  .dial svg{width:100%;max-width:184px}
+  .dial .lab{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
+  .dial .val{font-family:var(--disp);font-weight:700;font-size:30px;margin-top:2px;letter-spacing:.02em}
+  .dial .sub{font-family:var(--mono);font-size:10px;color:var(--ink-soft);margin-top:5px;line-height:1.5}
+  .needle{transform-origin:100px 100px;transition:transform 1.5s cubic-bezier(.22,1.2,.34,1)}
+  .arc{transition:stroke-dashoffset 1.5s cubic-bezier(.3,1,.3,1)}
+
+  /* alert / stamp box */
+  .stamp-box{
+    margin-top:18px;background:var(--card);border:2px solid var(--rosso);border-radius:10px;
+    padding:0;position:relative;overflow:hidden;
+  }
+  .stamp-box .bar{background:var(--rosso);color:#f4ecdd;font-family:var(--disp);font-weight:700;
+    text-transform:uppercase;letter-spacing:.08em;font-size:14px;padding:8px 16px;display:flex;justify-content:space-between;align-items:center}
+  .stamp-box .bar .tag{font-family:var(--mono);font-size:10px;letter-spacing:.2em;opacity:.85}
+  .stamp-box .body{padding:14px 16px;font-size:13.5px;line-height:1.75;direction:rtl;text-align:right}
+  .stamp-box .body b{color:var(--rosso-deep)}
+
+  .belt{margin-top:16px;background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:18px;box-shadow:4px 4px 0 rgba(33,28,23,.08)}
+  .belt-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline}
+  .belt-top h3{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:16px}
+  .belt-top .due{font-family:var(--mono);color:var(--amber);font-size:11.5px}
+  .track{position:relative;height:26px;margin-top:13px;border:1.5px solid var(--ink);border-radius:4px;background:repeating-linear-gradient(90deg,transparent 0 24px,var(--line) 24px 25px)}
+  .track-fill{position:absolute;top:0;left:0;bottom:0;width:0;background:repeating-linear-gradient(-45deg,var(--rosso-deep) 0 9px,var(--rosso) 9px 18px);transition:width 1.8s cubic-bezier(.3,1,.3,1)}
+  .track-marks{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 8px;font-family:var(--mono);font-size:9.5px;color:var(--ink);font-weight:700;mix-blend-mode:multiply}
+  .belt-note{margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);line-height:1.7}
+
+  /* ---------- PRIORITY BOARD ---------- */
+  .filters{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+  .fbtn{font-family:var(--mono);font-size:11px;letter-spacing:.04em;cursor:pointer;background:var(--card);color:var(--ink-soft);
+    border:1.5px solid var(--line-strong);border-radius:4px;padding:7px 13px;transition:all .15s}
+  .fbtn:hover{border-color:var(--ink);color:var(--ink)}
+  .fbtn.active{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+  .tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(288px,1fr));gap:14px}
+  .task{background:var(--card);border:1.5px solid var(--ink);border-radius:9px;padding:0;overflow:hidden;
+    transition:transform .16s,box-shadow .16s;box-shadow:3px 3px 0 rgba(33,28,23,.09)}
+  .task:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(33,28,23,.14)}
+  .task.hidden{display:none}
+  .task .spine{height:6px}
+  .p-crit .spine{background:var(--rosso)}
+  .p-high .spine{background:var(--amber)}
+  .p-med .spine{background:var(--steel)}
+  .p-plan .spine{background:var(--violet)}
+  .p-done .spine{background:var(--green)}
+  .task .inner{padding:13px 14px 14px}
+  .t-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .t-title{font-family:var(--disp);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.02em;line-height:1.05}
+  .t-badge{font-family:var(--mono);font-size:9px;padding:3px 6px;border-radius:3px;white-space:nowrap;border:1px solid;font-weight:700}
+  .p-crit .t-badge{color:var(--rosso);border-color:var(--rosso);background:rgba(176,36,24,.07)}
+  .p-high .t-badge{color:var(--amber);border-color:var(--amber);background:rgba(192,122,18,.08)}
+  .p-med .t-badge{color:var(--steel);border-color:var(--steel);background:rgba(63,99,119,.08)}
+  .p-plan .t-badge{color:var(--violet);border-color:var(--violet);background:rgba(107,74,143,.08)}
+  .p-done .t-badge{color:var(--green);border-color:var(--green);background:rgba(74,109,47,.08)}
+  .t-ar{font-family:var(--sans);color:var(--ink-soft);font-size:12.5px;margin-top:4px;direction:rtl;text-align:right}
+  .t-body{font-size:12.5px;color:#413a30;line-height:1.6;margin-top:9px;border-top:1px dashed var(--line);padding-top:9px}
+
+  /* ---------- BUYING LIST ---------- */
+  .buy-note{border:1.5px solid var(--steel);border-radius:9px;background:rgba(63,99,119,.06);padding:13px 15px;
+    font-size:12.5px;line-height:1.7;color:#3d3a33;margin-bottom:16px;direction:rtl;text-align:right}
+  .buy-note b{color:var(--steel)}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .vd{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;border:1px solid;letter-spacing:.04em;white-space:nowrap}
+  .vd.buy{color:var(--green);border-color:var(--green);background:rgba(74,109,47,.08)}
+  .vd.hold{color:var(--amber);border-color:var(--amber);background:rgba(192,122,18,.08)}
+  .vd.stop{color:var(--rosso);border-color:var(--rosso);background:rgba(176,36,24,.09)}
+  .vd.later{color:var(--violet);border-color:var(--violet);background:rgba(107,74,143,.08)}
+  .buy-group{margin-bottom:24px}
+  .buy-group>h3{font-family:var(--disp);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.05em;
+    margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--ink);direction:rtl;text-align:right}
+  .bl-scroll{overflow-x:auto;border:1.5px solid var(--ink);border-radius:8px}
+  table.bl{width:100%;border-collapse:collapse;min-width:940px;background:var(--card)}
+  table.bl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--paper);
+    text-align:left;padding:9px 10px;background:var(--ink);white-space:nowrap;position:sticky;top:0}
+  table.bl td{padding:9px 10px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
+  table.bl tr:last-child td{border-bottom:none}
+  table.bl tr:nth-child(even) td{background:rgba(200,190,165,.14)}
+  table.bl tr.bought td{opacity:.5}
+  table.bl tr.bought .nm b{text-decoration:line-through}
+  .nm b{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:.01em}
+  .nm small{display:block;font-family:var(--sans);color:var(--ink-soft);margin-top:1px;direction:rtl}
+  .nm .dq{display:block;font-family:var(--mono);font-size:10px;color:var(--rosso);margin-top:3px}
+  .pn{font-family:var(--mono);font-size:11.5px;color:var(--rosso-deep);font-weight:700;white-space:nowrap}
+  .pn .vfy{display:block;color:var(--amber);font-weight:400;font-size:9.5px;white-space:normal}
+  .fits{font-size:11px;color:var(--ink-soft);line-height:1.5;max-width:210px}
+  .intl{font-family:var(--mono);font-size:11px;color:var(--steel);white-space:nowrap}
+  .qty-in,.price-in{font-family:var(--mono);font-size:12.5px;background:#fffdf7;color:var(--ink);
+    border:1.5px solid var(--line-strong);border-radius:4px;padding:6px 7px}
+  .qty-in{width:46px;text-align:center}
+  .price-in{width:92px;text-align:right}
+  .price-in:focus,.qty-in:focus{outline:none;border-color:var(--rosso);box-shadow:0 0 0 2px rgba(176,36,24,.14)}
+  .line-total{font-family:var(--mono);font-size:12px;color:var(--ink);font-weight:700;white-space:nowrap}
+  .buy-chk{width:19px;height:19px;accent-color:var(--green);cursor:pointer}
+  .totals{position:sticky;bottom:0;margin-top:16px;background:var(--ink);color:var(--paper);border-radius:9px;
+    padding:15px 18px;display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center;box-shadow:0 -6px 20px rgba(33,28,23,.25)}
+  .totals .tt{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+  .totals .tt b{display:block;font-family:var(--disp);font-size:22px;letter-spacing:.02em;margin-top:3px;opacity:1}
+  .totals .tt.plan b{color:#f0c98a}.totals .tt.spent b{color:#a9d98a}.totals .tt.remain b{color:#f0a08a}
+  .reset{background:transparent;border:1.5px solid var(--line-strong);color:var(--paper);font-family:var(--mono);
+    font-size:10px;padding:7px 12px;border-radius:4px;cursor:pointer}
+  .reset:hover{border-color:var(--rosso);color:#f0a08a}
+
+  /* ---------- TIMELINE ---------- */
+  .timeline{position:relative;margin-left:10px;padding-left:30px}
+  .timeline::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--ink)}
+  .ev{position:relative;padding-bottom:26px}
+  .ev:last-child{padding-bottom:0}
+  .ev::before{content:"";position:absolute;left:-34px;top:3px;width:13px;height:13px;background:var(--card);border:3px solid var(--ink);border-radius:2px;transform:rotate(45deg)}
+  .ev.now::before{background:var(--rosso);border-color:var(--rosso);animation:beat 1.7s infinite}
+  @keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(176,36,24,.4)}50%{box-shadow:0 0 0 9px rgba(176,36,24,0)}}
+  .ev-km{font-family:var(--mono);font-size:11px;color:var(--rosso);letter-spacing:.1em;font-weight:700}
+  .ev.now .ev-km{color:var(--rosso)}
+  .ev h4{font-family:var(--disp);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.03em;margin:3px 0 4px}
+  .ev p{font-size:12.5px;color:#413a30;line-height:1.6;max-width:620px}
+  .ev .paid{font-family:var(--mono);font-size:11px;color:var(--ink);margin-top:5px;font-weight:700}
+  .ev .paid span{color:var(--green)}
+
+  /* ---------- BUDGET ---------- */
+  .budget-grid{display:grid;gap:12px}
+  .brow{background:var(--card);border:1.5px solid var(--ink);border-radius:9px;padding:14px 16px;box-shadow:3px 3px 0 rgba(33,28,23,.08)}
+  .brow-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;align-items:baseline;margin-bottom:9px}
+  .brow-top .nm2{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:15px}
+  .brow-top .amt{font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+  .brow-top .amt b{color:var(--ink);font-size:14px}
+  .bbar{height:14px;border:1.5px solid var(--ink);border-radius:3px;background:#fffdf7;overflow:hidden}
+  .bfill{height:100%;width:0;transition:width 1.5s cubic-bezier(.3,1,.3,1)}
+  .bf-red{background:repeating-linear-gradient(-45deg,var(--rosso-deep) 0 8px,var(--rosso) 8px 16px)}
+  .bf-amber{background:repeating-linear-gradient(-45deg,#8a5709 0 8px,var(--amber) 8px 16px)}
+  .bf-steel{background:repeating-linear-gradient(-45deg,#2c4756 0 8px,var(--steel) 8px 16px)}
+  .bf-violet{background:repeating-linear-gradient(-45deg,#4d3568 0 8px,var(--violet) 8px 16px)}
+  .bnote{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin-top:7px}
+  .big-total{margin-top:10px;text-align:right;font-family:var(--mono);font-size:12px;color:var(--ink-soft);direction:rtl}
+  .big-total b{color:var(--rosso);font-size:15px}
+
+  /* ---------- CHECKLIST ---------- */
+  .check-wrap{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:18px;box-shadow:4px 4px 0 rgba(33,28,23,.08)}
+  .check-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .check-head h3{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:16px}
+  .check-prog{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+  .check-prog b{color:var(--green);font-size:15px}
+  .cl{list-style:none;display:grid;gap:7px}
+  .cl li{display:flex;gap:11px;align-items:flex-start;background:var(--card2);border:1.5px solid var(--line-strong);
+    border-radius:6px;padding:10px 12px;cursor:pointer;transition:border-color .13s;user-select:none}
+  .cl li:hover{border-color:var(--ink)}
+  .box{flex:0 0 20px;height:20px;margin-top:1px;border:2px solid var(--ink-soft);border-radius:3px;
+    display:grid;place-items:center;font-size:13px;color:transparent;transition:all .15s}
+  .cl li.done .box{background:var(--green);border-color:var(--green);color:var(--paper)}
+  .cl li .txt{font-size:13px;line-height:1.45}
+  .cl li .txt small{display:block;font-family:var(--mono);font-size:10px;color:var(--ink-soft);margin-top:2px}
+  .cl li.done .txt{text-decoration:line-through;color:var(--ink-soft)}
+  .reset.dark{color:var(--ink-soft);border-color:var(--line-strong);margin-top:14px}
+  .reset.dark:hover{color:var(--rosso);border-color:var(--rosso)}
+
+  footer{margin-top:54px;padding-top:18px;border-top:2px solid var(--ink);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);line-height:1.8;text-align:center}
+  footer b{color:var(--rosso)}
+</style>
+</head>
+<body>
+<main>
+
+  <!-- MASTHEAD -->
+  <header>
+    <div class="dossier-no">Restoration Dossier · № GP-2010-TJET · Cairo · Rev. 12-Jul-2026</div>
+    <h1>GRANDE PUNTO <em>T-JET</em></h1>
+    <div class="subtitle">1.4 16v Turbo · 198A4000 · <span class="ar">فيات جراند بونتو — ملف الترميم الكامل</span></div>
+    <div class="masthead-rule"></div>
+    <div class="spec-strip">
+      <div class="spec-cell"><div class="k">Engine</div><div class="v">1.4 T-JET <small>120hp</small></div></div>
+      <div class="spec-cell"><div class="k">Year</div><div class="v">2010</div></div>
+      <div class="spec-cell"><div class="k">Fuel</div><div class="v">95 RON</div></div>
+      <div class="spec-cell"><div class="k">Oil</div><div class="v">5W-40 C3</div></div>
+      <div class="spec-cell"><div class="k">Wheels</div><div class="v">4×98 <small>ET35–43</small></div></div>
+    </div>
+    <div class="odo-wrap">
+      <div class="odo" id="odo"></div>
+      <div class="odo-lab">KM · عــداد</div>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="overview"><span class="n">01</span> Overview</button>
+    <button class="tab-btn" data-tab="board"><span class="n">02</span> Priorities</button>
+    <button class="tab-btn" data-tab="buy"><span class="n">03</span> Buying List</button>
+    <button class="tab-btn" data-tab="history"><span class="n">04</span> History</button>
+    <button class="tab-btn" data-tab="budget"><span class="n">05</span> Budget</button>
+    <button class="tab-btn" data-tab="checklist"><span class="n">06</span> Checklist</button>
+  </nav>
+
+  <div class="panel-wrap">
+
+  <!-- ===== OVERVIEW ===== -->
+  <div class="tabpanel active" id="tab-overview">
+    <div class="sec-head"><span class="fileno">01</span><h2>Instrument Cluster</h2><div class="rule"></div><span class="ar">حالة العربية</span></div>
+    <div class="gauges stagger">
+      <div class="dial">
+        <svg viewBox="0 0 200 120">
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#d8cdb2" stroke-width="12" stroke-linecap="round"/>
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#c07a12" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="55"/>
+          <line x1="100" y1="100" x2="100" y2="36" stroke="#211c17" stroke-width="3.5" stroke-linecap="round" class="needle" data-pct="55" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="7" fill="#b02418"/>
+        </svg>
+        <div class="val" style="color:var(--amber)">55%</div>
+        <div class="lab">Health / Safety</div>
+        <div class="sub">post-impact CAN fault · coolant leak · torn hose</div>
+      </div>
+      <div class="dial">
+        <svg viewBox="0 0 200 120">
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#d8cdb2" stroke-width="12" stroke-linecap="round"/>
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#c07a12" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="61"/>
+          <line x1="100" y1="100" x2="100" y2="36" stroke="#211c17" stroke-width="3.5" stroke-linecap="round" class="needle" data-pct="61" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="7" fill="#b02418"/>
+        </svg>
+        <div class="val" style="color:var(--amber)">61%</div>
+        <div class="lab">Timing Belt Life Used</div>
+        <div class="sub">43,000 of ~70,000 km since Oct-2023</div>
+      </div>
+      <div class="dial">
+        <svg viewBox="0 0 200 120">
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#d8cdb2" stroke-width="12" stroke-linecap="round"/>
+          <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#b02418" stroke-width="12" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" class="arc" data-pct="0"/>
+          <line x1="100" y1="100" x2="100" y2="36" stroke="#211c17" stroke-width="3.5" stroke-linecap="round" class="needle" data-pct="0" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="100" r="7" fill="#b02418"/>
+        </svg>
+        <div class="val" style="color:var(--rosso)" id="catchupPct">0%</div>
+        <div class="lab">Phase-1 Progress</div>
+        <div class="sub">driven by the Checklist tab</div>
+      </div>
+    </div>
+
+    <div class="stamp-box">
+      <div class="bar"><span>عطل السلامة — الأسبوع ده</span><span class="tag">PHASE 1 · CRITICAL</span></div>
+      <div class="body">
+        <b>١) تسريب قربة المياه</b> ← قربة + غطاء + اختبار ضغط + مية Paraflu.
+        <b>٢) خرطوم السحب المقطوع (OEM 51822558)</b> ← خطر على التيربو + المتهم في استهلاك الـ١٠ لتر.
+        <b>٣) كهربا الصدمة (اتأكد بالسكان):</b> خبطة الجمب اليمين قفلت فلاج قطع البنزين + تلّفت سلك خلفي (شورت لمبات اللوحة B1023) → أعطال CAN متقطّعة. <b>ده إصلاح أسلاك + بطارية، مش موديول — متشتريش ECU.</b>
+      </div>
+    </div>
+
+    <div class="belt">
+      <div class="belt-top"><h3>⏱ Next Timing Belt — سير التقسيمة</h3><div class="due">DUE ~172–180,000 KM · OR OCT 2027</div></div>
+      <div class="track"><div class="track-fill" data-w="63"></div>
+        <div class="track-marks"><span>112k · OCT 23</span><span>▲ 155k NOW</span><span>180k LIMIT</span></div></div>
+      <div class="belt-note">Interference engine — snapped belt = bent valves. Bundle at next job: tensioner + water pump + accessory belt. Coolant switch to Paraflu UP happens now with the leak repair.</div>
+    </div>
+  </div>
+
+  <!-- ===== PRIORITIES ===== -->
+  <div class="tabpanel" id="tab-board">
+    <div class="sec-head"><span class="fileno">02</span><h2>Priority Board</h2><div class="rule"></div><span class="ar">لوحة الأولويات</span></div>
+    <div class="filters">
+      <button class="fbtn active" data-f="all">ALL</button>
+      <button class="fbtn" data-f="p-crit">● CRITICAL</button>
+      <button class="fbtn" data-f="p-high">● HIGH</button>
+      <button class="fbtn" data-f="p-med">● MEDIUM</button>
+      <button class="fbtn" data-f="p-plan">● PHASE 2–3</button>
+      <button class="fbtn" data-f="p-done">● DONE</button>
+    </div>
+    <div class="tasks stagger" id="taskWrap"></div>
+  </div>
+
+  <!-- ===== BUYING LIST ===== -->
+  <div class="tabpanel" id="tab-buy">
+    <div class="sec-head"><span class="fileno">03</span><h2>Buying List</h2><div class="rule"></div><span class="ar">قائمة الشراء — اكتب سعرك</span></div>
+    <div class="buy-note">💡 <b>اكتب السعر الفعلي</b> في خانة "سعرك EGP" — بيتحفظ تلقائيًا والإجمالي بيتحسب لوحده. عمود 🌍 متوسط أوروبي <b>للمقارنة فقط</b>. <b class="vfy" style="color:var(--rosso)">⚠️ أكّد كل رقم OEM بالشاسيه على ePER</b> — نسخة التوربو بتختلف. عمود "يركب على" بيوسّع بحثك (شاسيه مشترك مع أوبل كورسا D).</div>
+    <div class="legend">
+      <span><span class="vd buy">✓ BUY</span> اشتري دلوقتي</span>
+      <span><span class="vd hold">⏸ HOLD</span> استنى الفحص</span>
+      <span><span class="vd stop">✕ STOP</span> متشتريش</span>
+      <span><span class="vd later">◷ LATER</span> مرحلة ٢–٣</span>
+    </div>
+    <div id="buyGroups"></div>
+    <div class="totals">
+      <div class="tt plan">إجمالي بأسعارك<b id="totPlan">EGP 0</b></div>
+      <div class="tt spent">اتشترى<b id="totSpent">EGP 0</b></div>
+      <div class="tt remain">متبقي<b id="totRemain">EGP 0</b></div>
+      <button class="reset" id="buyReset">⟲ مسح الأسعار</button>
+    </div>
+  </div>
+
+  <!-- ===== HISTORY ===== -->
+  <div class="tabpanel" id="tab-history">
+    <div class="sec-head"><span class="fileno">04</span><h2>Service History</h2><div class="rule"></div><span class="ar">تاريخ الصيانة</span></div>
+    <div class="timeline stagger">
+      <div class="ev"><div class="ev-km">SEP 2021 · 102,000 KM</div><h4>Front Suspension Overhaul</h4><p>Shocks, top mounts, links, arms, inner tie rod + alignment. Now 53k km old — re-inspection due.</p><div class="paid">PAID <span>EGP 4,195</span></div></div>
+      <div class="ev"><div class="ev-km">OCT 2023 · 112,000 KM</div><h4>Timing Belt + Water Pump + Plugs</h4><p>Belt & tensioner kit, accessory belt, water pump, plugs. Coolant refilled (Mannol).</p><div class="paid">PAID <span>EGP 5,400</span></div></div>
+      <div class="ev"><div class="ev-km">~115–122,000 KM</div><h4>Fuel Pump + PCV Oil Separator</h4><p>Both classic T-Jet weak points, sorted.</p><div class="paid">PAID <span>EGP 3,100</span></div></div>
+      <div class="ev"><div class="ev-km">125,000 KM</div><h4>Clutch (LuK) + Mounts + Fluids</h4><p>Clutch kit, release bearing, 2 engine mounts + gearbox oil + brake fluid.</p><div class="paid">PAID <span>EGP 16,200</span></div></div>
+      <div class="ev"><div class="ev-km">128,000 KM</div><h4>Alternator</h4><p>Charging system renewed.</p><div class="paid">PAID <span>EGP 3,300</span></div></div>
+      <div class="ev"><div class="ev-km">~144,000 KM</div><h4>⚠ Rear-Right Impact</h4><p>Hit near the fuel tank, rear bumper pushed in. Latched the crash fuel-cutoff + damaged rear wiring → the ongoing CAN bus fault.</p></div>
+      <div class="ev"><div class="ev-km">NOV–DEC 2025 · 135–140,000 KM</div><h4>Flywheel + Front Brakes + Steering Rack</h4><p>Rear pads, flywheel, front discs & pads, steering rack.</p><div class="paid">PAID <span>EGP 15,800+</span></div></div>
+      <div class="ev"><div class="ev-km">149,000 KM</div><h4>Oil Change 5W-40</h4><p>Last oil service. Next ~157k.</p></div>
+      <div class="ev now"><div class="ev-km">JUL 2026 · 155,000 KM — أنت هنا</div><h4>Diagnostic Report + Phase 1</h4><p>Confirmed: expansion-tank leak, torn intake hose, post-impact CAN fault (scans). Symptomatic: brakes, suspension thud, right-side load noise, 10 L/100km, idle whistle.</p></div>
+    </div>
+  </div>
+
+  <!-- ===== BUDGET ===== -->
+  <div class="tabpanel" id="tab-budget">
+    <div class="sec-head"><span class="fileno">05</span><h2>Budget Board</h2><div class="rule"></div><span class="ar">الميزانية</span></div>
+    <div class="budget-grid stagger">
+      <div class="brow"><div class="brow-top"><span class="nm2">🔴 Confirmed + Catch-Up</span><span class="amt"><b id="bYour">اكتب أسعارك في تاب الشراء</b></span></div>
+        <div class="bbar"><div class="bfill bf-red" data-w="30"></div></div>
+        <div class="bnote">tank · hose · coolant · belt set · plugs · oil+filters · brake fluid · rear discs+pads · battery · rear-harness repair</div></div>
+      <div class="brow"><div class="brow-top"><span class="nm2">🟠 Probable — after tests</span><span class="amt"><b>test results decide</b></span></div>
+        <div class="bbar"><div class="bfill bf-amber" data-w="60"></div></div>
+        <div class="bnote">radiator (pressure test) · CV joint/mount (load tests) · rear shocks (shake-down) · tires (DOT) · A/C · O2</div></div>
+      <div class="brow"><div class="brow-top"><span class="nm2">🟡 Scheduled Reserve</span><span class="amt"><b>~Oct 2027</b></span></div>
+        <div class="bbar"><div class="bfill bf-steel" data-w="20"></div></div>
+        <div class="bnote">next timing belt + tensioner + water pump + accessory belt</div></div>
+      <div class="brow"><div class="brow-top"><span class="nm2">🟣 Phase 2–3 — Comfort & Looks</span><span class="amt"><b>after mechanical closes</b></span></div>
+        <div class="bbar"><div class="bfill bf-violet" data-w="45"></div></div>
+        <div class="bnote">leather · 9" Android + speakers + subwoofer amp · polish · LED · cowl panel</div></div>
+    </div>
+    <div class="big-total">القاعدة: مفيش شراء برتقالي قبل الفحص → <b>التشخيص الأول، الفلوس بعدين</b></div>
+  </div>
+
+  <!-- ===== CHECKLIST ===== -->
+  <div class="tabpanel" id="tab-checklist">
+    <div class="sec-head"><span class="fileno">06</span><h2>Phase-1 Checklist</h2><div class="rule"></div><span class="ar">اضغط للتعليم — يتحفظ</span></div>
+    <div class="check-wrap">
+      <div class="check-head"><h3>🔧 Confirmed Failures + Catch-Up</h3><div class="check-prog"><b id="doneCount">0</b>/<span id="totCount">0</span> COMPLETE</div></div>
+      <ul class="cl" id="cl">
+        <li data-k="tank"><span class="box">✓</span><span class="txt">Expansion tank + cap + pressure test → radiator verdict<small>leak confirmed · refill Paraflu UP/G12+</small></span></li>
+        <li data-k="hose"><span class="box">✓</span><span class="txt">Air-intake hose 51822558 + clamps<small>torn — protects the original turbo</small></span></li>
+        <li data-k="beltset"><span class="box">✓</span><span class="txt">Accessory belt + tensioner + idler set<small>idle whistle · dealer: belt 650 + idler 450</small></span></li>
+        <li data-k="rearwire"><span class="box">✓</span><span class="txt">🔴 Repair REAR harness — B1023 plate-light short<small>impact zone · solder+heatshrink · start here</small></span></li>
+        <li data-k="battxt"><span class="box">✓</span><span class="txt">🔴 Battery replace (weak: 12.0V / 10.3V cranking)<small>drops CAN nodes — do early</small></span></li>
+        <li data-k="airbagcon"><span class="box">✓</span><span class="txt">Airbag ECU connector + ground — wiggle test<small>U1726 node drops · do NOT buy ECU</small></span></li>
+        <li data-k="loadnoise"><span class="box">✓</span><span class="txt">Load-noise tests: CV vs 3rd mount (NOT clutch)<small>circles · 4th-gear load · pry-bar</small></span></li>
+        <li data-k="oil"><span class="box">✓</span><span class="txt">Engine oil 5W-40 C3 + oil filter<small>last @149k → due ~157k</small></span></li>
+        <li data-k="filters"><span class="box">✓</span><span class="txt">Air filter + cabin filter<small>check airbox for dust from torn hose</small></span></li>
+        <li data-k="plugs"><span class="box">✓</span><span class="txt">Spark plugs ×4 — NGK 55212466<small>overdue at 43k km</small></span></li>
+        <li data-k="rearbrakes"><span class="box">✓</span><span class="txt">Rear discs + new pads<small>owner-confirmed worn</small></span></li>
+        <li data-k="fluid"><span class="box">✓</span><span class="txt">Brake fluid flush + caliper service<small>shared reservoir feeds clutch master · NOT master cyl</small></span></li>
+        <li data-k="smoke"><span class="box">✓</span><span class="txt">Smoke test for air/boost leaks<small>confirms consumption cause</small></span></li>
+        <li data-k="susp"><span class="box">✓</span><span class="txt">Suspension shake-down: front + rear<small>thud symptom · rear shocks likely</small></span></li>
+        <li data-k="tires"><span class="box">✓</span><span class="txt">Tire DOT dates + tread<small>&gt;5 yrs Egypt heat = replace</small></span></li>
+        <li data-k="ac"><span class="box">✓</span><span class="txt">A/C vent temp + leak test<small>diagnose before parts</small></span></li>
+        <li data-k="obd"><span class="box">✓</span><span class="txt">Full OBD scan — note which modules answer<small>clear crash flag AFTER wiring fix</small></span></li>
+      </ul>
+      <button class="reset dark" id="resetBtn">⟲ RESET CHECKLIST</button>
+    </div>
+  </div>
+
+  </div>
+
+  <footer>
+    FIAT GRANDE PUNTO T-JET · DOSSIER <b>GP-2010-TJET</b> · BUY ONCE, BUY RIGHT — اشتري مرة، اشتري صح<br>
+    verify every OEM number against VIN in ePER before purchase · 🌍 EU-average reference only · 95 RON only
+  </footer>
+</main>
+
+<script>
+(function(){
+  /* ---------- PRIORITY CARDS DATA ---------- */
+  var TASKS=[
+    ['p-crit','Coolant Leak — Tank','تسريب قربة المياه','🔴 CONFIRMED','Tank + cap → pressure test → radiator only if test confirms. Refill Paraflu UP/G12+. Until fixed: distilled top-ups, watch gauge, no hard pulls.'],
+    ['p-crit','Air-Intake Hose Torn','خرطوم السحب — 51822558','🔴 CONFIRMED','Unfiltered dust into the ORIGINAL 155k turbo = turbo killer. Prime suspect for 10 L/100km. Buy genuine, replace + all clamps.'],
+    ['p-crit','Post-Impact CAN Fault','عطل شبكة CAN بعد الخبطة','🔴 ROOT CAUSE','Rear-right impact (~144k) latched crash fuel-cutoff + damaged rear wiring. Scans: U1711/U0001, U0422, C1221, U1726, B1023. It is WIRING, not a dead module.'],
+    ['p-crit','B1023 Plate-Light Short','شورت لمبات اللوحة — مكان الخبطة','🔴 PRESENT','Number-plate lights short-to-ground, present, exactly where the bumper was pushed in. Concrete findable fault — START the wiring hunt here.'],
+    ['p-crit','Weak Battery','بطارية ضعيفة','🔴 REPLACE','Scan: rest ~12.0–12.25V, dips to 10.3V cranking. Low voltage drops CAN nodes intermittently. Cheap fix, do early. Do NOT buy an ECU.'],
+    ['p-high','Idle Whistle — Belt Set','صفير السلانسيه','🟠 REPLACE SET','Tensioner/idler bearing (43k km) or the torn hose. Replace belt + tensioner + idler as one set. Dealer: belt 650 + idler 450.'],
+    ['p-high','Load Noise Right 2nd/3rd','صوت تحميل يمين','🟠 DIAGNOSE','Ranked: inner CV (right) → 3rd engine mount → shaft bearing → clutch LAST (30k km young). Do NOT buy a clutch before tests.'],
+    ['p-high','Brakes: Weak + Pulling','ضعف فرامل + حدف','🟠 SERVICE PATH','Order: rear discs+pads → fluid flush → caliper sliders → runout on Dec-25 discs → THEN judge master/servo. Do NOT buy master (3500) first.'],
+    ['p-high','Thudding Over Bumps','هبدة في المطبات','🟠 INSPECT','Suspects: rear shocks (original @155k) + front mounts/bump stops. Shake-down first — do NOT pre-buy front shocks; avoid Chinese.'],
+    ['p-high','Fuel: 10 L/100km','استهلاك عالي','🟠 DIAGNOSE','Fix hose + plugs + air filter → re-measure → fuel trims → thermostat → O2 only if trims say so. No MAF on T-Jet (MAP-based).'],
+    ['p-high','Plugs + Oil + Filters','بوجيهات + زيت + فلاتر','🟠 DUE','Plugs overdue (43k). Oil last @149k → due ~157k. Air filter critical after the torn hose — check airbox for dust.'],
+    ['p-med','Turbo Boost Log','فحص التيربو','🟡 ORIGINAL','Original turbo + manifold. Boost log + shaft-play check after the hose fix — catch wear early.'],
+    ['p-med','Timing Belt (Scheduled)','سير التقسيمة','🟡 ~172–180K','Done @112k. Next ~172–180k or Oct 2027: belt + tensioner + water pump + accessory belt.'],
+    ['p-plan','Interior Refresh','تجديد الصالون','🟣 PHASE 2','Leather covers (front + rear bench), full deep clean incl. headliner + floor. Upholstery job, not a parts order.'],
+    ['p-plan','Audio System','شاشة + سماعات + صب ووفر','🟣 PHASE 2','9" Android unit + 4 door speakers + repair built-in subwoofer. Check boot amp/connector FIRST — usually the amp, not the sub.'],
+    ['p-plan','Exterior Detail','بوليش + كروم + فبرة','🟣 PHASE 3','Compound → polish → wax, headlight polish + UV seal, chrome, cowl/scuttle panel (confirmed broken — also protects the BSI).'],
+    ['p-plan','LED Lighting','ترقية LED','🟣 PHASE 3','Low + high (+ fogs). Philips Ultinon / Osram LEDriving ONLY — verify beam pattern on a wall. Cheap kits blind traffic.'],
+    ['p-done','Clutch + Flywheel + Gearbox Oil','دبرياج + فولام + زيت فتيس','🟢 DONE','LuK clutch @125k · flywheel @140k · gearbox oil @125k. Young and healthy.'],
+    ['p-done','Front Brakes · Steering · Alt · Fuel Pump · PCV','قطع اتعملت','🟢 DONE','Front discs/pads + rack @140k · alternator @128k · fuel pump @115k · PCV @~122k. EPS is electric — no hydraulic parts.']
+  ];
+  var tw=document.getElementById('taskWrap');
+  TASKS.forEach(function(t){
+    var d=document.createElement('div');d.className='task '+t[0];
+    d.innerHTML='<div class="spine"></div><div class="inner"><div class="t-head"><span class="t-title">'+t[1]+'</span><span class="t-badge">'+t[3]+'</span></div><div class="t-ar">'+t[2]+'</div><div class="t-body">'+t[4]+'</div></div>';
+    tw.appendChild(d);
+  });
+
+  /* ---------- BUYING LIST DATA ----------
+     v=verdict: buy / hold / stop / later ; dq=dealer quote note                 */
+  var BUY=[
+    {group:"🔴 المؤكد — الأسبوع ده", items:[
+      {id:"tank",v:"buy",nm:"Expansion tank + cap",ar:"قربة المياه + الغطاء",oem:"51718005 / cap 55700508 ⚠️ verify",alt:"Genuine · Behr",fits:"Grande Punto 199 · Punto Evo",intl:"€15–35 + cap €5–12",qty:1},
+      {id:"hose",v:"buy",nm:"Air intake hose (filter→turbo)",ar:"خرطوم السحب فلتر ← تيربو",oem:"51822558 ✅ confirmed on part",alt:"Genuine (shaped hose)",fits:"GP 1.4 T-Jet · Abarth GP",intl:"€25–60",qty:1},
+      {id:"coolant",v:"buy",nm:"Coolant Paraflu UP (G12+)",ar:"مية تبريد",oem:"Petronas Paraflu UP",alt:"any G12+/OAT red",fits:"Fiat/Lancia/Alfa — 50/50",intl:"€8–12 /L",qty:4},
+      {id:"belt",v:"buy",nm:"Accessory belt",ar:"سير المجموعة",oem:"via ePER (measure) ⚠️",alt:"Gates · Dayco · Contitech",fits:"Fiat 1.4 w/ AC",intl:"€10–20",qty:1,dq:"عرض التاجر: 650"},
+      {id:"tens",v:"buy",nm:"Belt tensioner + idler",ar:"شداد + بلي السير",oem:"55190813 ⚠️ verify",alt:"INA · SKF · Gates (as kit)",fits:"Fiat 1.4 16v family",intl:"€30–60 + idler €15–30",qty:1,dq:"عرض التاجر: بلية 450"},
+      {id:"clamps",v:"buy",nm:"Hose clamps set",ar:"كلبسات",oem:"—",alt:"Norma/ABA stainless",fits:"size to hoses",intl:"€5–10",qty:1}
+    ]},
+    {group:"🟠 الصيانة الشاملة", items:[
+      {id:"oil",v:"buy",nm:"Engine oil 5W-40 C3 (4L)",ar:"زيت موتور",oem:"Fiat 9.55535-S2",alt:"Selenia · Motul · Mobil",fits:"all 1.4 T-Jet",intl:"€30–45",qty:1},
+      {id:"ofilt",v:"buy",nm:"Oil filter",ar:"فلتر زيت",oem:"55223416",alt:"UFI · Mann · Mahle",fits:"1.4 Fire/T-Jet family",intl:"€5–10",qty:1},
+      {id:"afilt",v:"buy",nm:"Air filter",ar:"فلتر هواء",oem:"55192012 ⚠️ verify",alt:"Mann · Mahle · UFI",fits:"GP T-Jet (turbo airbox)",intl:"€10–20",qty:1},
+      {id:"cfilt",v:"buy",nm:"Cabin filter",ar:"فلتر تكييف",oem:"77363370 ⚠️ verify",alt:"Mann · Bosch · UFI",fits:"GP · Punto Evo",intl:"€8–15",qty:1},
+      {id:"plugs",v:"buy",nm:"Spark plugs iridium ×4",ar:"بوجيهات",oem:"55212466",alt:"NGK IKR9F8 (OE)",fits:"all 1.4 T-Jet family",intl:"€10–16 ea",qty:4},
+      {id:"bfluid",v:"buy",nm:"Brake fluid DOT4 (1L)",ar:"زيت فرامل",oem:"DOT4",alt:"ATE · Bosch · TRW",fits:"universal — serves clutch master",intl:"€8–15",qty:1},
+      {id:"rdiscs",v:"buy",nm:"Rear discs pair",ar:"دسكات ورا",oem:"51971354 ⚠️ MEASURE first",alt:"Brembo · TRW · ATE",fits:"GP · Evo · MiTo · Corsa D",intl:"€25–45 ea",qty:2},
+      {id:"rpads",v:"buy",nm:"Rear pads set",ar:"تيل ورا",oem:"via ePER",alt:"TRW · Ferodo · Brembo",fits:"same as rear discs",intl:"€20–40",qty:1},
+      {id:"wipers",v:"buy",nm:"Wiper blades pair",ar:"مساحات",oem:"measure lengths",alt:"Bosch Aerotwin",fits:"by length",intl:"€15–25",qty:1},
+      {id:"battery",v:"buy",nm:"Battery ~60Ah 540CCA",ar:"بطارية (ضعيفة مؤكد)",oem:"L2 tray",alt:"Varta · Bosch",fits:"check tray size",intl:"€70–110",qty:1}
+    ]},
+    {group:"🟡 بعد الفحص — متشتريش قبله", items:[
+      {id:"master",v:"stop",nm:"Brake master cylinder",ar:"ماستر فرامل — متشتريهوش دلوقتي",oem:"—",alt:"LAST suspect — do rear brakes+fluid+calipers first",fits:"—",intl:"—",qty:1,dq:"عرض التاجر: 3500 — استنى!"},
+      {id:"radiator",v:"hold",nm:"Radiator (TURBO version)",ar:"ردياتير",oem:"51780659 ⚠️ verify",alt:"Valeo · Denso · Nissens",fits:"GP 1.4 Turbo (NOT the NA)",intl:"€70–150",qty:1},
+      {id:"cv",v:"hold",nm:"Driveshaft RH / inner CV",ar:"عمود إحليل يمين",oem:"ePER SGR.21220",alt:"GKN/Löbro · SKF",fits:"by gearbox code",intl:"joint €40–90 · shaft €100–180",qty:1},
+      {id:"mount",v:"hold",nm:"Rear engine mount",ar:"قاعدة موتور خلفية",oem:"51782714 ⚠️ verify",alt:"Corteco · Febi",fits:"GP 1.4 · Evo",intl:"€25–50",qty:1},
+      {id:"rshock",v:"hold",nm:"Rear shocks pair",ar:"مساعدين ورا",oem:"via ePER",alt:"KYB · Sachs · Monroe",fits:"GP · Evo · Corsa D",intl:"€35–60 ea",qty:2,dq:"عرض التاجر: 3800 «أصلي» — أكّد النوع"},
+      {id:"fshock",v:"hold",nm:"Front struts pair",ar:"مساعدين قدام",oem:"via ePER",alt:"KYB / Sachs — تجنّب الصيني",fits:"GP · Evo · Corsa D",intl:"€60–100 ea",qty:2,dq:"عرض التاجر: 4800 تركي / 3800 صيني — استنى الفحص"},
+      {id:"o2",v:"hold",nm:"O2 sensor front",ar:"حساس أكسجين",oem:"via ePER ⚠️",alt:"Bosch · NGK-NTK",fits:"1.4 T-Jet pre-cat",intl:"€50–100",qty:1},
+      {id:"acclutch",v:"hold",nm:"A/C compressor clutch",ar:"كباس الكومبروسور",oem:"Denso comp.",alt:"Denso clutch kit",fits:"match compressor label",intl:"€40–80",qty:1},
+      {id:"cowl",v:"buy",nm:"Cowl / scuttle panel",ar:"فبرة المساحات (مكسورة)",oem:"via ePER ⚠️",alt:"genuine or clean used",fits:"GP · Punto Evo",intl:"€15–40 used",qty:1}
+    ]},
+    {group:"🟣 المرحلة ٢–٣ — الراحة والشكل", items:[
+      {id:"leatherF",v:"later",nm:"Leather covers — front",ar:"كسوة جلد أمامي",oem:"upholstery job",alt:"local trimmer",fits:"GP seats",intl:"workshop",qty:1},
+      {id:"leatherR",v:"later",nm:"Leather — rear bench",ar:"كسوة الكنبة",oem:"upholstery job",alt:"match front",fits:"GP bench",intl:"workshop",qty:1},
+      {id:"headunit",v:"later",nm:"9\" Android head unit",ar:"شاشة أندرويد",oem:"+ Fiat canbus adapter",alt:"Pioneer · Kenwood · Sony",fits:"GP 2-DIN + 199 canbus",intl:"€120–300 + adapter",qty:1},
+      {id:"speakers",v:"later",nm:"Door speakers ×4",ar:"سماعات ×٤",oem:"165mm (6.5\")",alt:"Focal · JBL · Pioneer",fits:"GP doors + rings",intl:"€40–120 /pair",qty:2},
+      {id:"subamp",v:"later",nm:"Subwoofer repair (check AMP)",ar:"إصلاح الصب ووفر",oem:"diagnose boot amp",alt:"usually amp, not sub",fits:"GP HiFi option",intl:"diagnose",qty:1},
+      {id:"detailEx",v:"later",nm:"Compound + polish + wax",ar:"بوليش",oem:"detailing",alt:"machine polish + sealant",fits:"—",intl:"service",qty:1},
+      {id:"headpol",v:"later",nm:"Headlight polish + UV",ar:"تلميع الفوانيس",oem:"kit",alt:"sand + UV clearcoat",fits:"GP lamps",intl:"€15–30",qty:1},
+      {id:"ledlow",v:"later",nm:"LED low beam (pair)",ar:"LED واطي",oem:"check base H7/H1",alt:"Philips Ultinon · Osram",fits:"match reflector",intl:"€60–130",qty:1},
+      {id:"ledhigh",v:"later",nm:"LED high beam (pair)",ar:"LED عالي",oem:"check base H1/H7",alt:"Philips · Osram",fits:"GP",intl:"€50–110",qty:1}
+    ]}
+  ];
+
+  var VD={buy:['buy','✓ BUY'],hold:['hold','⏸ HOLD'],stop:['stop','✕ STOP'],later:['later','◷ LATER']};
+
+  /* ---------- TABS ---------- */
+  var tabBtns=document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(function(b){b.addEventListener('click',function(){
+    tabBtns.forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active')});
+    b.classList.add('active');
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    if(b.dataset.tab==='overview')animateGauges();
+    if(b.dataset.tab==='budget')animateBars();
+  })});
+
+  /* ---------- ODOMETER ---------- */
+  var odo=document.getElementById('odo');
+  '000000'.split('').forEach(function(){var d=document.createElement('div');d.className='d';d.textContent='0';odo.appendChild(d);});
+  var cells=odo.querySelectorAll('.d'),target=155000,t0=null;
+  function pad(n){n=Math.floor(n).toString();while(n.length<6)n='0'+n;return n}
+  function tick(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1700,1);var s=pad((1-Math.pow(1-p,3))*target);
+    for(var i=0;i<6;i++)cells[i].textContent=s[i];if(p<1)requestAnimationFrame(tick)}
+  requestAnimationFrame(tick);
+
+  /* ---------- GAUGES / BARS ---------- */
+  function setGauge(scope,pct){var n=scope.querySelector('.needle'),a=scope.querySelector('.arc');
+    n.style.transform='rotate('+(-90+(pct/100)*180)+'deg)';a.style.strokeDashoffset=251-(pct/100)*251;}
+  function animateGauges(){document.querySelectorAll('#tab-overview .dial').forEach(function(c){
+    setTimeout(function(){setGauge(c,+c.querySelector('.needle').dataset.pct)},250);});
+    document.querySelectorAll('#tab-overview .track-fill').forEach(function(el){setTimeout(function(){el.style.width=el.dataset.w+'%'},350);});}
+  function animateBars(){document.querySelectorAll('#tab-budget .bfill').forEach(function(el){setTimeout(function(){el.style.width=el.dataset.w+'%'},200);});}
+  animateGauges();
+
+  /* ---------- FILTERS ---------- */
+  var fb=document.querySelectorAll('.fbtn');
+  fb.forEach(function(b){b.addEventListener('click',function(){
+    fb.forEach(function(x){x.classList.remove('active')});b.classList.add('active');
+    document.querySelectorAll('.task').forEach(function(t){t.classList.toggle('hidden',b.dataset.f!=='all'&&!t.classList.contains(b.dataset.f))});
+  })});
+
+  /* ---------- BUYING LIST ---------- */
+  var BKEY='gp-tjet-buylist-v1';
+  var bs={};try{bs=JSON.parse(localStorage.getItem(BKEY)||'{}')}catch(e){}
+  var wrap=document.getElementById('buyGroups');
+  BUY.forEach(function(g){
+    var div=document.createElement('div');div.className='buy-group';
+    var h='<h3>'+g.group+'</h3><div class="bl-scroll"><table class="bl"><thead><tr>'+
+      '<th>✔</th><th>Verdict</th><th>Part · القطعة</th><th>OEM #</th><th>Brands</th><th>يركب على</th><th>🌍 EU</th><th>Qty</th><th>سعرك EGP</th><th>Total</th></tr></thead><tbody>';
+    g.items.forEach(function(it){
+      var s=bs[it.id]||{};var vd=VD[it.v]||VD.buy;
+      var oem=it.oem.replace(/⚠️[^<]*/,function(m){return '<span class="vfy">'+m+'</span>'});
+      var name='<b>'+it.nm+'</b><small>'+it.ar+'</small>'+(it.dq?'<span class="dq">'+it.dq+'</span>':'');
+      h+='<tr data-id="'+it.id+'" class="'+(s.b?'bought':'')+'">'+
+        '<td><input type="checkbox" class="buy-chk" '+(s.b?'checked':'')+'></td>'+
+        '<td><span class="vd '+vd[0]+'">'+vd[1]+'</span></td>'+
+        '<td class="nm">'+name+'</td>'+
+        '<td class="pn">'+oem+'</td>'+
+        '<td class="fits">'+it.alt+'</td>'+
+        '<td class="fits">'+it.fits+'</td>'+
+        '<td class="intl">'+it.intl+'</td>'+
+        '<td><input type="number" min="1" class="qty-in" value="'+(s.q||it.qty)+'"></td>'+
+        '<td><input type="number" min="0" placeholder="—" class="price-in" value="'+(s.p!=null?s.p:'')+'"></td>'+
+        '<td class="line-total">—</td></tr>';
+    });
+    h+='</tbody></table></div>';div.innerHTML=h;wrap.appendChild(div);
+  });
+  function fmt(n){return 'EGP '+Math.round(n).toLocaleString('en-US')}
+  function recalcBuy(){var plan=0,spent=0;
+    wrap.querySelectorAll('tr[data-id]').forEach(function(tr){
+      var q=+tr.querySelector('.qty-in').value||0,p=parseFloat(tr.querySelector('.price-in').value),lt=tr.querySelector('.line-total');
+      if(!isNaN(p)&&p>0){var t=p*q;lt.textContent=fmt(t);plan+=t;if(tr.classList.contains('bought'))spent+=t;}else{lt.textContent='—';}
+    });
+    document.getElementById('totPlan').textContent=fmt(plan);
+    document.getElementById('totSpent').textContent=fmt(spent);
+    document.getElementById('totRemain').textContent=fmt(plan-spent);
+    var by=document.getElementById('bYour');if(by)by.innerHTML='<b>'+(plan>0?fmt(plan):'اكتب أسعارك في تاب الشراء')+'</b>';
+  }
+  function saveBuy(){wrap.querySelectorAll('tr[data-id]').forEach(function(tr){var pv=tr.querySelector('.price-in').value;
+    bs[tr.dataset.id]={b:tr.classList.contains('bought'),q:+tr.querySelector('.qty-in').value||1,p:pv===''?null:parseFloat(pv)};});
+    localStorage.setItem(BKEY,JSON.stringify(bs));}
+  wrap.addEventListener('input',function(){recalcBuy();saveBuy()});
+  wrap.addEventListener('change',function(e){if(e.target.classList.contains('buy-chk')){e.target.closest('tr').classList.toggle('bought',e.target.checked);recalcBuy();saveBuy();}});
+  document.getElementById('buyReset').addEventListener('click',function(){if(!confirm('مسح كل الأسعار والحالات؟'))return;
+    bs={};localStorage.setItem(BKEY,'{}');wrap.querySelectorAll('tr[data-id]').forEach(function(tr){tr.classList.remove('bought');
+    tr.querySelector('.buy-chk').checked=false;tr.querySelector('.price-in').value='';});recalcBuy();});
+  recalcBuy();
+
+  /* ---------- CHECKLIST ---------- */
+  var KEY='gp-tjet-checklist-v2';
+  var items=document.querySelectorAll('#cl li');
+  var saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+  var g3=document.querySelectorAll('#tab-overview .dial')[2],g3v=document.getElementById('catchupPct');
+  document.getElementById('totCount').textContent=items.length;
+  function refresh(){var d=0;items.forEach(function(li){if(li.classList.contains('done'))d++});
+    document.getElementById('doneCount').textContent=d;var pct=Math.round(d/items.length*100);
+    setGauge(g3,pct);g3v.textContent=pct+'%';
+    g3v.style.color=pct===100?'var(--green)':(pct>=50?'var(--amber)':'var(--rosso)');
+    g3.querySelector('.arc').style.stroke=pct===100?'#4a6d2f':(pct>=50?'#c07a12':'#b02418');}
+  items.forEach(function(li){if(saved[li.dataset.k])li.classList.add('done');
+    li.addEventListener('click',function(){li.classList.toggle('done');saved[li.dataset.k]=li.classList.contains('done');
+    localStorage.setItem(KEY,JSON.stringify(saved));refresh();});});
+  document.getElementById('resetBtn').addEventListener('click',function(){items.forEach(function(li){li.classList.remove('done')});
+    saved={};localStorage.setItem(KEY,'{}');refresh();});
+  setTimeout(refresh,650);
+})();
+</script>
+</body>
+</html>
