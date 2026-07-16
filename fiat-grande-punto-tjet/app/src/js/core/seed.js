@@ -93,13 +93,23 @@ App.seed = {
         { date: '2026-07-10', km: 155000, liters: 41, pricePerL: 12.5, station: 'Wataniya', type: '95' }
       ],
       /* ---- BUDGET (categories) ---- */
+      /* Real target: EGP 50-60k across ALL phases (not per-category padding).
+         `phase` ties each category to a Roadmap phase (1-4) so Budget and
+         Roadmap always agree — Roadmap SUMS these, it never hardcodes its
+         own totals. Turbo is folded into Engine: we are NOT rebuilding the
+         turbo, just the intake hose + a boost-log check (cheap), so it
+         doesn't deserve its own inflated category. */
       budget: [
-        { cat: 'Engine', budget: 12000, spent: 0 }, { cat: 'Cooling', budget: 9000, spent: 0 },
-        { cat: 'Turbo', budget: 4000, spent: 0 }, { cat: 'Suspension', budget: 14000, spent: 0 },
-        { cat: 'Steering', budget: 0, spent: 0 }, { cat: 'Electrical', budget: 8000, spent: 0 },
-        { cat: 'Brakes', budget: 7000, spent: 0 }, { cat: 'Interior', budget: 12000, spent: 0 },
-        { cat: 'Exterior', budget: 10000, spent: 0 }, { cat: 'Body', budget: 15000, spent: 0 },
-        { cat: 'Accessories', budget: 9000, spent: 0 }
+        { cat: 'Engine', budget: 8000, spent: 0, phase: 2, note: 'plugs, oil+filters, belt/tensioner set, intake hose+clamps, throttle clean — includes the turbo intake fix, NOT a turbo rebuild' },
+        { cat: 'Cooling', budget: 4500, spent: 0, phase: 1, note: 'expansion tank+cap, pressure test, coolant switch to Paraflu UP' },
+        { cat: 'Electrical', budget: 8500, spent: 0, phase: 1, note: 'rear-harness repair (post-impact CAN fault), battery, airbag connector work' },
+        { cat: 'Brakes', budget: 6000, spent: 0, phase: 1, note: 'rear discs+pads, fluid flush, caliper service' },
+        { cat: 'Suspension', budget: 6000, spent: 0, phase: 2, note: 'rear shocks + front/rear shake-down labor' },
+        { cat: 'Steering', budget: 0, spent: 0, phase: 2, note: 'rack replaced Dec-2025 — nothing budgeted' },
+        { cat: 'Interior', budget: 7000, spent: 0, phase: 3, note: 'leather seat covers, deep clean' },
+        { cat: 'Accessories', budget: 3000, spent: 0, phase: 3, note: '9" Android screen + ambient light' },
+        { cat: 'Exterior', budget: 6000, spent: 0, phase: 4, note: 'polish, LED lighting, headlight restoration' },
+        { cat: 'Body', budget: 5000, spent: 0, phase: 4, note: 'cowl/scuttle panel, bumper fiber+weld repair' }
       ],
       /* ---- MAINTENANCE PLANNER ---- */
       planner: [
@@ -140,11 +150,15 @@ App.seed = {
         { name: 'AlfaOBD scan screenshots', type: 'Diagnostics', date: '2026-07', ref: 'images', notes: 'CAN fault codes' }
       ],
       /* ---- ROADMAP ---- */
+      /* NOTE: budget/spent are NOT stored here — Roadmap computes them live
+         by summing budget[] entries whose `phase` matches (App.util.phaseBudget).
+         This file only carries what a phase IS, never its cost, so the two
+         screens can't drift apart. */
       roadmap: [
-        { phase: 1, title: 'Safety', progress: 0, budget: 30000, note: 'cooling leak · intake hose · CAN wiring · battery · rear brakes' },
-        { phase: 2, title: 'Reliability', progress: 0, budget: 20000, note: 'service · suspension · CV/mount' },
-        { phase: 3, title: 'Comfort', progress: 0, budget: 15000, note: 'A/C drain · interior · audio' },
-        { phase: 4, title: 'Cosmetic', progress: 0, budget: 30000, note: 'bodywork · bumpers fiber · paint · LED' }
+        { phase: 1, title: 'Safety', progress: 0, note: 'cooling leak · rear-harness CAN wiring · battery · rear brakes' },
+        { phase: 2, title: 'Reliability', progress: 0, note: 'catch-up service · intake hose · suspension shake-down' },
+        { phase: 3, title: 'Comfort', progress: 0, note: 'A/C drain fix · leather interior · screen + ambient' },
+        { phase: 4, title: 'Cosmetic', progress: 0, note: 'cowl panel · bumper repair · polish · LED lighting' }
       ],
       /* ---- PHOTO TIMELINE ---- */
       photos: [

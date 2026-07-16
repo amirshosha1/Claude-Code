@@ -405,7 +405,21 @@ App.util = (function () {
       <circle cx="100" cy="100" r="7" fill="var(--rosso)"/></svg>`;
   }
 
-  return { el, $, $$, EGP, num, shortDate, countUp, toast, modal, gaugeSVG };
+  /* Single source of truth for phase money: Budget Manager and Restoration
+     Roadmap both call this instead of storing their own totals, so the two
+     screens can never disagree. */
+  function phaseBudget(vehicleData, phase) {
+    const rows = (vehicleData.budget || []).filter(c => c.phase === phase);
+    return {
+      budget: rows.reduce((s, c) => s + (c.budget || 0), 0),
+      spent: rows.reduce((s, c) => s + (c.spent || 0), 0),
+      cats: rows
+    };
+  }
+  const PHASE_COLOR = { 1: 'var(--rosso)', 2: 'var(--amber)', 3: 'var(--violet)', 4: 'var(--steel)' };
+  const PHASE_FILL = { 1: 'f-red', 2: 'f-amber', 3: 'f-violet', 4: 'f-steel' };
+
+  return { el, $, $$, EGP, num, shortDate, countUp, toast, modal, gaugeSVG, phaseBudget, PHASE_COLOR, PHASE_FILL };
 })();
 
 </script>
@@ -567,13 +581,23 @@ App.seed = {
         { date: '2026-07-10', km: 155000, liters: 41, pricePerL: 12.5, station: 'Wataniya', type: '95' }
       ],
       /* ---- BUDGET (categories) ---- */
+      /* Real target: EGP 50-60k across ALL phases (not per-category padding).
+         `phase` ties each category to a Roadmap phase (1-4) so Budget and
+         Roadmap always agree — Roadmap SUMS these, it never hardcodes its
+         own totals. Turbo is folded into Engine: we are NOT rebuilding the
+         turbo, just the intake hose + a boost-log check (cheap), so it
+         doesn't deserve its own inflated category. */
       budget: [
-        { cat: 'Engine', budget: 12000, spent: 0 }, { cat: 'Cooling', budget: 9000, spent: 0 },
-        { cat: 'Turbo', budget: 4000, spent: 0 }, { cat: 'Suspension', budget: 14000, spent: 0 },
-        { cat: 'Steering', budget: 0, spent: 0 }, { cat: 'Electrical', budget: 8000, spent: 0 },
-        { cat: 'Brakes', budget: 7000, spent: 0 }, { cat: 'Interior', budget: 12000, spent: 0 },
-        { cat: 'Exterior', budget: 10000, spent: 0 }, { cat: 'Body', budget: 15000, spent: 0 },
-        { cat: 'Accessories', budget: 9000, spent: 0 }
+        { cat: 'Engine', budget: 8000, spent: 0, phase: 2, note: 'plugs, oil+filters, belt/tensioner set, intake hose+clamps, throttle clean — includes the turbo intake fix, NOT a turbo rebuild' },
+        { cat: 'Cooling', budget: 4500, spent: 0, phase: 1, note: 'expansion tank+cap, pressure test, coolant switch to Paraflu UP' },
+        { cat: 'Electrical', budget: 8500, spent: 0, phase: 1, note: 'rear-harness repair (post-impact CAN fault), battery, airbag connector work' },
+        { cat: 'Brakes', budget: 6000, spent: 0, phase: 1, note: 'rear discs+pads, fluid flush, caliper service' },
+        { cat: 'Suspension', budget: 6000, spent: 0, phase: 2, note: 'rear shocks + front/rear shake-down labor' },
+        { cat: 'Steering', budget: 0, spent: 0, phase: 2, note: 'rack replaced Dec-2025 — nothing budgeted' },
+        { cat: 'Interior', budget: 7000, spent: 0, phase: 3, note: 'leather seat covers, deep clean' },
+        { cat: 'Accessories', budget: 3000, spent: 0, phase: 3, note: '9" Android screen + ambient light' },
+        { cat: 'Exterior', budget: 6000, spent: 0, phase: 4, note: 'polish, LED lighting, headlight restoration' },
+        { cat: 'Body', budget: 5000, spent: 0, phase: 4, note: 'cowl/scuttle panel, bumper fiber+weld repair' }
       ],
       /* ---- MAINTENANCE PLANNER ---- */
       planner: [
@@ -614,11 +638,15 @@ App.seed = {
         { name: 'AlfaOBD scan screenshots', type: 'Diagnostics', date: '2026-07', ref: 'images', notes: 'CAN fault codes' }
       ],
       /* ---- ROADMAP ---- */
+      /* NOTE: budget/spent are NOT stored here — Roadmap computes them live
+         by summing budget[] entries whose `phase` matches (App.util.phaseBudget).
+         This file only carries what a phase IS, never its cost, so the two
+         screens can't drift apart. */
       roadmap: [
-        { phase: 1, title: 'Safety', progress: 0, budget: 30000, note: 'cooling leak · intake hose · CAN wiring · battery · rear brakes' },
-        { phase: 2, title: 'Reliability', progress: 0, budget: 20000, note: 'service · suspension · CV/mount' },
-        { phase: 3, title: 'Comfort', progress: 0, budget: 15000, note: 'A/C drain · interior · audio' },
-        { phase: 4, title: 'Cosmetic', progress: 0, budget: 30000, note: 'bodywork · bumpers fiber · paint · LED' }
+        { phase: 1, title: 'Safety', progress: 0, note: 'cooling leak · rear-harness CAN wiring · battery · rear brakes' },
+        { phase: 2, title: 'Reliability', progress: 0, note: 'catch-up service · intake hose · suspension shake-down' },
+        { phase: 3, title: 'Comfort', progress: 0, note: 'A/C drain fix · leather interior · screen + ambient' },
+        { phase: 4, title: 'Cosmetic', progress: 0, note: 'cowl panel · bumper repair · polish · LED lighting' }
       ],
       /* ---- PHOTO TIMELINE ---- */
       photos: [
@@ -1861,47 +1889,86 @@ App.router = (function () {
 </script>
 <script>
 /* ==== js/modules/budget.js ==== */
-/* Budget Manager — per-category budget/spent/remaining/forecast + bars */
+/* Budget Manager — categories grouped by Roadmap phase, so the two
+   screens always tell the same story. Target: EGP 50-60k total, not
+   per-category padding. Click any category to edit budget/spent. */
 (function () {
-  const { el } = App.util; const ui = App.ui; const money = App.config.money;
+  const { el, phaseBudget, PHASE_COLOR, PHASE_FILL } = App.util; const ui = App.ui; const money = App.config.money;
+  const PHASE_NAME = { 1: 'Phase 1 · Safety', 2: 'Phase 2 · Reliability', 3: 'Phase 3 · Comfort', 4: 'Phase 4 · Cosmetic' };
+
   App.router.register({
     id: 'budget', label: 'Budget Manager', group: 'Money', icon: App.config.icon('budget'),
     render(view) {
       const d = App.store.veh().data;
-      // derive spent from service history by rough category if not set; else use stored
       const cats = d.budget;
       const totalBudget = cats.reduce((s, c) => s + (c.budget || 0), 0);
       const totalSpent = cats.reduce((s, c) => s + (c.spent || 0), 0);
+      const inTarget = totalBudget >= 50000 && totalBudget <= 60000;
+
       view.appendChild(ui.secHead('07', 'Budget Manager', 'إدارة الميزانية'));
 
-      view.appendChild(el('div', { class: 'tiles', style: 'margin-bottom:16px' }, [
-        ui.tile('Planned', money(totalBudget), 'across categories'),
-        ui.tile('Spent', money(totalSpent), '', { color: 'var(--green)' }),
-        ui.tile('Remaining', money(totalBudget - totalSpent), '', { color: 'var(--amber)' }),
-        ui.tile('Recommended', 'EGP 75–120k', 'full mechanical', { color: 'var(--steel)' })
+      view.appendChild(el('div', { class: 'tiles stagger' }, [
+        ui.tile('Total Budget', money(totalBudget), inTarget ? '✓ within 50–60k target' : 'target 50–60k', { color: inTarget ? 'var(--green)' : 'var(--amber)' }),
+        ui.tile('Spent', money(totalSpent), Math.round((totalSpent / (totalBudget || 1)) * 100) + '% of budget', { color: 'var(--steel)' }),
+        ui.tile('Remaining', money(totalBudget - totalSpent), ''),
+        ui.tile('Phases', '4', 'Safety → Reliability → Comfort → Cosmetic')
       ]));
 
-      const grid = el('div', { class: 'grid-2 stagger' });
-      cats.forEach(c => {
-        const pct = c.budget ? Math.min(100, (c.spent / c.budget) * 100) : 0;
-        const over = c.spent > c.budget;
-        const card = el('div', { class: 'card card-hover' }, [el('div', { class: 'spine', style: 'background:' + (over ? 'var(--rosso)' : 'var(--steel)') })]);
-        const pad = el('div', { class: 'pad' }, [
-          el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
-            el('span', { class: 'h-disp', style: 'font-size:15px', text: c.cat }),
-            el('span', { class: 'mono', style: 'font-size:12px', text: money(c.spent) + ' / ' + money(c.budget) })
-          ]),
-          ui.meter(pct, over ? 'f-red' : 'f-steel'),
-          el('div', { class: 'mono muted', style: 'font-size:10.5px;margin-top:6px', text: over ? 'Over by ' + money(c.spent - c.budget) : money(c.budget - c.spent) + ' remaining' })
-        ]);
-        // click to edit spent/budget
-        pad.style.cursor = 'pointer';
-        pad.addEventListener('click', () => edit(c));
-        card.appendChild(pad); grid.appendChild(card);
+      // composition bar: one bar, segmented by phase, so Budget visually
+      // matches the Roadmap at a glance
+      view.appendChild(compositionBar(d));
+
+      // grouped-by-phase cards
+      [1, 2, 3, 4].forEach(ph => {
+        const { budget, spent, cats: rows } = phaseBudget(d, ph);
+        if (!rows.length) return;
+        const section = el('div', { style: 'margin-top:22px' });
+        section.appendChild(el('div', { style: 'display:flex;align-items:baseline;gap:10px;margin-bottom:10px' }, [
+          el('span', { style: 'width:10px;height:10px;border-radius:2px;background:' + PHASE_COLOR[ph] + ';display:inline-block;transform:rotate(45deg)' }),
+          el('h3', { class: 'h-disp', style: 'font-size:15px', text: PHASE_NAME[ph] }),
+          el('span', { class: 'mono muted', style: 'font-size:11px', text: money(spent) + ' / ' + money(budget) }),
+          el('button', { class: 'btn sm ghost', style: 'margin-left:auto', onclick: () => App.router.go('roadmap') }, 'View in Roadmap →')
+        ]));
+        const grid = el('div', { class: 'grid-2 stagger' });
+        rows.forEach(c => grid.appendChild(catCard(c, ph)));
+        section.appendChild(grid);
+        view.appendChild(section);
       });
-      view.appendChild(grid);
     }
   });
+
+  function compositionBar(d) {
+    const total = d.budget.reduce((s, c) => s + (c.budget || 0), 0) || 1;
+    const segs = [1, 2, 3, 4].map(ph => {
+      const { budget } = phaseBudget(d, ph);
+      return { ph, pct: (budget / total) * 100, budget };
+    }).filter(s => s.budget > 0);
+    const bar = el('div', { style: 'display:flex;height:16px;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin:14px 0 6px' });
+    segs.forEach(s => bar.appendChild(el('div', { style: 'width:' + s.pct + '%;background:' + PHASE_COLOR[s.ph], 'data-tip': PHASE_NAME[s.ph] + ' · ' + App.config.money(s.budget) })));
+    const legend = el('div', { class: 'chips', style: 'margin-bottom:4px' });
+    segs.forEach(s => legend.appendChild(el('span', { class: 'tag', style: 'border-color:' + PHASE_COLOR[s.ph] + ';color:' + PHASE_COLOR[s.ph], text: PHASE_NAME[s.ph].split('·')[1].trim() + ' ' + Math.round(s.pct) + '%' })));
+    return el('div', { class: 'card', style: 'margin-bottom:6px' }, [el('div', { class: 'pad' }, [
+      el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase', text: 'Budget composition by phase' }),
+      bar, legend
+    ])]);
+  }
+
+  function catCard(c, phase) {
+    const pct = c.budget ? Math.min(100, (c.spent / c.budget) * 100) : 0;
+    const over = c.spent > c.budget;
+    const card = el('div', { class: 'card card-hover' }, [el('div', { class: 'spine', style: 'background:' + (over ? 'var(--rosso)' : PHASE_COLOR[phase]) })]);
+    const pad = el('div', { class: 'pad', style: 'cursor:pointer' }, [
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
+        el('span', { class: 'h-disp', style: 'font-size:15px', text: c.cat }),
+        el('span', { class: 'mono', style: 'font-size:12px', text: App.config.money(c.spent) + ' / ' + App.config.money(c.budget) })
+      ]),
+      ui.meter(pct, over ? 'f-red' : PHASE_FILL[phase]),
+      c.note ? el('div', { style: 'font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5', text: c.note }) : null,
+      el('div', { class: 'mono muted', style: 'font-size:10.5px;margin-top:6px', text: over ? 'Over by ' + App.config.money(c.spent - c.budget) : App.config.money(c.budget - c.spent) + ' remaining' })
+    ]);
+    pad.addEventListener('click', () => edit(c));
+    card.appendChild(pad); return card;
+  }
 
   function edit(c) {
     const { el } = App.util;
@@ -1958,20 +2025,32 @@ App.router = (function () {
   }
 
   /* ---- Restoration Roadmap ---- */
+  const PHASE_COLOR = App.util.PHASE_COLOR, PHASE_FILL = App.util.PHASE_FILL;
   App.router.register({
     id: 'roadmap', label: 'Restoration Roadmap', group: 'Insights', icon: App.config.icon('roadmap'),
     render(view) {
       const d = App.store.veh().data;
+      const grandTotal = d.budget.reduce((s, c) => s + (c.budget || 0), 0);
       view.appendChild(ui.secHead('13', 'Restoration Roadmap', 'خريطة الترميم'));
+      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:16px' }, [el('div', { class: 'pad', style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' }, [
+        el('span', { class: 'mono muted', style: 'font-size:11.5px', text: 'Full restoration, all 4 phases' }),
+        el('span', { class: 'h-disp', style: 'font-size:20px;color:var(--rosso)', text: money(grandTotal) }),
+        el('button', { class: 'btn sm ghost', onclick: () => App.router.go('budget') }, 'Edit in Budget Manager →')
+      ])]));
       const grid = el('div', { class: 'grid-2 stagger' });
       d.roadmap.forEach(p => {
-        const card = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:var(--rosso)' })]);
+        const { budget, spent, cats } = App.util.phaseBudget(d, p.phase);
+        const pct = budget ? Math.min(100, (spent / budget) * 100) : 0;
+        const card = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:' + PHASE_COLOR[p.phase] })]);
+        const chips = el('div', { class: 'chips', style: 'margin-top:10px' });
+        cats.forEach(c => chips.appendChild(el('span', { class: 'tag', text: c.cat + ' ' + money(c.budget) })));
         card.appendChild(el('div', { class: 'pad' }, [
           el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
             el('span', { class: 'h-disp', style: 'font-size:16px', text: 'Phase ' + p.phase + ' · ' + p.title }),
-            el('span', { class: 'mono', style: 'font-size:12px', text: money(p.budget) })]),
-          ui.meter(p.progress, p.progress >= 100 ? 'f-green' : 'f-amber'),
-          el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:6px', text: p.note })
+            el('span', { class: 'mono', style: 'font-size:12px', text: money(spent) + ' / ' + money(budget) })]),
+          ui.meter(pct, PHASE_FILL[p.phase]),
+          el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:8px', text: p.note }),
+          chips
         ]));
         grid.appendChild(card);
       });

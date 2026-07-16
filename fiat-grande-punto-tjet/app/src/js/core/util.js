@@ -66,5 +66,19 @@ App.util = (function () {
       <circle cx="100" cy="100" r="7" fill="var(--rosso)"/></svg>`;
   }
 
-  return { el, $, $$, EGP, num, shortDate, countUp, toast, modal, gaugeSVG };
+  /* Single source of truth for phase money: Budget Manager and Restoration
+     Roadmap both call this instead of storing their own totals, so the two
+     screens can never disagree. */
+  function phaseBudget(vehicleData, phase) {
+    const rows = (vehicleData.budget || []).filter(c => c.phase === phase);
+    return {
+      budget: rows.reduce((s, c) => s + (c.budget || 0), 0),
+      spent: rows.reduce((s, c) => s + (c.spent || 0), 0),
+      cats: rows
+    };
+  }
+  const PHASE_COLOR = { 1: 'var(--rosso)', 2: 'var(--amber)', 3: 'var(--violet)', 4: 'var(--steel)' };
+  const PHASE_FILL = { 1: 'f-red', 2: 'f-amber', 3: 'f-violet', 4: 'f-steel' };
+
+  return { el, $, $$, EGP, num, shortDate, countUp, toast, modal, gaugeSVG, phaseBudget, PHASE_COLOR, PHASE_FILL };
 })();

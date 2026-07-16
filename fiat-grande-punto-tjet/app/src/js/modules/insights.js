@@ -36,20 +36,32 @@
   }
 
   /* ---- Restoration Roadmap ---- */
+  const PHASE_COLOR = App.util.PHASE_COLOR, PHASE_FILL = App.util.PHASE_FILL;
   App.router.register({
     id: 'roadmap', label: 'Restoration Roadmap', group: 'Insights', icon: App.config.icon('roadmap'),
     render(view) {
       const d = App.store.veh().data;
+      const grandTotal = d.budget.reduce((s, c) => s + (c.budget || 0), 0);
       view.appendChild(ui.secHead('13', 'Restoration Roadmap', 'خريطة الترميم'));
+      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:16px' }, [el('div', { class: 'pad', style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' }, [
+        el('span', { class: 'mono muted', style: 'font-size:11.5px', text: 'Full restoration, all 4 phases' }),
+        el('span', { class: 'h-disp', style: 'font-size:20px;color:var(--rosso)', text: money(grandTotal) }),
+        el('button', { class: 'btn sm ghost', onclick: () => App.router.go('budget') }, 'Edit in Budget Manager →')
+      ])]));
       const grid = el('div', { class: 'grid-2 stagger' });
       d.roadmap.forEach(p => {
-        const card = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:var(--rosso)' })]);
+        const { budget, spent, cats } = App.util.phaseBudget(d, p.phase);
+        const pct = budget ? Math.min(100, (spent / budget) * 100) : 0;
+        const card = el('div', { class: 'card' }, [el('div', { class: 'spine', style: 'background:' + PHASE_COLOR[p.phase] })]);
+        const chips = el('div', { class: 'chips', style: 'margin-top:10px' });
+        cats.forEach(c => chips.appendChild(el('span', { class: 'tag', text: c.cat + ' ' + money(c.budget) })));
         card.appendChild(el('div', { class: 'pad' }, [
           el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
             el('span', { class: 'h-disp', style: 'font-size:16px', text: 'Phase ' + p.phase + ' · ' + p.title }),
-            el('span', { class: 'mono', style: 'font-size:12px', text: money(p.budget) })]),
-          ui.meter(p.progress, p.progress >= 100 ? 'f-green' : 'f-amber'),
-          el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:6px', text: p.note })
+            el('span', { class: 'mono', style: 'font-size:12px', text: money(spent) + ' / ' + money(budget) })]),
+          ui.meter(pct, PHASE_FILL[p.phase]),
+          el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:8px', text: p.note }),
+          chips
         ]));
         grid.appendChild(card);
       });
