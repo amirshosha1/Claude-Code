@@ -514,10 +514,10 @@ App.seed = {
         { id: 'p-tank', name: 'Expansion tank + cap', ar: 'قربة المياه + غطاء', oem: '51718005', fiat: '51718005', alt: 'cap 55700508', brand: 'Behr/Genuine', tier: 5, category: 'Cooling', priceNewEg: null, priceUsedEg: null, euRef: '€20–47', supplier: '', laborEg: null, warranty: '', status: 'to-order', priority: 'critical', vinOk: false, compat: 'GP 199 · Punto Evo', verdict: 'buy', notes: 'Leak confirmed.' },
         { id: 'p-coolant', name: 'Coolant Paraflu UP (G12+)', ar: 'مية تبريد', oem: '', fiat: 'Paraflu UP', alt: 'any G12+/OAT', brand: 'Petronas', tier: 5, category: 'Cooling', euRef: '€8–12/L', status: 'to-order', priority: 'critical', vinOk: true, compat: '50/50 demin.', verdict: 'buy', qty: 4, notes: 'Switch from Mannol now (system open).' },
         { id: 'p-belt', name: 'Accessory belt', ar: 'سير المجموعة', oem: '', fiat: 'via ePER', alt: 'Gates/Dayco/Contitech', brand: 'Gates', tier: 5, category: 'Engine', euRef: '€10–20', priceNewEg: 650, supplier: 'ELKHLANY', status: 'to-order', priority: 'high', vinOk: false, compat: 'Fiat 1.4 w/ AC', verdict: 'buy', notes: 'Dealer quote 650. Idle whistle.' },
-        { id: 'p-tens', name: 'Belt tensioner + idler', ar: 'شداد + بلي', oem: '55190813', fiat: '55190813', alt: 'INA/SKF/Gates', brand: 'INA', tier: 5, category: 'Engine', euRef: '€45–90', priceNewEg: 450, supplier: 'ELKHLANY', status: 'to-order', priority: 'high', vinOk: false, compat: 'Fiat 1.4 16v', verdict: 'buy', notes: 'Dealer idler 450. Buy as set with belt.' },
-        { id: 'p-plugs', name: 'Spark plugs iridium ×4', ar: 'بوجيهات', oem: '55212466', fiat: '55212466', alt: 'NGK IKR9F8', brand: 'NGK', tier: 5, category: 'Engine', euRef: '€10–16 ea', status: 'to-order', priority: 'high', vinOk: true, compat: 'all 1.4 T-Jet', verdict: 'buy', qty: 4, notes: 'Overdue at 43k km.' },
+        { id: 'p-tens', name: 'Belt tensioner + idler', ar: 'شداد + بلي', oem: '55190813', fiat: '55190813', alt: 'INA/SKF/Gates', brand: 'INA', tier: 5, category: 'Engine', euRef: '€45–90', priceNewEg: 1150, supplier: 'El Asmar', laborEg: null, status: 'to-order', priority: 'high', vinOk: false, compat: 'Fiat 1.4 16v', verdict: 'buy', notes: 'El Asmar: full tensioner set 1,150 (idler pulley alone 450). ELKHLANY quoted idler-only at 450 — confirm which scope before ordering.' },
+        { id: 'p-plugs', name: 'Spark plugs iridium ×4', ar: 'بوجيهات', oem: '55212466', fiat: '55212466', alt: 'NGK IKR9F8', brand: 'NGK', tier: 5, category: 'Engine', euRef: '€10–16 ea', priceNewEg: 3100, supplier: 'El Asmar', laborEg: null, status: 'to-order', priority: 'high', vinOk: true, compat: 'all 1.4 T-Jet', verdict: 'buy', qty: 1, notes: 'El Asmar: 3,100 for the ORIGINAL/توكيل set of 4 — NGK not in their stock currently. Price is for the full set, not per plug.' },
         { id: 'p-ofilt', name: 'Oil filter', ar: 'فلتر زيت', oem: '55223416', fiat: '55223416', alt: 'UFI/Mann/Mahle', brand: 'UFI', tier: 5, category: 'Engine', euRef: '€5–10', status: 'to-order', priority: 'high', vinOk: true, compat: '1.4 Fire/T-Jet', verdict: 'buy' },
-        { id: 'p-afilt', name: 'Air filter', ar: 'فلتر هواء', oem: '55192012', fiat: '55192012', alt: 'Mann/Mahle', brand: 'Mann', tier: 5, category: 'Engine', euRef: '€10–20', status: 'to-order', priority: 'high', vinOk: false, compat: 'GP T-Jet (turbo airbox)', verdict: 'buy' },
+        { id: 'p-afilt', name: 'Air filter', ar: 'فلتر هواء', oem: '55192012', fiat: '55192012', alt: 'Mann/Mahle', brand: 'Mann', tier: 5, category: 'Engine', euRef: '€10–20', priceNewEg: 250, supplier: 'El Asmar', laborEg: null, status: 'to-order', priority: 'high', vinOk: false, compat: 'GP T-Jet (turbo airbox)', verdict: 'buy', notes: 'El Asmar quote: 250.' },
         { id: 'p-cfilt', name: 'Cabin filter', ar: 'فلتر تكييف', oem: '77363370', fiat: '77363370', alt: 'Mann/Bosch', brand: 'Mann', tier: 4, category: 'Interior', euRef: '€8–15', status: 'to-order', priority: 'medium', vinOk: false, compat: 'GP · Evo', verdict: 'buy' },
         { id: 'p-oil', name: 'Engine oil 5W-40 C3 (4L)', ar: 'زيت موتور', oem: '', fiat: '9.55535-S2', alt: 'Selenia/Motul/Mobil', brand: 'Selenia', tier: 5, category: 'Engine', euRef: '€30–45', status: 'to-order', priority: 'high', vinOk: true, compat: 'all T-Jet', verdict: 'buy' },
         { id: 'p-bfluid', name: 'Brake fluid DOT4 (1L)', ar: 'زيت فرامل', oem: '', fiat: 'DOT4', alt: 'ATE/Bosch/TRW', brand: 'ATE', tier: 5, category: 'Brakes', euRef: '€8–15', status: 'to-order', priority: 'high', vinOk: true, compat: 'serves clutch master too', verdict: 'buy' },
@@ -525,19 +525,22 @@ App.seed = {
         { id: 'p-rpads', name: 'Rear pads set', ar: 'تيل ورا', oem: '', fiat: 'via ePER', alt: 'TRW/Ferodo/Brembo', brand: 'TRW', tier: 5, category: 'Brakes', euRef: '€20–40', status: 'to-order', priority: 'high', vinOk: false, compat: 'as rear discs', verdict: 'buy' },
         { id: 'p-battery', name: 'Battery ~60Ah 540CCA', ar: 'بطارية', oem: 'L2', fiat: '', alt: 'Varta/Bosch', brand: 'Varta', tier: 5, category: 'Electrical', euRef: '€70–110', status: 'to-order', priority: 'critical', vinOk: true, compat: 'check tray', verdict: 'buy', notes: 'Weak: 12.0V rest / 10.3V cranking — drops CAN nodes.' },
         { id: 'p-wipers', name: 'Wiper blades pair', ar: 'مساحات', oem: '', fiat: 'by length', alt: 'Bosch Aerotwin', brand: 'Bosch', tier: 4, category: 'Exterior', euRef: '€15–25', status: 'to-order', priority: 'medium', vinOk: true, compat: 'by length', verdict: 'buy' },
-        { id: 'p-cowl', name: 'Cowl / scuttle panel', ar: 'فبرة المساحات', oem: '', fiat: 'via ePER', alt: 'genuine/used', brand: 'Genuine', tier: 3, category: 'Body', euRef: '€15–40', status: 'to-order', priority: 'medium', vinOk: false, compat: 'GP · Evo', verdict: 'buy', notes: 'Confirmed broken; protects BSI from water.' },
-        { id: 'p-master', name: 'Brake master cylinder', ar: 'ماستر فرامل', oem: '', fiat: '', alt: 'LAST suspect', brand: '', tier: 0, category: 'Brakes', euRef: '—', priceNewEg: 3500, supplier: 'ELKHLANY', status: 'hold', priority: 'low', vinOk: false, compat: '—', verdict: 'stop', notes: 'Dealer 3500 — DO NOT BUY. Do rear brakes+fluid+calipers first.' },
+        { id: 'p-cowl', name: 'Cowl / scuttle panel', ar: 'فبرة المساحات', oem: '', fiat: 'via ePER', alt: 'genuine/used', brand: '', tier: 3, category: 'Body', euRef: '€15–40', priceNewEg: 1500, supplier: 'Italians House', laborEg: null, status: 'to-order', priority: 'medium', vinOk: false, compat: 'GP · Evo', verdict: 'buy', notes: 'Confirmed broken; protects BSI from water. Italians House quote: 1,500.' },
+        { id: 'p-master', name: 'Brake master cylinder', ar: 'ماستر فرامل', oem: '', fiat: '', alt: 'LAST suspect', brand: '', tier: 0, category: 'Brakes', euRef: '—', priceNewEg: 3500, supplier: 'ELKHLANY', laborEg: null, status: 'hold', priority: 'low', vinOk: false, compat: '—', verdict: 'stop', notes: 'ELKHLANY quote 3,500; El Asmar ~3,000 (wants to see the Grande Punto specifically to confirm). DO NOT BUY — do rear brakes+fluid+calipers first.' },
         { id: 'p-radiator', name: 'Radiator (TURBO version)', ar: 'ردياتير', oem: '51780659', fiat: '51780659', alt: 'Valeo/Denso/Nissens', brand: 'Valeo', tier: 5, category: 'Cooling', euRef: '€70–150', status: 'hold', priority: 'medium', vinOk: false, compat: 'GP 1.4 Turbo (NOT NA)', verdict: 'hold', notes: 'Only after pressure test.' },
         { id: 'p-cv', name: 'Driveshaft RH / inner CV', ar: 'عمود إحليل يمين', oem: 'SGR.21220', fiat: 'via ePER', alt: 'GKN/Löbro/SKF', brand: 'GKN', tier: 5, category: 'Transmission', euRef: 'joint €40–90 / shaft €100–180', status: 'hold', priority: 'medium', vinOk: false, compat: 'by gearbox code', verdict: 'hold', notes: 'After load-noise tests.' },
         { id: 'p-mount', name: 'Rear engine mount', ar: 'قاعدة موتور خلفية', oem: '51782714', fiat: '51782714', alt: 'Corteco/Febi', brand: 'Corteco', tier: 4, category: 'Engine', euRef: '€25–50', status: 'hold', priority: 'medium', vinOk: false, compat: 'GP 1.4 · Evo', verdict: 'hold' },
-        { id: 'p-rshock', name: 'Rear shocks pair', ar: 'مساعدين ورا', oem: '', fiat: 'via ePER', alt: 'KYB/Sachs/Monroe', brand: 'KYB', tier: 5, category: 'Suspension', euRef: '€35–60 ea', priceNewEg: 3800, supplier: 'ELKHLANY', status: 'hold', priority: 'medium', vinOk: false, compat: 'GP/Evo/Corsa D', verdict: 'hold', qty: 2, notes: 'Dealer 3800 "original" — confirm brand.' },
-        { id: 'p-fshock', name: 'Front struts pair', ar: 'مساعدين قدام', oem: '', fiat: 'via ePER', alt: 'KYB/Sachs (avoid Chinese)', brand: 'KYB', tier: 5, category: 'Suspension', euRef: '€60–100 ea', priceNewEg: 4800, supplier: 'ELKHLANY', status: 'hold', priority: 'medium', vinOk: false, compat: 'GP/Evo/Corsa D', verdict: 'hold', qty: 2, notes: 'Dealer 4800 Turkish / 3800 Chinese — inspect first; avoid Chinese.' },
+        { id: 'p-rshock', name: 'Rear shocks pair', ar: 'مساعدين ورا', oem: '', fiat: 'via ePER', alt: 'KYB/Sachs/Monroe', brand: 'KYB', tier: 5, category: 'Suspension', euRef: '€35–60 ea', priceNewEg: 2500, supplier: 'Italians House', laborEg: null, status: 'hold', priority: 'medium', vinOk: false, compat: 'GP/Evo/Corsa D', verdict: 'hold', qty: 1, notes: 'Prices are per PAIR (both sides), qty=1. Italians House 2,500 · ELKHLANY 3,800 "original" (confirm brand) — inspect first before buying either.' },
+        { id: 'p-fshock', name: 'Front struts pair', ar: 'مساعدين قدام', oem: '', fiat: 'via ePER', alt: 'KYB/Sachs (avoid Chinese)', brand: 'KYB', tier: 5, category: 'Suspension', euRef: '€60–100 ea', priceNewEg: 4800, supplier: 'ELKHLANY', laborEg: null, status: 'hold', priority: 'medium', vinOk: false, compat: 'GP/Evo/Corsa D', verdict: 'hold', qty: 1, notes: 'Prices are per PAIR (both sides), qty=1. ELKHLANY 4,800 Turkish / 3,800 Chinese · El Asmar ~6,000 Turkish set · Italians House 6,000 — inspect first; avoid Chinese regardless of price.' },
         { id: 'p-o2', name: 'O2 sensor front', ar: 'حساس أكسجين', oem: '', fiat: 'via ePER', alt: 'Bosch/NGK-NTK', brand: 'Bosch', tier: 5, category: 'Engine', euRef: '€50–100', status: 'hold', priority: 'low', vinOk: false, compat: '1.4 T-Jet pre-cat', verdict: 'hold', notes: 'Only if fuel trims confirm.' },
         { id: 'p-acclutch', name: 'A/C compressor clutch', ar: 'كباس الكومبروسور', oem: '', fiat: 'Denso', alt: 'Denso kit', brand: 'Denso', tier: 5, category: 'Electrical', euRef: '€40–80', status: 'hold', priority: 'low', vinOk: false, compat: 'match comp. label', verdict: 'hold' },
-        { id: 'p-headunit', name: '9" Android head unit', ar: 'شاشة أندرويد', oem: '', fiat: '+canbus adapter', alt: 'Pioneer/Kenwood/Sony', brand: '', tier: 4, category: 'Accessories', euRef: '€120–300', status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP 2-DIN + 199 canbus', verdict: 'later' },
-        { id: 'p-speakers', name: 'Door speakers ×4 (165mm)', ar: 'سماعات', oem: '', fiat: '6.5"', alt: 'Focal/JBL/Pioneer', brand: '', tier: 4, category: 'Accessories', euRef: '€40–120/pair', status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP doors', verdict: 'later', qty: 2 },
-        { id: 'p-ledlow', name: 'LED low beam (pair)', ar: 'LED واطي', oem: '', fiat: 'check base', alt: 'Philips Ultinon/Osram', brand: 'Philips', tier: 5, category: 'Exterior', euRef: '€60–130', status: 'later', priority: 'cosmetic', vinOk: false, compat: 'match reflector', verdict: 'later', notes: 'Verify beam pattern on a wall.' },
-        { id: 'p-leather', name: 'Leather seat covers (F+R)', ar: 'كسوة جلد', oem: '', fiat: 'upholstery', alt: 'local trimmer', brand: '', tier: 4, category: 'Interior', euRef: 'workshop', status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP seats', verdict: 'later' }
+        { id: 'p-headunit', name: '9" Android head unit', ar: 'شاشة أندرويد', oem: '', fiat: '+canbus adapter', alt: 'X-max (ELHakim) / Winca / TS18', brand: 'X-max', tier: 4, category: 'Accessories', euRef: '€120–300', priceNewEg: 4750, supplier: 'ELHakim Car Hub', laborEg: 0, status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP 2-DIN + 199 canbus', verdict: 'later', notes: 'ELHakim X-max 2/32 = 4,750, price INCLUDES frame+camera+AHD+install+1yr warranty — no separate labor for this option. Alternatives: X-max 4/64=6,500 · SK Vision 2K=7,500 · Winca 2/32=6,500 (4/64=10,000) · TS18 varies 6,200–9,000 across sellers.' },
+        { id: 'p-ambient', name: 'Ambient light kit', ar: 'إضاءة أمبيينت', oem: '', fiat: '', alt: '', brand: '', tier: 3, category: 'Accessories', euRef: '', priceNewEg: 1850, supplier: 'Screens — Alexandria', laborEg: null, status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP interior trim', verdict: 'later', notes: 'Quote: 1,850 (+20 11 12336552).' },
+        { id: 'p-speakers', name: 'Door speakers ×4 (165mm)', ar: 'سماعات', oem: '', fiat: '6.5"', alt: 'Focal/JBL/Pioneer', brand: '', tier: 4, category: 'Accessories', euRef: '€40–120/pair', status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP doors', verdict: 'later', qty: 2, notes: 'No Egyptian dealer quote yet — EU reference only.' },
+        { id: 'p-ledlow', name: 'LED low beam (pair)', ar: 'LED واطي', oem: '', fiat: 'check base', alt: 'Philips Ultinon/Osram', brand: 'Philips', tier: 5, category: 'Exterior', euRef: '€60–130', status: 'later', priority: 'cosmetic', vinOk: false, compat: 'match reflector', verdict: 'later', notes: 'No Egyptian dealer quote yet — EU reference only. Verify beam pattern on a wall.' },
+        { id: 'p-leather', name: 'Leather seat covers (F+R)', ar: 'كسوة جلد', oem: '', fiat: 'upholstery', alt: 'local trimmer', brand: '', tier: 4, category: 'Interior', euRef: 'workshop', priceNewEg: 3700, supplier: 'Leather trim (+20 10 90421285)', laborEg: 0, status: 'later', priority: 'cosmetic', vinOk: true, compat: 'GP seats', verdict: 'later', notes: 'Quote 3,700 INSTALLED — labor is already included in this price, leave labor field at 0 for this item.' },
+        { id: 'p-frontbumper', name: 'Front bumper', ar: 'اكصدام أمامي', oem: '', fiat: 'via ePER', alt: 'black available', brand: '', tier: 3, category: 'Body', euRef: '', priceNewEg: 4500, supplier: 'Italians House', laborEg: null, status: 'hold', priority: 'cosmetic', vinOk: false, compat: 'GP', verdict: 'hold', notes: 'Quote: 4,500. Only if the existing bumper can\'t be fiber+weld repaired economically.' },
+        { id: 'p-rearbumper', name: 'Rear bumper (w/ lights)', ar: 'اكصدام خلفي بالفوانيس', oem: '', fiat: 'via ePER', alt: '', brand: '', tier: 3, category: 'Body', euRef: '', priceNewEg: 4000, supplier: 'Italians House', laborEg: null, status: 'hold', priority: 'high', vinOk: false, compat: 'GP', verdict: 'hold', notes: 'Quote: 4,000 incl. lights. This is the rear-impact panel — coordinate with the rear-harness CAN repair (§12), since that area needs to be opened anyway. Decide replace vs. fiber+weld once the electrician has assessed the damage.' }
       ],
       /* installed history parts (for reference) */
       installed: [
@@ -919,7 +922,7 @@ App.DataTable = function (cols, rows, opts) {
     bar.appendChild(search);
     cols.filter(c => c.filter).forEach(c => {
       const sel = el('select', { class: 'inp dt-filter', onchange: e => { filters[c.key] = e.target.value; page = 1; render(); } });
-      sel.appendChild(el('option', { value: '', text: c.label + ': all' }));
+      sel.appendChild(el('option', { value: '', text: (c.filterLabel || c.label || 'Filter') + ': all' }));
       c.filter.forEach(v => sel.appendChild(el('option', { value: v, text: v, selected: filters[c.key] === v ? 'selected' : null })));
       bar.appendChild(sel);
     });
@@ -1486,9 +1489,9 @@ App.router = (function () {
     Checklist() {
       const saved = load();
       const done = CHECK.filter(c => saved[c[0]]).length;
-      const head = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px' }, [
-        el('h3', { class: 'h-disp', style: 'font-size:16px', text: 'Phase-1 Checklist' }),
-        el('span', { class: 'mono', html: '<b style="color:var(--green)">' + done + '</b>/' + CHECK.length + ' COMPLETE' })
+      const head = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-bottom:12px' }, [
+        el('h3', { class: 'h-disp', style: 'font-size:16px;min-width:0', text: 'Phase-1 Checklist' }),
+        el('span', { class: 'mono', style: 'white-space:nowrap;flex-shrink:0', html: '<b style="color:var(--green)">' + done + '</b>/' + CHECK.length + ' COMPLETE' })
       ]);
       const list = el('ul', { style: 'list-style:none;display:grid;gap:7px' });
       CHECK.forEach(c => {
@@ -1548,12 +1551,14 @@ App.router = (function () {
 
       const cats = Array.from(new Set(rows.map(r => r.category))).sort();
       const cols = [
-        { key: 'verdict', label: '', render: r => ui.verdict(r.verdict), filter: ['buy', 'hold', 'stop', 'later'] },
+        { key: 'verdict', label: '', filterLabel: 'Verdict', render: r => ui.verdict(r.verdict), filter: ['buy', 'hold', 'stop', 'later'] },
         { key: 'name', label: 'Part', sort: true, render: r => el('div', {}, [el('b', { text: r.name }), el('div', { class: 'mono muted', style: 'font-size:10px', text: r.ar || '' })]) },
         { key: 'oem', label: 'OEM #', sort: true, render: r => el('span', { class: 'mono', style: 'color:var(--rosso-deep);font-weight:700', text: r.oem || '—' }) },
         { key: 'brand', label: 'Brand', sort: true },
         { key: 'category', label: 'Category', sort: true, filter: cats },
-        { key: 'priceNewEg', label: 'New EGP', sort: true, render: r => r.priceNewEg ? App.util.num(r.priceNewEg) : '—' },
+        { key: 'priceNewEg', label: 'Part EGP', sort: true, render: r => r.priceNewEg ? App.util.num(r.priceNewEg) : '—' },
+        { key: 'laborEg', label: 'Labor EGP', sort: true, render: r => r.laborEg ? App.util.num(r.laborEg) : el('span', { class: 'mono muted', text: '— add' }) },
+        { key: '_total', label: 'Total', sort: false, render: r => partTotal(r) != null ? el('span', { class: 'mono', style: 'font-weight:700', text: App.util.num(partTotal(r)) }) : '—' },
         { key: 'euRef', label: '🌍 EU' },
         { key: 'priority', label: 'Priority', sort: true, render: r => ui.priorityBadge(r.priority), filter: ['critical', 'high', 'medium', 'low', 'cosmetic'] },
         { key: 'vinOk', label: 'VIN', render: r => r.vinOk ? '✅' : el('span', { class: 'mono', style: 'color:var(--amber)', text: 'verify' }) }
@@ -1564,8 +1569,21 @@ App.router = (function () {
         actions: [{ label: '+ Add Part', cls: 'rosso', fn: () => openPart(null) }]
       });
       view.appendChild(dt);
+
+      const grand = rows.reduce((s, r) => s + (partTotal(r) || 0), 0);
+      const missingLabor = rows.filter(r => r.priceNewEg && r.laborEg == null).length;
+      view.appendChild(el('div', { class: 'card', style: 'margin-top:14px' }, [el('div', { class: 'pad', style: 'display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:center' }, [
+        el('span', { class: 'mono muted', style: 'font-size:11px', text: missingLabor ? missingLabor + ' item(s) still need a labor/installation price' : 'Labor filled in for all priced parts' }),
+        el('span', { class: 'h-disp', style: 'font-size:18px;color:var(--rosso)', text: 'Grand total (parts+labor): ' + App.config.money(grand) })
+      ])]));
     }
   });
+
+  /* (price × qty) + labor — the number to actually budget for this line */
+  function partTotal(r) {
+    if (r.priceNewEg == null && r.laborEg == null) return null;
+    return (r.priceNewEg || 0) * (r.qty || 1) + (r.laborEg || 0);
+  }
 
   function openPart(rec) {
     const isNew = !rec; rec = rec || { verdict: 'buy', priority: 'medium', category: 'Engine', vinOk: false };
@@ -1578,6 +1596,7 @@ App.router = (function () {
       el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Category' }),
         selectFrom('category', ['Engine', 'Cooling', 'Turbo', 'Suspension', 'Steering', 'Electrical', 'Brakes', 'Interior', 'Exterior', 'Body', 'Transmission', 'Accessories'], rec.category)]),
       f('Price new (EGP)', 'priceNewEg', null, 'number'), f('Price used (EGP)', 'priceUsedEg', null, 'number'),
+      f('Labor / installation (EGP)', 'laborEg', null, 'number'), f('Quantity', 'qty', null, 'number'),
       f('EU reference', 'euRef'), f('Supplier', 'supplier'), f('Compatibility', 'compat'), f('Warranty', 'warranty'),
       el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Verdict' }), selectFrom('verdict', ['buy', 'hold', 'stop', 'later', 'installed'], rec.verdict)]),
       el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Priority' }), selectFrom('priority', ['critical', 'high', 'medium', 'low', 'cosmetic'], rec.priority)]),
@@ -1596,7 +1615,7 @@ App.router = (function () {
         let val = i.value;
         if (i.dataset.key === 'tags') val = val.split(',').map(s => s.trim()).filter(Boolean);
         if (i.dataset.key === 'vinOk') val = val === 'true';
-        if (['priceNewEg', 'priceUsedEg'].includes(i.dataset.key)) val = val === '' ? null : +val;
+        if (['priceNewEg', 'priceUsedEg', 'laborEg', 'qty'].includes(i.dataset.key)) val = val === '' ? null : +val;
         patch[i.dataset.key] = val;
       });
       if (isNew) App.store.add('parts', patch); else App.store.update('parts', rec.id, patch);
@@ -1958,9 +1977,9 @@ App.router = (function () {
     const over = c.spent > c.budget;
     const card = el('div', { class: 'card card-hover' }, [el('div', { class: 'spine', style: 'background:' + (over ? 'var(--rosso)' : PHASE_COLOR[phase]) })]);
     const pad = el('div', { class: 'pad', style: 'cursor:pointer' }, [
-      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
-        el('span', { class: 'h-disp', style: 'font-size:15px', text: c.cat }),
-        el('span', { class: 'mono', style: 'font-size:12px', text: App.config.money(c.spent) + ' / ' + App.config.money(c.budget) })
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 10px' }, [
+        el('span', { class: 'h-disp', style: 'font-size:15px;flex:1;min-width:0', text: c.cat }),
+        el('span', { class: 'mono', style: 'font-size:12px;white-space:nowrap;flex-shrink:0', text: App.config.money(c.spent) + ' / ' + App.config.money(c.budget) })
       ]),
       ui.meter(pct, over ? 'f-red' : PHASE_FILL[phase]),
       c.note ? el('div', { style: 'font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5', text: c.note }) : null,
@@ -2045,9 +2064,9 @@ App.router = (function () {
         const chips = el('div', { class: 'chips', style: 'margin-top:10px' });
         cats.forEach(c => chips.appendChild(el('span', { class: 'tag', text: c.cat + ' ' + money(c.budget) })));
         card.appendChild(el('div', { class: 'pad' }, [
-          el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
-            el('span', { class: 'h-disp', style: 'font-size:16px', text: 'Phase ' + p.phase + ' · ' + p.title }),
-            el('span', { class: 'mono', style: 'font-size:12px', text: money(spent) + ' / ' + money(budget) })]),
+          el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 10px' }, [
+            el('span', { class: 'h-disp', style: 'font-size:16px;flex:1;min-width:0', text: 'Phase ' + p.phase + ' · ' + p.title }),
+            el('span', { class: 'mono', style: 'font-size:12px;white-space:nowrap;flex-shrink:0', text: money(spent) + ' / ' + money(budget) })]),
           ui.meter(pct, PHASE_FILL[p.phase]),
           el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:8px', text: p.note }),
           chips
@@ -2195,9 +2214,9 @@ App.router = (function () {
       const flags = c.features;
       const fl = el('div', { class: 'grid-2' });
       [['obdLive', 'OBD-II Live Diagnostics'], ['aiAdvisor', 'AI Maintenance Advisor'], ['expenseForecast', 'Expense Forecasting'], ['vinDecoder', 'VIN Decoder'], ['ocrInvoice', 'OCR Invoice Scanner'], ['barcodeScanner', 'Barcode / QR Parts Scanner'], ['cloudSync', 'Cloud Sync'], ['multiUser', 'Multi-user Collaboration']].forEach(f => {
-        fl.appendChild(el('label', { class: 'card', style: 'display:flex;justify-content:space-between;align-items:center;padding:11px 14px;cursor:pointer' }, [
-          el('span', { text: f[1] }),
-          (function () { const cb = el('input', { type: 'checkbox', checked: flags[f[0]] ? 'checked' : null }); cb.onchange = () => { cfg.setPath('features', f[0], cb.checked); App.util.toast(f[1] + (cb.checked ? ' enabled (stub)' : ' disabled')); }; return cb; })()
+        fl.appendChild(el('label', { class: 'card', style: 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;cursor:pointer' }, [
+          el('span', { style: 'min-width:0', text: f[1] }),
+          (function () { const cb = el('input', { type: 'checkbox', style: 'flex-shrink:0', checked: flags[f[0]] ? 'checked' : null }); cb.onchange = () => { cfg.setPath('features', f[0], cb.checked); App.util.toast(f[1] + (cb.checked ? ' enabled (stub)' : ' disabled')); }; return cb; })()
         ]));
       });
       view.appendChild(section('Extension Points (roadmap)', el('div', {}, [el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:10px', text: 'Feature flags — flip on as each module is built. Data layer + UI hooks already exist.' }), fl])));

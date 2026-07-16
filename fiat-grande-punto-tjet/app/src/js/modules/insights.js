@@ -56,9 +56,9 @@
         const chips = el('div', { class: 'chips', style: 'margin-top:10px' });
         cats.forEach(c => chips.appendChild(el('span', { class: 'tag', text: c.cat + ' ' + money(c.budget) })));
         card.appendChild(el('div', { class: 'pad' }, [
-          el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
-            el('span', { class: 'h-disp', style: 'font-size:16px', text: 'Phase ' + p.phase + ' · ' + p.title }),
-            el('span', { class: 'mono', style: 'font-size:12px', text: money(spent) + ' / ' + money(budget) })]),
+          el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 10px' }, [
+            el('span', { class: 'h-disp', style: 'font-size:16px;flex:1;min-width:0', text: 'Phase ' + p.phase + ' · ' + p.title }),
+            el('span', { class: 'mono', style: 'font-size:12px;white-space:nowrap;flex-shrink:0', text: money(spent) + ' / ' + money(budget) })]),
           ui.meter(pct, PHASE_FILL[p.phase]),
           el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:8px', text: p.note }),
           chips

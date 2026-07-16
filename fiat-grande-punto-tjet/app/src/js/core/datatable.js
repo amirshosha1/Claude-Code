@@ -52,7 +52,7 @@ App.DataTable = function (cols, rows, opts) {
     bar.appendChild(search);
     cols.filter(c => c.filter).forEach(c => {
       const sel = el('select', { class: 'inp dt-filter', onchange: e => { filters[c.key] = e.target.value; page = 1; render(); } });
-      sel.appendChild(el('option', { value: '', text: c.label + ': all' }));
+      sel.appendChild(el('option', { value: '', text: (c.filterLabel || c.label || 'Filter') + ': all' }));
       c.filter.forEach(v => sel.appendChild(el('option', { value: v, text: v, selected: filters[c.key] === v ? 'selected' : null })));
       bar.appendChild(sel);
     });

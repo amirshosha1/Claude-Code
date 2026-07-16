@@ -106,9 +106,9 @@
     Checklist() {
       const saved = load();
       const done = CHECK.filter(c => saved[c[0]]).length;
-      const head = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:12px' }, [
-        el('h3', { class: 'h-disp', style: 'font-size:16px', text: 'Phase-1 Checklist' }),
-        el('span', { class: 'mono', html: '<b style="color:var(--green)">' + done + '</b>/' + CHECK.length + ' COMPLETE' })
+      const head = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-bottom:12px' }, [
+        el('h3', { class: 'h-disp', style: 'font-size:16px;min-width:0', text: 'Phase-1 Checklist' }),
+        el('span', { class: 'mono', style: 'white-space:nowrap;flex-shrink:0', html: '<b style="color:var(--green)">' + done + '</b>/' + CHECK.length + ' COMPLETE' })
       ]);
       const list = el('ul', { style: 'list-style:none;display:grid;gap:7px' });
       CHECK.forEach(c => {

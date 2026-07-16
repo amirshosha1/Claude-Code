@@ -42,9 +42,9 @@
       const flags = c.features;
       const fl = el('div', { class: 'grid-2' });
       [['obdLive', 'OBD-II Live Diagnostics'], ['aiAdvisor', 'AI Maintenance Advisor'], ['expenseForecast', 'Expense Forecasting'], ['vinDecoder', 'VIN Decoder'], ['ocrInvoice', 'OCR Invoice Scanner'], ['barcodeScanner', 'Barcode / QR Parts Scanner'], ['cloudSync', 'Cloud Sync'], ['multiUser', 'Multi-user Collaboration']].forEach(f => {
-        fl.appendChild(el('label', { class: 'card', style: 'display:flex;justify-content:space-between;align-items:center;padding:11px 14px;cursor:pointer' }, [
-          el('span', { text: f[1] }),
-          (function () { const cb = el('input', { type: 'checkbox', checked: flags[f[0]] ? 'checked' : null }); cb.onchange = () => { cfg.setPath('features', f[0], cb.checked); App.util.toast(f[1] + (cb.checked ? ' enabled (stub)' : ' disabled')); }; return cb; })()
+        fl.appendChild(el('label', { class: 'card', style: 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;cursor:pointer' }, [
+          el('span', { style: 'min-width:0', text: f[1] }),
+          (function () { const cb = el('input', { type: 'checkbox', style: 'flex-shrink:0', checked: flags[f[0]] ? 'checked' : null }); cb.onchange = () => { cfg.setPath('features', f[0], cb.checked); App.util.toast(f[1] + (cb.checked ? ' enabled (stub)' : ' disabled')); }; return cb; })()
         ]));
       });
       view.appendChild(section('Extension Points (roadmap)', el('div', {}, [el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:10px', text: 'Feature flags — flip on as each module is built. Data layer + UI hooks already exist.' }), fl])));

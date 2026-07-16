@@ -67,9 +67,9 @@
     const over = c.spent > c.budget;
     const card = el('div', { class: 'card card-hover' }, [el('div', { class: 'spine', style: 'background:' + (over ? 'var(--rosso)' : PHASE_COLOR[phase]) })]);
     const pad = el('div', { class: 'pad', style: 'cursor:pointer' }, [
-      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline' }, [
-        el('span', { class: 'h-disp', style: 'font-size:15px', text: c.cat }),
-        el('span', { class: 'mono', style: 'font-size:12px', text: App.config.money(c.spent) + ' / ' + App.config.money(c.budget) })
+      el('div', { style: 'display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px 10px' }, [
+        el('span', { class: 'h-disp', style: 'font-size:15px;flex:1;min-width:0', text: c.cat }),
+        el('span', { class: 'mono', style: 'font-size:12px;white-space:nowrap;flex-shrink:0', text: App.config.money(c.spent) + ' / ' + App.config.money(c.budget) })
       ]),
       ui.meter(pct, over ? 'f-red' : PHASE_FILL[phase]),
       c.note ? el('div', { style: 'font-size:11.5px;color:var(--ink-soft);margin-top:8px;line-height:1.5', text: c.note }) : null,
