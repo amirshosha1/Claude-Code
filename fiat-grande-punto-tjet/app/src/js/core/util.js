@@ -41,18 +41,43 @@ App.util = (function () {
     t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
+  /* Accessible modal: role=dialog + aria-modal, Escape closes, Tab is
+     trapped inside while open, and focus returns to whatever element
+     opened it (so keyboard/screen-reader users never lose their place). */
   function modal(title, bodyNode) {
     let back = $('#modalBack');
     if (!back) { back = el('div', { id: 'modalBack', class: 'modal-back' }); document.body.appendChild(back); }
     back.innerHTML = '';
-    const close = () => back.classList.remove('open');
-    const box = el('div', { class: 'modal' }, [
-      el('div', { class: 'm-head' }, [el('h3', { text: title }), el('button', { class: 'x-btn', 'aria-label': 'Close', onclick: close }, '×')]),
+    const previouslyFocused = document.activeElement;
+    const titleId = 'modalTitle-' + Date.now();
+
+    function focusable() {
+      return Array.prototype.slice.call(box.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+        .filter(n => !n.disabled && n.offsetParent !== null);
+    }
+    function onKeydown(e) {
+      if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const items = focusable(); if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    function close() {
+      back.classList.remove('open');
+      document.removeEventListener('keydown', onKeydown, true);
+      if (previouslyFocused && typeof previouslyFocused.focus === 'function') previouslyFocused.focus();
+    }
+
+    const box = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId, tabindex: '-1' }, [
+      el('div', { class: 'm-head' }, [el('h3', { id: titleId, text: title }), el('button', { class: 'x-btn', type: 'button', 'aria-label': 'Close dialog', onclick: close }, '×')]),
       el('div', { class: 'm-body' }, [bodyNode])
     ]);
     back.appendChild(box);
     back.onclick = e => { if (e.target === back) close(); };
+    document.addEventListener('keydown', onKeydown, true);
     back.classList.add('open');
+    setTimeout(() => { const items = focusable(); (items[0] || box).focus(); }, 30);
     return { close };
   }
 

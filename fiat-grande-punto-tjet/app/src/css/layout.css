@@ -16,9 +16,12 @@
 .nav-group{margin-top:14px}
 .nav-group .gt{font-family:var(--mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); padding:0 16px 6px}
 .nav-item{display:flex; align-items:center; gap:10px; padding:9px 16px; cursor:pointer; font-size:13.5px;
-  border-left:3px solid transparent; transition:background .12s, border-color .12s; color:var(--ink)}
+  border-left:3px solid transparent; transition:background .12s, border-color .12s; color:var(--ink);
+  /* button reset — .nav-item is a real <button> now for native keyboard support */
+  background:none; border-top:none; border-right:none; border-bottom:none; font:inherit; text-align:left; width:100%}
 .nav-item:hover{background:var(--card2)}
 .nav-item.active{background:var(--card2); border-left-color:var(--rosso); font-weight:700}
+.nav-item:focus-visible{outline:2px solid var(--rosso); outline-offset:-2px}
 .nav-item .ic{width:18px; text-align:center; font-size:15px}
 .nav-item .soon{margin-left:auto; font-family:var(--mono); font-size:8px; color:var(--ink-soft); border:1px solid var(--line-strong); padding:1px 4px; border-radius:3px}
 
@@ -42,8 +45,11 @@
 .search-results{position:absolute; top:44px; right:0; width:340px; max-width:80vw; background:var(--card);
   border:1.5px solid var(--ink); border-radius:8px; box-shadow:0 14px 40px rgba(0,0,0,.25); max-height:60vh; overflow:auto; display:none; z-index:60}
 .search-results.open{display:block}
-.sr-item{padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:12.5px}
+.sr-item{padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:12.5px;
+  /* button reset — real <button>, full-width, left-aligned, no browser chrome */
+  display:block; width:100%; background:none; border-left:none; border-right:none; border-top:none; font:inherit; text-align:left; color:inherit}
 .sr-item:hover{background:var(--card2)}
+.sr-item:focus-visible{outline:2px solid var(--rosso); outline-offset:-2px}
 .sr-item .t{font-weight:700}
 .sr-item .m{font-family:var(--mono); font-size:10px; color:var(--ink-soft)}
 

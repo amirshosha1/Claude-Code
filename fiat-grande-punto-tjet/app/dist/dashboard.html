@@ -267,9 +267,12 @@ label.fld .lb{font-family:var(--mono); font-size:10px; letter-spacing:.14em; tex
 .nav-group{margin-top:14px}
 .nav-group .gt{font-family:var(--mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); padding:0 16px 6px}
 .nav-item{display:flex; align-items:center; gap:10px; padding:9px 16px; cursor:pointer; font-size:13.5px;
-  border-left:3px solid transparent; transition:background .12s, border-color .12s; color:var(--ink)}
+  border-left:3px solid transparent; transition:background .12s, border-color .12s; color:var(--ink);
+  /* button reset — .nav-item is a real <button> now for native keyboard support */
+  background:none; border-top:none; border-right:none; border-bottom:none; font:inherit; text-align:left; width:100%}
 .nav-item:hover{background:var(--card2)}
 .nav-item.active{background:var(--card2); border-left-color:var(--rosso); font-weight:700}
+.nav-item:focus-visible{outline:2px solid var(--rosso); outline-offset:-2px}
 .nav-item .ic{width:18px; text-align:center; font-size:15px}
 .nav-item .soon{margin-left:auto; font-family:var(--mono); font-size:8px; color:var(--ink-soft); border:1px solid var(--line-strong); padding:1px 4px; border-radius:3px}
 
@@ -293,8 +296,11 @@ label.fld .lb{font-family:var(--mono); font-size:10px; letter-spacing:.14em; tex
 .search-results{position:absolute; top:44px; right:0; width:340px; max-width:80vw; background:var(--card);
   border:1.5px solid var(--ink); border-radius:8px; box-shadow:0 14px 40px rgba(0,0,0,.25); max-height:60vh; overflow:auto; display:none; z-index:60}
 .search-results.open{display:block}
-.sr-item{padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:12.5px}
+.sr-item{padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; font-size:12.5px;
+  /* button reset — real <button>, full-width, left-aligned, no browser chrome */
+  display:block; width:100%; background:none; border-left:none; border-right:none; border-top:none; font:inherit; text-align:left; color:inherit}
 .sr-item:hover{background:var(--card2)}
+.sr-item:focus-visible{outline:2px solid var(--rosso); outline-offset:-2px}
 .sr-item .t{font-weight:700}
 .sr-item .m{font-family:var(--mono); font-size:10px; color:var(--ink-soft)}
 
@@ -380,18 +386,43 @@ App.util = (function () {
     t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
+  /* Accessible modal: role=dialog + aria-modal, Escape closes, Tab is
+     trapped inside while open, and focus returns to whatever element
+     opened it (so keyboard/screen-reader users never lose their place). */
   function modal(title, bodyNode) {
     let back = $('#modalBack');
     if (!back) { back = el('div', { id: 'modalBack', class: 'modal-back' }); document.body.appendChild(back); }
     back.innerHTML = '';
-    const close = () => back.classList.remove('open');
-    const box = el('div', { class: 'modal' }, [
-      el('div', { class: 'm-head' }, [el('h3', { text: title }), el('button', { class: 'x-btn', 'aria-label': 'Close', onclick: close }, '×')]),
+    const previouslyFocused = document.activeElement;
+    const titleId = 'modalTitle-' + Date.now();
+
+    function focusable() {
+      return Array.prototype.slice.call(box.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+        .filter(n => !n.disabled && n.offsetParent !== null);
+    }
+    function onKeydown(e) {
+      if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+      if (e.key !== 'Tab') return;
+      const items = focusable(); if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    function close() {
+      back.classList.remove('open');
+      document.removeEventListener('keydown', onKeydown, true);
+      if (previouslyFocused && typeof previouslyFocused.focus === 'function') previouslyFocused.focus();
+    }
+
+    const box = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': titleId, tabindex: '-1' }, [
+      el('div', { class: 'm-head' }, [el('h3', { id: titleId, text: title }), el('button', { class: 'x-btn', type: 'button', 'aria-label': 'Close dialog', onclick: close }, '×')]),
       el('div', { class: 'm-body' }, [bodyNode])
     ]);
     back.appendChild(box);
     back.onclick = e => { if (e.target === back) close(); };
+    document.addEventListener('keydown', onKeydown, true);
     back.classList.add('open');
+    setTimeout(() => { const items = focusable(); (items[0] || box).focus(); }, 30);
     return { close };
   }
 
@@ -670,45 +701,155 @@ App.seed = {
    - Vehicle-scoped collections (array of records = future DB rows).
    - Pluggable persistence ADAPTER so we can swap localStorage for
      SQLite / Supabase / Postgres later WITHOUT touching the UI.
-     Any adapter must implement: load() -> state|null, save(state).
+     Any adapter must implement: load() -> parsed|undefined(corrupt)|null(empty),
+     loadRaw() -> string|null, save(state).
    - Pub/sub so modules re-render on change.
+
+   DATA-SAFETY CONTRACT (read before touching load/migrate/import):
+   - A missing/empty store is the ONLY case that may install the seed
+     silently (first run — nothing existed to lose).
+   - Corrupt JSON or a payload that fails validateState() is NEVER
+     silently discarded. The raw bytes are preserved under a
+     'gp-os-corrupt-<ts>' key, a recoveryNotice is attached to the
+     in-memory state for the UI to surface loudly, and nothing is
+     written back to the primary key until the user acts.
+   - Only reset()/hardReset() (an explicit, user-confirmed action) may
+     replace existing good data with the seed.
    ============================================================ */
 window.App = window.App || {};
 App.store = (function () {
   const KEY = 'gp-os-v2';
+  const CORRUPT_PREFIX = 'gp-os-corrupt-';
 
   /* ---- persistence adapters (swap here for a real DB) ---- */
   const adapters = {
     local: {
-      load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } },
+      loadRaw() { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
+      // returns: null = nothing stored yet · undefined = stored but not valid JSON · object = parsed
+      load() {
+        const raw = this.loadRaw();
+        if (raw == null) return null;
+        try { return JSON.parse(raw); } catch (e) { return undefined; }
+      },
       save(state) { localStorage.setItem(KEY, JSON.stringify(state)); }
     }
     /* Example future adapter (same signature, async-capable):
-       supabase: { async load(){...}, async save(s){...} }
+       supabase: { async load(){...}, async loadRaw(){...}, async save(s){...} }
        Only this object changes; modules keep calling App.store.* */
   };
   let adapter = adapters.local;
 
   let state = null;
   const subs = [];
+  const ARRAY_COLLECTIONS = ['parts', 'installed', 'faults', 'scans', 'service', 'fuel', 'budget',
+    'planner', 'workshops', 'suppliers', 'inventory', 'documents', 'roadmap', 'photos'];
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  function migrate(s) {
-    // simple forward-migration hook; bump seed.meta.schema when shape changes
-    if (!s || !s.meta || s.meta.schema !== App.seed.meta.schema) return clone(App.seed);
+  /* ---- shape validation (also used to screen imports + cloud pulls) ---- */
+  function validateState(obj) {
+    const errors = [];
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) { errors.push('root is not an object'); return { valid: false, errors }; }
+    if (!obj.meta || typeof obj.meta.schema !== 'number') errors.push('missing meta.schema (number)');
+    if (!Array.isArray(obj.vehicles) || obj.vehicles.length === 0) {
+      errors.push('missing vehicles[] (non-empty array)');
+    } else {
+      obj.vehicles.forEach((v, i) => {
+        if (!v || typeof v !== 'object') { errors.push('vehicles[' + i + '] is not an object'); return; }
+        if (typeof v.id !== 'string' || !v.id) errors.push('vehicles[' + i + '].id missing');
+        if (!v.data || typeof v.data !== 'object') errors.push('vehicles[' + i + '].data missing');
+        else ARRAY_COLLECTIONS.forEach(c => {
+          if (v.data[c] != null && !Array.isArray(v.data[c])) errors.push('vehicles[' + i + '].data.' + c + ' must be an array');
+        });
+      });
+      if (typeof obj.activeVehicleId !== 'string' || !obj.activeVehicleId) errors.push('missing activeVehicleId');
+    }
+    return { valid: errors.length === 0, errors };
+  }
+
+  /* ---- version-by-version migrations ----
+     Add one entry per released schema bump: MIGRATIONS[N] transforms a
+     state at schema N into schema N+1. Never skip versions — the
+     runner walks the chain step by step so nothing is silently lost
+     between releases. */
+  const MIGRATIONS = {
+    // Example scaffold for the first future bump (schema 2 -> 3).
+    // Replace/extend when the shape actually changes; keep old entries
+    // forever so old backups can still be replayed forward.
+    // 2: function migrate_2_to_3(s) { /* transform s in place, return s */ return s; }
+  };
+
+  function runMigrations(raw) {
+    const s = raw;
+    const current = App.seed.meta.schema;
+    if (typeof s.meta.schema !== 'number') s.meta.schema = 1;
+    if (s.meta.schema > current) {
+      // Data saved by a NEWER app version than this one understands.
+      // Do not guess a downgrade transform — pass it through untouched
+      // and flag it so the UI can warn instead of quietly mangling it.
+      s.meta.schemaAhead = true;
+      return s;
+    }
+    let steps = 0;
+    while (s.meta.schema < current) {
+      const fn = MIGRATIONS[s.meta.schema];
+      if (!fn) break; // no known path from here — stop rather than guess
+      const before = s.meta.schema;
+      fn(s);
+      s.meta.schema = before + 1;
+      if (++steps > 50) break; // guard against a buggy migration looping forever
+    }
     return s;
   }
 
+  function preserveCorrupt(rawStr) {
+    try { localStorage.setItem(CORRUPT_PREFIX + Date.now(), rawStr == null ? '' : rawStr); } catch (e) { /* best effort */ }
+  }
+  function corruptBackups() {
+    const out = [];
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf(CORRUPT_PREFIX) === 0) out.push(k); } } catch (e) { }
+    return out.sort().reverse();
+  }
+  function readCorruptBackup(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function discardCorruptBackup(key) { try { localStorage.removeItem(key); } catch (e) { } }
+
   function load() {
-    state = migrate(adapter.load());
+    const raw = adapter.load();
+    if (raw === null) { // nothing stored — legitimate first run, nothing to lose
+      state = clone(App.seed);
+      persistSafe();
+      return state;
+    }
+    if (raw === undefined) { // stored but not valid JSON at all
+      preserveCorrupt(adapter.loadRaw ? adapter.loadRaw() : null);
+      state = clone(App.seed);
+      state.meta.recoveryNotice = 'Saved data could not be parsed (corrupted). The raw file was preserved — see Settings → Backup & Restore → Recovered Data. Showing defaults; nothing was overwritten.';
+      return state;
+    }
+    const migrated = runMigrations(raw);
+    const { valid, errors } = validateState(migrated);
+    if (!valid) {
+      preserveCorrupt(JSON.stringify(raw));
+      state = clone(App.seed);
+      state.meta.recoveryNotice = 'Saved data did not match the expected format (' + errors.slice(0, 3).join('; ') + '). A copy was preserved — see Settings → Backup & Restore → Recovered Data. Showing defaults; nothing was overwritten.';
+      return state;
+    }
+    state = migrated;
     return state;
   }
-  function persist() {
-    state.meta.savedAt = new Date().toISOString();
-    adapter.save(state);
-    subs.forEach(fn => fn(state));
+
+  function persistSafe() {
+    try {
+      state.meta.savedAt = new Date().toISOString();
+      adapter.save(state);
+      return true;
+    } catch (e) {
+      console.error('App.store: write failed —', e);
+      App.util && App.util.toast && App.util.toast('⚠ Could not save (storage full or blocked). Export a backup from Settings.');
+      return false;
+    }
   }
+  function persist() { const ok = persistSafe(); subs.forEach(fn => fn(state)); return ok; }
   function subscribe(fn) { subs.push(fn); return () => { const i = subs.indexOf(fn); if (i > -1) subs.splice(i, 1); }; }
 
   /* ---- vehicle scope ---- */
@@ -748,25 +889,65 @@ App.store = (function () {
   const BKEY = 'gp-os-backups';
   function backups() { try { return JSON.parse(localStorage.getItem(BKEY)) || []; } catch (e) { return []; } }
   function snapshot(label) {
-    const keep = (App.config && App.config.get().backup.autoKeep) || 5;
-    const list = backups();
-    list.unshift({ at: new Date().toISOString(), label: label || 'auto', json: JSON.stringify(state) });
-    localStorage.setItem(BKEY, JSON.stringify(list.slice(0, keep)));
+    try {
+      const keep = (App.config && App.config.get().backup.autoKeep) || 5;
+      const list = backups();
+      list.unshift({ at: new Date().toISOString(), label: label || 'auto', json: JSON.stringify(state) });
+      localStorage.setItem(BKEY, JSON.stringify(list.slice(0, keep)));
+      return true;
+    } catch (e) {
+      console.error('App.store.snapshot failed —', e);
+      App.util && App.util.toast && App.util.toast('⚠ Snapshot failed (storage full?)');
+      return false;
+    }
   }
-  function restoreBackup(at) { const b = backups().find(x => x.at === at); if (b) { state = migrate(JSON.parse(b.json)); persist(); } }
+  function clearBackups() { try { localStorage.removeItem(BKEY); } catch (e) { } }
+  function restoreBackup(at) {
+    const b = backups().find(x => x.at === at);
+    if (!b) return { ok: false, error: 'Backup not found' };
+    let parsed; try { parsed = JSON.parse(b.json); } catch (e) { return { ok: false, error: 'Backup is corrupted' }; }
+    const migrated = runMigrations(parsed);
+    const { valid, errors } = validateState(migrated);
+    if (!valid) return { ok: false, error: 'Backup failed validation: ' + errors.join('; ') };
+    state = migrated; persist(); return { ok: true };
+  }
 
   /* ---- vehicle fields ---- */
   function veh() { return activeVehicle(); }
   function setVeh(patch) { Object.assign(activeVehicle(), patch); persist(); }
 
-  /* adopt remote state (from cloud sync) into local cache + UI,
-     WITHOUT bumping savedAt (preserves the remote timestamp so we
-     don't treat the pulled copy as "newer" and echo it back). */
-  function adopt(data) { state = migrate(data); adapter.save(state); subs.forEach(fn => fn(state)); }
+  /* adopt remote state (from cloud sync). Validated exactly like an
+     import — a malformed or malicious cloud payload must never
+     silently corrupt or replace good local data. */
+  function adopt(data) {
+    const migrated = runMigrations(clone(data));
+    const { valid, errors } = validateState(migrated);
+    if (!valid) return { ok: false, error: 'Cloud data failed validation: ' + errors.join('; ') };
+    state = migrated;
+    persistSafe();
+    subs.forEach(fn => fn(state));
+    return { ok: true };
+  }
 
   function exportJSON() { return JSON.stringify(state, null, 2); }
-  function importJSON(txt) { const parsed = JSON.parse(txt); state = migrate(parsed); persist(); }
+
+  /* Import: parse -> migrate -> validate -> ONLY THEN commit. A safety
+     snapshot of the CURRENT state is taken first so a bad-but-valid
+     import can always be undone from Settings → Backup & Restore. */
+  function importJSON(txt) {
+    let parsed;
+    try { parsed = JSON.parse(txt); } catch (e) { throw new Error('That file is not valid JSON.'); }
+    const migrated = runMigrations(parsed);
+    const { valid, errors } = validateState(migrated);
+    if (!valid) throw new Error('This backup does not match the expected format:\n- ' + errors.join('\n- '));
+    snapshot('pre-import-safety');
+    state = migrated;
+    persist();
+  }
+
+  /* Explicit, user-confirmed destructive actions only. */
   function reset() { state = clone(App.seed); persist(); }
+  function hardReset() { reset(); clearBackups(); }
 
   /* ---- global search across collections ---- */
   function search(q) {
@@ -784,8 +965,10 @@ App.store = (function () {
   }
 
   return { load, persist, subscribe, state: () => state, vehicles, activeVehicle, setActiveVehicle, addVehicle,
-    all, add, update, remove, veh, setVeh, adopt, exportJSON, importJSON, reset, search,
-    backups, snapshot, restoreBackup, useAdapter: a => { adapter = adapters[a] || adapter; } };
+    all, add, update, remove, veh, setVeh, adopt, exportJSON, importJSON, reset, hardReset, search,
+    backups, snapshot, clearBackups, restoreBackup, validateState, runMigrations,
+    corruptBackups, readCorruptBackup, discardCorruptBackup,
+    useAdapter: a => { adapter = adapters[a] || adapter; } };
 })();
 
 </script>
@@ -807,6 +990,10 @@ App.ui = (function () {
     ]);
   }
 
+  /* NOTE: k/v/sub/label may ultimately originate from stored or imported
+     data (e.g. a vehicle's free-text `phase` field). Every value here is
+     set via textContent, never innerHTML, so a crafted backup can't
+     inject markup through a shared component used across every module. */
   function tile(k, v, sub, opts) {
     opts = opts || {};
     const vNode = el('div', { class: 'v' });
@@ -814,16 +1001,19 @@ App.ui = (function () {
       el('div', { class: 'k', text: k }), vNode, sub ? el('div', { class: 'sub', text: sub }) : null
     ]);
     if (opts.count != null) App.util.countUp(vNode, opts.count, opts);
-    else vNode.innerHTML = v;
+    else vNode.textContent = v;
     if (opts.color) vNode.style.color = opts.color;
     return t;
   }
 
   function dial(pct, label, sub, color) {
     const d = el('div', { class: 'dial' });
-    d.innerHTML = App.util.gaugeSVG(0, color) +
-      `<div class="val" style="color:${color || 'var(--amber)'}">${pct}%</div>` +
-      `<div class="lab">${label}</div>` + (sub ? `<div class="sub">${sub}</div>` : '');
+    // gaugeSVG's own inputs (pct/color) are always internal numbers/CSS
+    // vars from the call site, never stored text, so it alone stays HTML.
+    d.innerHTML = App.util.gaugeSVG(0, color);
+    d.appendChild(el('div', { class: 'val', style: 'color:' + (color || 'var(--amber)'), text: pct + '%' }));
+    d.appendChild(el('div', { class: 'lab', text: label }));
+    if (sub) d.appendChild(el('div', { class: 'sub', text: sub }));
     // animate after mount
     setTimeout(() => {
       const deg = -90 + (pct / 100) * 180, off = 251 - (pct / 100) * 251;
@@ -1096,35 +1286,124 @@ App.notify = (function () {
 
 </script>
 <script>
+/* ==== js/core/auth.js ==== */
+/* ============================================================
+   App.auth — Supabase Auth (GoTrue) via plain fetch, no SDK.
+   Email one-time-code sign-in. The session's access_token is what
+   makes cloud sync SAFE: without it, sync.js refuses to run, because
+   an anon key alone cannot scope rows to a single owner (RLS needs
+   auth.uid(), which only exists once a user is signed in).
+   Session is cached in localStorage under its own key, separate from
+   both app state and app config, so a data-only reset never silently
+   signs the user out and a config wipe doesn't strand a live session.
+   ============================================================ */
+window.App = window.App || {};
+App.auth = (function () {
+  const KEY = 'gp-os-auth';
+  let session = load();
+
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } }
+  function save(s) { session = s; try { if (s) localStorage.setItem(KEY, JSON.stringify(s)); else localStorage.removeItem(KEY); } catch (e) { } }
+
+  function conf() { return App.config.get().cloud || {}; }
+  function authBase() { return conf().url.replace(/\/+$/, '') + '/auth/v1/'; }
+  function apiKeyHeaders() { return { apikey: conf().anonKey, 'Content-Type': 'application/json' }; }
+
+  function isSignedIn() { return !!(session && session.access_token && session.expires_at > Date.now()); }
+  function getUser() { return session ? session.user : null; }
+
+  /* Step 1: request a 6-digit email code. */
+  async function requestCode(email) {
+    if (!conf().url || !conf().anonKey) return { ok: false, error: 'Configure the Supabase URL + anon key first.' };
+    try {
+      const r = await fetch(authBase() + 'otp', { method: 'POST', headers: apiKeyHeaders(), body: JSON.stringify({ email, create_user: true }) });
+      if (!r.ok) { const j = await safeJson(r); return { ok: false, error: (j && j.msg) || ('HTTP ' + r.status) }; }
+      return { ok: true };
+    } catch (e) { return { ok: false, error: e.message || 'Network error' }; }
+  }
+
+  /* Step 2: verify the code the user received by email. */
+  async function verifyCode(email, token) {
+    try {
+      const r = await fetch(authBase() + 'verify', { method: 'POST', headers: apiKeyHeaders(), body: JSON.stringify({ email, token, type: 'email' }) });
+      const j = await safeJson(r);
+      if (!r.ok || !j || !j.access_token) return { ok: false, error: (j && (j.msg || j.error_description)) || ('HTTP ' + r.status) };
+      save({ access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user: j.user });
+      return { ok: true, user: j.user };
+    } catch (e) { return { ok: false, error: e.message || 'Network error' }; }
+  }
+
+  /* Silent refresh; called by sync before any authenticated request if the token is near/past expiry. */
+  async function ensureFreshSession() {
+    if (!session || !session.refresh_token) return false;
+    if (session.expires_at > Date.now() + 30000) return true; // still fresh enough
+    try {
+      const r = await fetch(authBase() + 'token?grant_type=refresh_token', { method: 'POST', headers: apiKeyHeaders(), body: JSON.stringify({ refresh_token: session.refresh_token }) });
+      const j = await safeJson(r);
+      if (!r.ok || !j || !j.access_token) { save(null); return false; }
+      save({ access_token: j.access_token, refresh_token: j.refresh_token || session.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user: j.user || session.user });
+      return true;
+    } catch (e) { return false; }
+  }
+
+  async function signOut() {
+    if (session && session.access_token) {
+      try { await fetch(authBase() + 'logout', { method: 'POST', headers: Object.assign(apiKeyHeaders(), { Authorization: 'Bearer ' + session.access_token }) }); } catch (e) { /* best effort */ }
+    }
+    save(null);
+  }
+
+  function accessToken() { return session ? session.access_token : null; }
+  async function safeJson(r) { try { return await r.json(); } catch (e) { return null; } }
+
+  return { isSignedIn, getUser, requestCode, verifyCode, ensureFreshSession, signOut, accessToken, hardClear: () => save(null) };
+})();
+
+</script>
+<script>
 /* ==== js/core/sync.js ==== */
 /* ============================================================
    App.sync — Supabase cloud sync (localStorage-first, background).
    - Pure REST via fetch(); no external library, so the offline
      build stays dependency-free and degrades gracefully offline.
-   - Whole app state is stored as one JSONB row (id,data,updated_at).
-     Trivial to normalize into per-collection tables later.
-   - Config (url, anon key, table, rowId) comes from App.config.cloud
-     and the `cloudSync` feature flag — never hardcoded.
-   Security: the anon key is PUBLIC by design; keep the hosted site
-   behind Cloudflare Access + enable RLS on the table (see HOSTING.md).
+   - REQUIRES a signed-in Supabase Auth session (App.auth). Without one,
+     sync refuses to run — an anon key alone cannot scope a row to one
+     owner, so "logged out" must mean "no cloud read/write", full stop.
+   - Row-level security: the table's `owner` column defaults to
+     auth.uid() server-side and RLS restricts every policy to
+     owner = auth.uid(). See HOSTING.md for the exact SQL.
+   - Conflict handling: whole-state last-write-wins is replaced with a
+     timestamp check against the last successful sync. If BOTH the
+     local copy and the cloud copy changed since that point, sync stops
+     and asks the user which one to keep instead of guessing.
+     (This is still a whole-document compare, not a per-record 3-way
+     merge — a real per-record merge would need each collection in its
+     own table with row timestamps. That's a larger follow-up; this at
+     least turns silent overwrite into an explicit, informed choice.)
    ============================================================ */
 window.App = window.App || {};
 App.sync = (function () {
-  let enabled = false, timer = null, busy = false;
+  let enabled = false, timer = null, resolvingConflict = false;
+  const LAST_SYNC_KEY = 'gp-os-sync-lastAt';
 
   function conf() { return App.config.get().cloud || {}; }
   function ready() { const c = conf(); return !!(c.url && c.anonKey); }
   function base() { return conf().url.replace(/\/+$/, '') + '/rest/v1/'; }
-  function headers(extra) {
-    const c = conf();
-    return Object.assign({ apikey: c.anonKey, Authorization: 'Bearer ' + c.anonKey, 'Content-Type': 'application/json' }, extra || {});
+  async function authedHeaders(extra) {
+    await App.auth.ensureFreshSession();
+    const c = conf(); const token = App.auth.accessToken();
+    return Object.assign({ apikey: c.anonKey, Authorization: 'Bearer ' + (token || c.anonKey), 'Content-Type': 'application/json' }, extra || {});
   }
+
+  function lastSyncedAt() { try { return localStorage.getItem(LAST_SYNC_KEY) || null; } catch (e) { return null; } }
+  function setLastSyncedAt(iso) { try { localStorage.setItem(LAST_SYNC_KEY, iso); } catch (e) { } }
 
   async function pull() {
     if (!ready()) return { ok: false, reason: 'not configured' };
+    if (!App.auth.isSignedIn()) return { ok: false, reason: 'not signed in' };
     const c = conf();
     const url = base() + encodeURIComponent(c.table) + '?id=eq.' + encodeURIComponent(c.rowId) + '&select=data,updated_at';
-    const r = await fetch(url, { headers: headers() });
+    const r = await fetch(url, { headers: await authedHeaders() });
     if (!r.ok) return { ok: false, reason: 'HTTP ' + r.status };
     const rows = await r.json();
     if (!rows.length) return { ok: true, empty: true };
@@ -1133,45 +1412,88 @@ App.sync = (function () {
 
   async function push(state) {
     if (!ready()) return { ok: false, reason: 'not configured' };
+    if (!App.auth.isSignedIn()) return { ok: false, reason: 'not signed in' };
     const c = conf();
-    const url = base() + encodeURIComponent(c.table) + '?on_conflict=id';
-    const body = [{ id: c.rowId, data: state || App.store.state(), updated_at: new Date().toISOString() }];
-    const r = await fetch(url, { method: 'POST', headers: headers({ Prefer: 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(body) });
+    const url = base() + encodeURIComponent(c.table) + '?on_conflict=owner,id';
+    const nowIso = new Date().toISOString();
+    // NOTE: no `owner` field sent — the column DEFAULTs to auth.uid()
+    // server-side; RLS then guarantees this can only ever touch the
+    // caller's own row regardless of what id/table values are supplied.
+    const body = [{ id: c.rowId, data: state || App.store.state(), updated_at: nowIso }];
+    const r = await fetch(url, { method: 'POST', headers: await authedHeaders({ Prefer: 'resolution=merge-duplicates,return=minimal' }), body: JSON.stringify(body) });
+    if (r.ok) setLastSyncedAt(nowIso);
     return { ok: r.ok, reason: r.ok ? '' : 'HTTP ' + r.status };
+  }
+
+  /* Ask the user which copy to keep. Resolves 'local' | 'remote' | 'cancel'. */
+  function confirmConflict(localAt, remoteAt) {
+    return new Promise(resolve => {
+      const { el } = App.util;
+      const body = el('div', {}, [
+        el('p', { style: 'font-size:13.5px;line-height:1.6;margin-bottom:12px', text:
+          'Both this device and the cloud have changes since the last sync. This device was last saved ' + new Date(localAt).toLocaleString() +
+          '; the cloud copy was last saved ' + new Date(remoteAt).toLocaleString() + '. Whole-state sync can only keep one — pick which to keep.' }),
+        el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, [
+          el('button', { class: 'btn rosso', onclick: () => { resolve('local'); m.close(); } }, 'Keep THIS device'),
+          el('button', { class: 'btn ghost', onclick: () => { resolve('remote'); m.close(); } }, 'Keep CLOUD copy'),
+          el('button', { class: 'btn ghost', onclick: () => { resolve('cancel'); m.close(); } }, 'Cancel (decide later)')
+        ])
+      ]);
+      const m = App.util.modal('Sync conflict', body);
+    });
   }
 
   function schedulePush() {
     if (!enabled) return;
     clearTimeout(timer);
-    timer = setTimeout(async () => { try { await push(); } catch (e) { /* offline: keep local */ } }, 1500);
+    timer = setTimeout(async () => { try { await syncNow(); } catch (e) { /* offline: keep local, retry next change */ } }, 1500);
   }
 
+  /* Core sync decision: pull first, compare timestamps, act or ask. */
+  async function syncNow() {
+    if (!enabled || resolvingConflict) return;
+    const res = await pull();
+    if (!res.ok) return; // offline or misconfigured — stay on local silently, no data at risk
+    const localSavedAt = (App.store.state().meta || {}).savedAt || null;
+    const last = lastSyncedAt();
+    const localChangedSinceSync = !last || (localSavedAt && new Date(localSavedAt) > new Date(last));
+    const remoteChangedSinceSync = res.empty ? false : (!last || new Date(res.updatedAt) > new Date(last));
+
+    if (res.empty) { await push(); return; } // first upload ever
+    if (remoteChangedSinceSync && localChangedSinceSync) {
+      resolvingConflict = true;
+      const choice = await confirmConflict(localSavedAt, res.updatedAt);
+      resolvingConflict = false;
+      if (choice === 'local') await push();
+      else if (choice === 'remote') { const r = App.store.adopt(res.data); if (r.ok) { setLastSyncedAt(res.updatedAt); App.util.toast('Kept cloud copy ↓'); rerender(); } else App.util.toast('Cloud data rejected: ' + r.error); }
+      // 'cancel' — do nothing; will ask again on next change
+      return;
+    }
+    if (remoteChangedSinceSync) {
+      const r = App.store.adopt(res.data);
+      if (r.ok) { setLastSyncedAt(res.updatedAt); App.util.toast('Synced from cloud ↓'); rerender(); }
+      else App.util.toast('Cloud data rejected: ' + r.error);
+      return;
+    }
+    if (localChangedSinceSync) { await push(); return; }
+  }
+
+  function rerender() { if (App.router) App.router.go((location.hash || '').replace('#/', '') || 'command', true); }
+
   async function init() {
-    enabled = ready() && !!App.config.get().features.cloudSync;
+    enabled = ready() && !!App.config.get().features.cloudSync && App.auth.isSignedIn();
     if (!enabled) return;
-    try {
-      const res = await pull();
-      if (res.ok && res.data) {
-        const localAt = new Date((App.store.state().meta || {}).savedAt || 0).getTime();
-        const remoteAt = new Date(res.updatedAt || 0).getTime();
-        if (remoteAt > localAt) {
-          App.store.adopt(res.data);
-          App.util.toast('Synced from cloud ↓');
-          if (App.router) App.router.go((location.hash || '').replace('#/', '') || 'command', true);
-        } else {
-          schedulePush(); // local is newer → upload
-        }
-      } else if (res.ok && res.empty) {
-        schedulePush(); // first upload
-      }
-    } catch (e) { /* offline: silently stay on localStorage */ }
+    try { await syncNow(); } catch (e) { /* offline: silently stay on localStorage */ }
     App.store.subscribe(() => schedulePush());
   }
 
-  async function test() { try { return await pull(); } catch (e) { return { ok: false, reason: e.message || 'network' }; } }
-  function status() { return { enabled, ready: ready() }; }
+  async function test() {
+    if (!App.auth.isSignedIn()) return { ok: false, reason: 'Sign in first (Settings → Cloud Sync)' };
+    try { return await pull(); } catch (e) { return { ok: false, reason: e.message || 'network' }; }
+  }
+  function status() { return { enabled, ready: ready(), signedIn: App.auth.isSignedIn() }; }
 
-  return { init, pull, push, test, status, schedulePush };
+  return { init, pull, push, test, status, schedulePush, syncNow };
 })();
 
 </script>
@@ -1179,8 +1501,17 @@ App.sync = (function () {
 /* ==== js/core/router.js ==== */
 /* ============================================================
    App.router — module registry + hash routing + app shell
-   Modules register with App.router.register({...}) and are
-   rendered lazily into the view on navigation.
+
+   Navigation model:
+   - go(id) is the app-internal "navigate to a section" call. It always
+     pushes a new history entry (history.pushState), so the Back/Forward
+     buttons step through the sections a user actually visited.
+   - popstate (fired only on Back/Forward, never by pushState itself) is
+     handled by re-rendering the target route WITHOUT touching history
+     again — otherwise Back would push yet another entry and trap you.
+   - An invalid or missing hash is normalized to '#/command' via
+     history.replaceState on first load, so a bad URL never lingers in
+     the address bar while a different screen is shown underneath it.
    ============================================================ */
 window.App = window.App || {};
 App.router = (function () {
@@ -1188,7 +1519,7 @@ App.router = (function () {
   const modules = [];
   let current = null;
 
-  function register(mod) { modules.push(mod); } // {id,label,icon,group,soon,render(el)}
+  function register(mod) { modules.push(mod); } // {id,label,icon,group,soon,soonLabel,render(el)}
   function get(id) { return modules.find(m => m.id === id); }
 
   const GROUPS = ['Overview', 'Vehicle', 'Money', 'Logistics', 'Archive', 'Insights'];
@@ -1201,13 +1532,14 @@ App.router = (function () {
     const side = el('aside', { class: 'side', id: 'side' });
     const brand = el('div', { class: 'brand' }, [
       el('div', { class: 'dno', text: '№ GP-2010-TJET · DOSSIER' }),
-      el('h1', { html: 'GRANDE PUNTO <em>T-JET</em>' }),
+      el('h1', { html: 'GRANDE PUNTO <em>T-JET</em>' }), // static developer literal, not stored data
       el('div', { class: 'veh', id: 'brandVeh', text: v.year + ' · ' + v.engine.split('(')[0].trim() })
     ]);
     side.appendChild(brand);
 
     // vehicle switcher (multi-vehicle ready)
-    const sel = el('select', { class: 'inp veh-switch', id: 'vehSwitch', onchange: e => { App.store.setActiveVehicle(e.target.value); location.hash = '#/command'; go('command', true); } });
+    const sel = el('select', { class: 'inp veh-switch', id: 'vehSwitch', 'aria-label': 'Switch vehicle',
+      onchange: e => { App.store.setActiveVehicle(e.target.value); go('command', true); } });
     App.store.vehicles().forEach(x => sel.appendChild(el('option', { value: x.id, text: x.make + ' ' + x.model + ' ' + x.year })));
     sel.value = App.store.state().activeVehicleId;
     side.appendChild(sel);
@@ -1216,35 +1548,41 @@ App.router = (function () {
       const items = modules.filter(m => m.group === g);
       if (!items.length) return;
       const grp = el('div', { class: 'nav-group' }, [el('div', { class: 'gt', text: g })]);
-      items.forEach(m => grp.appendChild(el('div', {
-        class: 'nav-item', data: { id: m.id }, role: 'button', tabindex: '0',
-        onclick: () => go(m.id), onkeydown: e => { if (e.key === 'Enter') go(m.id); }
-      }, [el('span', { class: 'ic', text: m.icon || '•' }), el('span', { text: m.label }),
-        m.soon ? el('span', { class: 'soon', text: 'BETA' }) : null])));
+      items.forEach(m => grp.appendChild(el('button', {
+        class: 'nav-item', type: 'button', data: { id: m.id }, onclick: () => go(m.id)
+      }, [el('span', { class: 'ic', 'aria-hidden': 'true', text: m.icon || '•' }), el('span', { text: m.label }),
+        m.soon ? el('span', { class: 'soon', text: m.soonLabel || 'BETA' }) : null])));
       side.appendChild(grp);
     });
 
     /* main */
     const main = el('div', { class: 'main' });
+    const crumb = el('div', { class: 'crumb', id: 'crumb' }, ['GARAGE OS · ', el('b', { text: 'Command' })]);
     const topbar = el('div', { class: 'topbar' }, [
-      el('button', { class: 'icon-btn hamb', 'aria-label': 'Menu', onclick: toggleSide }, '≡'),
-      el('div', { class: 'crumb', id: 'crumb', html: 'GARAGE OS · <b>Command</b>' }),
+      el('button', { class: 'icon-btn hamb', type: 'button', 'aria-label': 'Toggle menu', onclick: toggleSide }, '≡'),
+      crumb,
       el('div', { class: 'spacer' }),
       searchBox(),
-      el('button', { class: 'icon-btn', 'aria-label': 'Theme', 'data-tip': 'Light / Dark', onclick: toggleTheme }, '◐'),
-      el('button', { class: 'icon-btn no-print', 'aria-label': 'Print', 'data-tip': 'Print', onclick: () => window.print() }, '⎙')
+      el('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Toggle light/dark theme', 'data-tip': 'Light / Dark', onclick: toggleTheme }, '◐'),
+      el('button', { class: 'icon-btn no-print', type: 'button', 'aria-label': 'Print', 'data-tip': 'Print', onclick: () => window.print() }, '⎙')
     ]);
-    const view = el('main', { class: 'view', id: 'view' });
+    const view = el('main', { class: 'view', id: 'view', tabindex: '-1' });
     main.appendChild(topbar); main.appendChild(view);
 
     const backdrop = el('div', { class: 'backdrop', id: 'backdrop', onclick: toggleSide });
 
     app.appendChild(side); app.appendChild(main);
     document.body.appendChild(app); document.body.appendChild(backdrop);
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const results = $('#searchResults'); if (results && results.classList.contains('open')) results.classList.remove('open');
+      const s = $('#side'); if (s && s.classList.contains('open')) toggleSide();
+    });
   }
 
   function searchBox() {
-    const results = el('div', { class: 'search-results', id: 'searchResults' });
+    const results = el('div', { class: 'search-results', id: 'searchResults', role: 'listbox' });
     const input = el('input', { class: 'inp', type: 'search', placeholder: 'Search parts, codes, invoices…', 'aria-label': 'Search',
       oninput: e => runSearch(e.target.value, results),
       onblur: () => setTimeout(() => results.classList.remove('open'), 180) });
@@ -1256,7 +1594,9 @@ App.router = (function () {
     if (!q) { box.classList.remove('open'); return; }
     if (!res.length) { box.appendChild(el('div', { class: 'sr-item' }, 'No matches')); box.classList.add('open'); return; }
     const collToMod = { parts: 'parts', faults: 'diagnostics', service: 'service', workshops: 'workshops', suppliers: 'suppliers', inventory: 'inventory', documents: 'documents' };
-    res.forEach(r => box.appendChild(el('div', { class: 'sr-item', onmousedown: () => { go(collToMod[r.coll] || 'command'); } }, [
+    res.forEach(r => box.appendChild(el('button', { class: 'sr-item', type: 'button', role: 'option',
+      // onmousedown (not onclick) fires before the input's onblur hides this dropdown
+      onmousedown: () => { go(collToMod[r.coll] || 'command'); } }, [
       el('div', { class: 't', text: r.label }), el('div', { class: 'm', text: r.coll.toUpperCase() + (r.rec.oem ? ' · ' + r.rec.oem : '') })
     ])));
     box.classList.add('open');
@@ -1269,24 +1609,46 @@ App.router = (function () {
     root.setAttribute('data-theme', next); localStorage.setItem('gp-os-theme', next);
   }
 
-  function go(id, force) {
+  /* Renders a route into the shell WITHOUT touching browser history —
+     used for the initial load, popstate (Back/Forward), and anywhere
+     else history is already correct (e.g. after a hash the browser
+     itself just navigated to). */
+  function renderRoute(id, force) {
     const mod = get(id) || get('command');
     if (current === mod.id && !force) return;
     current = mod.id;
-    if (location.hash !== '#/' + id) history.replaceState(null, '', '#/' + id);
-    App.util.$$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.id === mod.id));
-    const crumb = $('#crumb'); if (crumb) crumb.innerHTML = 'GARAGE OS · <b>' + mod.label + '</b>';
+    App.util.$$('.nav-item').forEach(n => {
+      const active = n.dataset.id === mod.id;
+      n.classList.toggle('active', active);
+      if (active) n.setAttribute('aria-current', 'page'); else n.removeAttribute('aria-current');
+    });
+    const crumb = $('#crumb');
+    if (crumb) { crumb.textContent = ''; crumb.appendChild(document.createTextNode('GARAGE OS · ')); crumb.appendChild(el('b', { text: mod.label })); }
     const view = $('#view'); view.innerHTML = ''; view.scrollTop = 0;
     mod.render(view);
     if (window.innerWidth <= 900) { $('#side').classList.remove('open'); $('#backdrop').classList.remove('open'); }
   }
 
+  /* Public "navigate" entry point — always pushes history so Back/Forward
+     work between sections a user actually visited. */
+  function go(id, force) {
+    const mod = get(id) || get('command');
+    const target = '#/' + mod.id;
+    if (location.hash !== target) history.pushState(null, '', target);
+    renderRoute(mod.id, force);
+  }
+
   function start() {
     const saved = localStorage.getItem('gp-os-theme'); if (saved) document.documentElement.setAttribute('data-theme', saved);
     buildShell();
-    const id = (location.hash || '').replace('#/', '') || 'command';
-    go(id, true);
-    window.addEventListener('hashchange', () => { const h = (location.hash || '').replace('#/', ''); if (h && h !== current) go(h); });
+    const raw = (location.hash || '').replace('#/', '');
+    const isValid = !!(raw && get(raw));
+    if (!isValid) history.replaceState(null, '', '#/command'); // normalize bad/missing hash, no ghost entry
+    renderRoute(isValid ? raw : 'command', true);
+    window.addEventListener('popstate', () => {
+      const h = (location.hash || '').replace('#/', '');
+      renderRoute(get(h) ? h : 'command', true);
+    });
     App.store.subscribe(() => { const b = $('#brandVeh'); const v = App.store.veh(); if (b) b.textContent = v.year + ' · ' + v.engine.split('(')[0].trim(); });
   }
 
@@ -2030,16 +2392,26 @@ App.router = (function () {
     }
   });
 
+  /* d.label here can originate from stored/imported data (a service
+     record's year, a budget category name) — everything is placed via
+     text:, never interpolated into a markup string, so a crafted
+     backup can't inject through this chart. */
   function barChart(title, data) {
     const card = el('div', { class: 'card', style: 'margin-bottom:16px' });
     const max = Math.max.apply(null, data.map(d => d.val).concat([1]));
-    let bars = data.map(d => `<div style="display:flex;align-items:center;gap:10px;margin:6px 0">
-      <span class="mono" style="width:64px;font-size:10px;color:var(--ink-soft);text-align:right">${d.label}</span>
-      <div style="flex:1;background:var(--paper);border:1.5px solid var(--ink);border-radius:3px;height:18px;overflow:hidden">
-        <div style="height:100%;width:${(d.val / max) * 100}%;background:repeating-linear-gradient(-45deg,var(--rosso-deep) 0 8px,var(--rosso) 8px 16px)"></div></div>
-      <span class="mono" style="width:78px;font-size:11px">${App.util.num(d.val)}</span></div>`).join('');
-    if (!data.length) bars = '<div class="empty">No data yet.</div>';
-    card.innerHTML = `<div class="pad"><div class="mono muted" style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">${title}</div>${bars}</div>`;
+    const pad = el('div', { class: 'pad' }, [
+      el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px', text: title })
+    ]);
+    if (!data.length) { pad.appendChild(ui.empty('No data yet.')); }
+    else data.forEach(d => {
+      const fill = el('div', { style: 'height:100%;width:' + ((d.val / max) * 100) + '%;background:repeating-linear-gradient(-45deg,var(--rosso-deep) 0 8px,var(--rosso) 8px 16px)' });
+      pad.appendChild(el('div', { style: 'display:flex;align-items:center;gap:10px;margin:6px 0' }, [
+        el('span', { class: 'mono', style: 'width:64px;font-size:10px;color:var(--ink-soft);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap', text: d.label }),
+        el('div', { style: 'flex:1;background:var(--paper);border:1.5px solid var(--ink);border-radius:3px;height:18px;overflow:hidden' }, [fill]),
+        el('span', { class: 'mono', style: 'width:78px;font-size:11px', text: App.util.num(d.val) })
+      ]));
+    });
+    card.appendChild(pad);
     return card;
   }
 
@@ -2143,12 +2515,21 @@ App.router = (function () {
     }
   });
 
-  /* ---- AI Assistant (UI only; no AI wired) ---- */
+  /* ---- Assistant — rule-based canned answers today, NOT a real AI.
+     Labeled and disclaimed honestly (issue: don't present a placeholder
+     as if it were live AI). Answer text is built via text:, never
+     innerHTML — a fault `code` or budget `cat` below can come from
+     imported/stored data, so it must never be interpolated as markup. */
   App.router.register({
-    id: 'assistant', label: 'AI Assistant', group: 'Insights', icon: App.config.icon('assistant'), soon: true,
+    id: 'assistant', label: 'Assistant (rule-based)', group: 'Insights', icon: App.config.icon('assistant'), soon: true, soonLabel: 'DEMO',
     render(view) {
-      view.appendChild(ui.secHead('17', 'AI Maintenance Advisor', 'مستشار الصيانة'));
-      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:14px' }, [el('div', { class: 'pad mono muted', style: 'font-size:11.5px', html: '🧠 Extension point — UI ready, no AI wired yet (flag <code>aiAdvisor</code>). It will reason over the same data layer (parts, faults, fuel, budget).' })]));
+      view.appendChild(ui.secHead('17', 'Maintenance Assistant', 'مساعد الصيانة'));
+      view.appendChild(el('div', { class: 'card', style: 'margin-bottom:14px;border-color:var(--amber)' }, [el('div', { class: 'pad', style: 'font-size:11.5px;color:var(--ink-soft)' }, [
+        el('b', { style: 'color:var(--amber)', text: '⚠ Not a real AI. ' }),
+        el('span', { text: 'These are fixed, rule-based answers written for this demo — nothing is sent to any AI model. A real "AI Maintenance Advisor" (flag ' }),
+        el('code', { text: 'aiAdvisor' }),
+        el('span', { text: ') is a planned extension point, not implemented yet.' })
+      ])]));
       const qs = ['Why is fuel consumption increasing?', 'What should I repair first?', 'What can safely wait?', 'Am I over budget in any category?'];
       const chat = el('div', { class: 'card' }, [el('div', { class: 'pad' })]);
       const pad = chat.querySelector('.pad');
@@ -2158,10 +2539,16 @@ App.router = (function () {
       function answer(q) {
         const d = App.store.veh().data; let txt = '';
         if (/fuel/i.test(q)) txt = 'Top suspects from your data: torn intake hose (51822558), overdue plugs, then a smoke test + fuel-trim read. Fix the hose first and re-measure.';
-        else if (/first/i.test(q)) txt = 'Critical open faults: ' + d.faults.filter(f => !f.solved && f.priority === 'critical').map(f => f.code).join(', ') + '. Start with the rear-harness wiring (B1023) + coolant leak + intake hose.';
+        else if (/first/i.test(q)) txt = 'Critical open faults: ' + (d.faults.filter(f => !f.solved && f.priority === 'critical').map(f => f.code).join(', ') || 'none') + '. Start with the rear-harness wiring (B1023) + coolant leak + intake hose.';
         else if (/wait/i.test(q)) txt = 'Safe to defer: radiator (pending pressure test), front shocks (inspect first), all Phase 2–3 cosmetic items.';
         else txt = 'Categories over budget: ' + (d.budget.filter(c => c.spent > c.budget).map(c => c.cat).join(', ') || 'none yet') + '.';
-        ans.innerHTML = '<div class="card" style="border-color:var(--steel)"><div class="pad" style="font-size:13px;line-height:1.6"><b class="mono" style="color:var(--steel)">ADVISOR ·</b> ' + txt + '</div></div>';
+        ans.innerHTML = '';
+        ans.appendChild(el('div', { class: 'card', style: 'border-color:var(--steel)' }, [
+          el('div', { class: 'pad', style: 'font-size:13px;line-height:1.6' }, [
+            el('b', { class: 'mono', style: 'color:var(--steel)', text: 'RULE-BASED · ' }),
+            el('span', { text: txt })
+          ])
+        ]));
       }
     }
   });
@@ -2170,20 +2557,25 @@ App.router = (function () {
 </script>
 <script>
 /* ==== js/modules/settings.js ==== */
-/* Settings — vehicle profile, preferences, backup/restore, feature
-   flags (future extension points), notifications overview. */
+/* Settings — vehicle profile, preferences, backup/restore, cloud sync
+   sign-in, and an honest list of what's shipped vs. planned. */
 (function () {
   const { el } = App.util; const ui = App.ui; const cfg = App.config;
   App.router.register({
     id: 'settings', label: 'Settings', group: 'Insights', icon: cfg.icon('settings'),
     render(view) {
       view.appendChild(ui.secHead('', 'Settings', 'الإعدادات'));
-      const v = App.store.veh();
 
-      /* vehicle profile */
+      const notice = App.store.state().meta && App.store.state().meta.recoveryNotice;
+      if (notice) view.appendChild(el('div', { class: 'card', style: 'margin-bottom:16px;border-color:var(--rosso)' }, [
+        el('div', { class: 'pad', style: 'font-size:13px;line-height:1.6' }, [
+          el('b', { style: 'color:var(--rosso)', text: '⚠ Data recovery notice: ' }), el('span', { text: notice })
+        ])
+      ]));
+
+      const v = App.store.veh();
       view.appendChild(section('Vehicle Profile', vehForm(v)));
 
-      /* preferences */
       const c = cfg.get();
       const pref = el('div', { class: 'grid-3' }, [
         prefSelect('Theme', ['light', 'dark'], c.theme.mode, val => { cfg.setPath('theme', 'mode', val); document.documentElement.setAttribute('data-theme', val); localStorage.setItem('gp-os-theme', val); }),
@@ -2195,52 +2587,133 @@ App.router = (function () {
       ]);
       view.appendChild(section('Preferences', pref));
 
-      /* backup / restore */
-      const backupUI = el('div', {}, [
-        el('div', { class: 'qa', style: 'margin-bottom:12px' }, [
-          el('button', { class: 'btn sm', onclick: exportBackup }, '⇩ Export JSON backup'),
-          el('button', { class: 'btn sm ghost', onclick: importBackup }, '⇧ Import JSON'),
-          el('button', { class: 'btn sm ghost', onclick: () => { App.store.snapshot('manual'); App.util.toast('Snapshot saved'); App.router.go('settings', true); } }, '📸 Snapshot now'),
-          el('button', { class: 'btn sm ghost', onclick: () => { if (confirm('Reset ALL data to seed?')) { App.store.reset(); location.reload(); } } }, '⟲ Factory reset')
-        ]),
-        backupList()
-      ]);
-      view.appendChild(section('Backup & Restore', backupUI));
-
-      /* cloud sync (Supabase) */
+      view.appendChild(section('Backup & Restore', backupSection()));
       view.appendChild(section('Cloud Sync — Supabase', cloudForm()));
-
-      /* future extension points */
-      const flags = c.features;
-      const fl = el('div', { class: 'grid-2' });
-      [['obdLive', 'OBD-II Live Diagnostics'], ['aiAdvisor', 'AI Maintenance Advisor'], ['expenseForecast', 'Expense Forecasting'], ['vinDecoder', 'VIN Decoder'], ['ocrInvoice', 'OCR Invoice Scanner'], ['barcodeScanner', 'Barcode / QR Parts Scanner'], ['cloudSync', 'Cloud Sync'], ['multiUser', 'Multi-user Collaboration']].forEach(f => {
-        fl.appendChild(el('label', { class: 'card', style: 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;cursor:pointer' }, [
-          el('span', { style: 'min-width:0', text: f[1] }),
-          (function () { const cb = el('input', { type: 'checkbox', style: 'flex-shrink:0', checked: flags[f[0]] ? 'checked' : null }); cb.onchange = () => { cfg.setPath('features', f[0], cb.checked); App.util.toast(f[1] + (cb.checked ? ' enabled (stub)' : ' disabled')); }; return cb; })()
-        ]));
-      });
-      view.appendChild(section('Extension Points (roadmap)', el('div', {}, [el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:10px', text: 'Feature flags — flip on as each module is built. Data layer + UI hooks already exist.' }), fl])));
+      view.appendChild(section('Shipped vs. Planned', featureList(c)));
     }
   });
 
+  /* ---------------- Backup & Restore ---------------- */
+  function backupSection() {
+    const actions = el('div', { class: 'qa', style: 'margin-bottom:12px' }, [
+      el('button', { class: 'btn sm', onclick: exportBackup }, '⇩ Export JSON backup'),
+      el('button', { class: 'btn sm ghost', onclick: importBackup }, '⇧ Import JSON'),
+      el('button', { class: 'btn sm ghost', onclick: () => { App.store.snapshot('manual'); App.util.toast('Snapshot saved'); App.router.go('settings', true); } }, '📸 Snapshot now'),
+      el('button', { class: 'btn sm rosso', onclick: factoryReset }, '⟲ Factory reset (clears everything)')
+    ]);
+    const corrupt = App.store.corruptBackups();
+    const corruptUI = corrupt.length ? el('div', { style: 'margin-top:14px' }, [
+      el('div', { class: 'h-disp', style: 'font-size:13px;color:var(--rosso);margin-bottom:6px', text: 'Recovered Data (' + corrupt.length + ')' }),
+      el('div', { class: 'mono muted', style: 'font-size:11px;margin-bottom:8px', text: 'Data that failed to load safely was preserved here instead of being silently discarded. Export or discard each.' }),
+      el('div', { class: 'chips' }, corrupt.map(k => el('span', { class: 'tag' }, [
+        el('span', { text: k.replace('gp-os-corrupt-', 'backup @ ') + '  ' }),
+        el('button', { class: 'btn sm ghost', style: 'padding:1px 6px;font-size:9px', onclick: () => downloadCorrupt(k) }, '⇩'),
+        el('button', { class: 'btn sm ghost', style: 'padding:1px 6px;font-size:9px', onclick: () => { if (confirm('Permanently discard this recovered copy?')) { App.store.discardCorruptBackup(k); App.router.go('settings', true); } } }, '✕')
+      ])))
+    ]) : null;
+    return el('div', {}, [actions, backupList(), corruptUI].filter(Boolean));
+  }
+  function exportBackup() {
+    const a = el('a', { href: 'data:application/json;charset=utf-8,' + encodeURIComponent(App.store.exportJSON()), download: 'garage-os-backup-' + new Date().toISOString().slice(0, 10) + '.json' });
+    document.body.appendChild(a); a.click(); a.remove(); App.util.toast('Backup exported');
+  }
+  function downloadCorrupt(key) {
+    const raw = App.store.readCorruptBackup(key) || '';
+    const a = el('a', { href: 'data:application/json;charset=utf-8,' + encodeURIComponent(raw), download: key + '.json' });
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function importBackup() {
+    const inp = el('input', { type: 'file', accept: '.json', style: 'display:none' });
+    inp.onchange = () => {
+      const f = inp.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try { App.store.importJSON(r.result); App.util.toast('Restored — a snapshot of your previous data was kept.'); location.reload(); }
+        catch (e) { showError('Import failed', e.message || 'Unknown error'); }
+      };
+      r.readAsText(f);
+    };
+    document.body.appendChild(inp); inp.click(); inp.remove();
+  }
+  function factoryReset() {
+    const msg = 'Factory reset clears EVERYTHING on this device: vehicle data, all snapshots, preferences, and any saved Supabase URL/key. This cannot be undone by this app.\n\nA backup will be downloaded automatically first. Continue?';
+    if (!confirm(msg)) return;
+    exportBackup();
+    App.store.hardReset();
+    cfg.reset();
+    if (App.auth) App.auth.hardClear();
+    App.util.toast('Everything cleared — reloading…');
+    setTimeout(() => location.reload(), 400);
+  }
+  function backupList() {
+    const list = App.store.backups();
+    if (!list.length) return ui.empty('No snapshots yet.');
+    return App.DataTable([
+      { key: 'at', label: 'When', render: r => App.util.shortDate(r.at) + ' ' + new Date(r.at).toLocaleTimeString() },
+      { key: 'label', label: 'Label' },
+      { key: '_r', label: '', render: r => el('button', { class: 'btn sm ghost', onclick: () => {
+        if (!confirm('Restore this snapshot? Current data will be replaced (a safety snapshot of it will not be auto-taken — export a backup first if unsure).')) return;
+        const res = App.store.restoreBackup(r.at);
+        if (res.ok) location.reload(); else showError('Restore failed', res.error);
+      } }, 'Restore') }
+    ], list, { title: 'backups', pageSize: 5 });
+  }
+  function showError(title, msg) {
+    const body = el('div', {}, [el('pre', { style: 'white-space:pre-wrap;font-family:var(--mono);font-size:12px;background:var(--card2);padding:10px;border-radius:6px' }, msg)]);
+    App.util.modal(title, body);
+  }
+
+  /* ---------------- Cloud Sync (Supabase Auth + sync) ---------------- */
   function cloudForm() {
     const c = cfg.get(); const cl = c.cloud;
     const fields = [['url', 'Supabase Project URL', 'https://xxxx.supabase.co'], ['anonKey', 'Anon public key', 'eyJ...'], ['table', 'Table name', 'garage_state'], ['rowId', 'Row id', 'gp-tjet-2010']];
     const body = el('div', { class: 'grid-2' });
     fields.forEach(f => body.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: f[1] }), el('input', { class: 'inp', value: cl[f[0]] || '', placeholder: f[2], data: { key: f[0] } })])));
-    const status = el('div', { class: 'mono muted', style: 'font-size:11px;margin:6px 0' , text: 'Status: ' + (App.sync.status().enabled ? 'ENABLED' : (App.sync.status().ready ? 'configured (flag off)' : 'not configured')) });
+
+    const signedIn = App.auth.isSignedIn(); const user = App.auth.getUser();
+    const authBox = el('div', { style: 'margin-top:10px' });
+    if (signedIn) {
+      authBox.appendChild(el('div', { style: 'display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' }, [
+        el('span', { class: 'mono', style: 'font-size:12px' }, ['Signed in as ', el('b', { text: (user && user.email) || '(unknown)' })]),
+        el('button', { class: 'btn sm ghost', onclick: async () => { await App.auth.signOut(); App.router.go('settings', true); } }, 'Sign out')
+      ]));
+    } else {
+      const emailInp = el('input', { class: 'inp', type: 'email', placeholder: 'you@email.com' });
+      const codeRow = el('div', { style: 'display:none;margin-top:8px;gap:8px', class: 'qa' });
+      const codeInp = el('input', { class: 'inp', style: 'max-width:140px', placeholder: '6-digit code' });
+      const sendBtn = el('button', { class: 'btn sm', onclick: async () => {
+        if (!emailInp.value) return App.util.toast('Enter an email first');
+        sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+        const r = await App.auth.requestCode(emailInp.value.trim());
+        sendBtn.disabled = false; sendBtn.textContent = 'Send code';
+        if (r.ok) { codeRow.style.display = 'flex'; App.util.toast('Code sent — check your email'); } else App.util.toast('Failed: ' + r.error);
+      } }, 'Send code');
+      const verifyBtn = el('button', { class: 'btn rosso', onclick: async () => {
+        const r = await App.auth.verifyCode(emailInp.value.trim(), codeInp.value.trim());
+        if (r.ok) { App.util.toast('Signed in ✓'); App.router.go('settings', true); } else App.util.toast('Failed: ' + r.error);
+      } }, 'Verify & sign in');
+      codeRow.appendChild(codeInp); codeRow.appendChild(verifyBtn);
+      authBox.appendChild(el('label', { class: 'fld' }, [el('span', { class: 'lb', text: 'Sign in (required for sync — scopes your data to your account only)' }), emailInp]));
+      authBox.appendChild(el('div', { class: 'qa' }, [sendBtn]));
+      authBox.appendChild(codeRow);
+    }
+
+    const stat = App.sync.status();
+    const status = el('div', { class: 'mono muted', style: 'font-size:11px;margin:10px 0', text:
+      'Status: ' + (stat.enabled ? 'ENABLED & signed in' : (!stat.signedIn ? 'sign in required' : (stat.ready ? 'configured (flag off)' : 'not configured'))) });
     const toggle = el('label', { class: 'fld', style: 'display:flex;gap:8px;align-items:center' }, [
       (function () { const cb = el('input', { type: 'checkbox', checked: c.features.cloudSync ? 'checked' : null, data: { key: '_enable' } }); return cb; })(),
-      el('span', { class: 'lb', style: 'margin:0', text: 'Enable cloud sync (feature flag)' })
+      el('span', { class: 'lb', style: 'margin:0', text: 'Enable cloud sync' })
     ]);
     const wrap = el('div', {}, [
-      el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-bottom:10px', html: 'Free Supabase + Cloudflare. Paste your project URL & anon key, run the SQL in <b>HOSTING.md</b>, enable the flag, Save. Data then syncs across devices. Anon key is public — keep the site behind Cloudflare Access.' }),
-      body, toggle, status,
+      el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-bottom:10px', html:
+        'Free Supabase + Cloudflare. Paste your project URL &amp; anon key, run the SQL in <b>HOSTING.md</b> (creates the table with row-level security scoped to your account), sign in below, enable the flag, Save.' }),
+      body, authBox, toggle, status,
       el('div', { class: 'qa' }, [
         el('button', { class: 'btn sm rosso', onclick: save }, 'Save cloud config'),
         el('button', { class: 'btn sm ghost', onclick: doTest }, '🔌 Test connection'),
         el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.push(); App.util.toast(r.ok ? 'Pushed to cloud ↑' : 'Push failed: ' + r.reason); } }, '↑ Push now'),
-        el('button', { class: 'btn sm ghost', onclick: async () => { const r = await App.sync.pull(); if (r.ok && r.data) { App.store.adopt(r.data); App.util.toast('Pulled ↓'); App.router.go('settings', true); } else App.util.toast('Pull: ' + (r.reason || (r.empty ? 'no cloud row yet' : 'ok'))); } }, '↓ Pull now')
+        el('button', { class: 'btn sm ghost', onclick: () => App.sync.syncNow() }, '↕ Sync now')
       ])
     ]);
     function save() {
@@ -2250,8 +2723,24 @@ App.router = (function () {
       cfg.setPath('features', 'cloudSync', toggle.querySelector('input').checked);
       App.util.toast('Cloud config saved'); App.sync.init(); App.router.go('settings', true);
     }
-    async function doTest() { const r = await App.sync.test(); App.util.toast(r.ok ? (r.empty ? 'Connected ✓ (no row yet)' : 'Connected ✓ cloud row found') : 'Failed: ' + (r.reason || 'check URL/key/RLS')); }
+    async function doTest() { const r = await App.sync.test(); App.util.toast(r.ok ? (r.empty ? 'Connected ✓ (no row yet)' : 'Connected ✓ cloud row found') : 'Failed: ' + (r.reason || 'check URL/key/RLS/sign-in')); }
     return wrap;
+  }
+  /* ---------------- Shipped vs. Planned (no fake stub toggles) ---------------- */
+  function featureList(c) {
+    const shipped = [
+      'Multi-vehicle data layer', 'Parts / Diagnostics / Service Book / Fuel / Budget / Planner',
+      'Workshops / Suppliers / Inventory / Documents', 'Global search', 'JSON backup + restore + rolling snapshots',
+      'Cloud sync with Supabase Auth + row-level security (once you sign in above)'
+    ];
+    const planned = ['OBD-II Live Diagnostics', 'AI Maintenance Advisor (currently: canned rule-based answers only, not a real AI)',
+      'Expense Forecasting', 'VIN Decoder', 'OCR Invoice Scanner', 'Barcode / QR Parts Scanner', 'Multi-user Collaboration'];
+    return el('div', {}, [
+      el('div', { class: 'h-disp', style: 'font-size:13px;margin-bottom:6px', text: '✓ Shipped' }),
+      el('ul', { style: 'margin:0 0 14px 18px;font-size:12.5px;line-height:1.7' }, shipped.map(s => el('li', { text: s }))),
+      el('div', { class: 'h-disp', style: 'font-size:13px;margin-bottom:6px;color:var(--ink-soft)', text: '◷ Planned — not implemented yet' }),
+      el('ul', { style: 'margin:0 0 0 18px;font-size:12.5px;line-height:1.7;color:var(--ink-soft)' }, planned.map(s => el('li', { text: s })))
+    ]);
   }
 
   function section(title, node) {
@@ -2271,24 +2760,6 @@ App.router = (function () {
   function prefText(label, cur, fn) {
     const i = el('input', { class: 'inp', value: cur }); i.onchange = () => fn(i.value);
     return el('label', { class: 'fld' }, [el('span', { class: 'lb', text: label }), i]);
-  }
-  function exportBackup() {
-    const a = el('a', { href: 'data:application/json;charset=utf-8,' + encodeURIComponent(App.store.exportJSON()), download: 'garage-os-backup-' + new Date().toISOString().slice(0, 10) + '.json' });
-    document.body.appendChild(a); a.click(); a.remove(); App.util.toast('Backup exported');
-  }
-  function importBackup() {
-    const inp = el('input', { type: 'file', accept: '.json', style: 'display:none' });
-    inp.onchange = () => { const f = inp.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { App.store.importJSON(r.result); App.util.toast('Restored'); location.reload(); } catch (e) { App.util.toast('Invalid file'); } }; r.readAsText(f); };
-    document.body.appendChild(inp); inp.click(); inp.remove();
-  }
-  function backupList() {
-    const list = App.store.backups();
-    if (!list.length) return ui.empty('No snapshots yet.');
-    return App.DataTable([
-      { key: 'at', label: 'When', render: r => App.util.shortDate(r.at) + ' ' + new Date(r.at).toLocaleTimeString() },
-      { key: 'label', label: 'Label' },
-      { key: '_r', label: '', render: r => el('button', { class: 'btn sm ghost', onclick: () => { if (confirm('Restore this snapshot?')) { App.store.restoreBackup(r.at); location.reload(); } } }, 'Restore') }
-    ], list, { title: 'backups', pageSize: 5 });
   }
 })();
 

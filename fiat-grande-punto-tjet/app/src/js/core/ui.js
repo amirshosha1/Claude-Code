@@ -14,6 +14,10 @@ App.ui = (function () {
     ]);
   }
 
+  /* NOTE: k/v/sub/label may ultimately originate from stored or imported
+     data (e.g. a vehicle's free-text `phase` field). Every value here is
+     set via textContent, never innerHTML, so a crafted backup can't
+     inject markup through a shared component used across every module. */
   function tile(k, v, sub, opts) {
     opts = opts || {};
     const vNode = el('div', { class: 'v' });
@@ -21,16 +25,19 @@ App.ui = (function () {
       el('div', { class: 'k', text: k }), vNode, sub ? el('div', { class: 'sub', text: sub }) : null
     ]);
     if (opts.count != null) App.util.countUp(vNode, opts.count, opts);
-    else vNode.innerHTML = v;
+    else vNode.textContent = v;
     if (opts.color) vNode.style.color = opts.color;
     return t;
   }
 
   function dial(pct, label, sub, color) {
     const d = el('div', { class: 'dial' });
-    d.innerHTML = App.util.gaugeSVG(0, color) +
-      `<div class="val" style="color:${color || 'var(--amber)'}">${pct}%</div>` +
-      `<div class="lab">${label}</div>` + (sub ? `<div class="sub">${sub}</div>` : '');
+    // gaugeSVG's own inputs (pct/color) are always internal numbers/CSS
+    // vars from the call site, never stored text, so it alone stays HTML.
+    d.innerHTML = App.util.gaugeSVG(0, color);
+    d.appendChild(el('div', { class: 'val', style: 'color:' + (color || 'var(--amber)'), text: pct + '%' }));
+    d.appendChild(el('div', { class: 'lab', text: label }));
+    if (sub) d.appendChild(el('div', { class: 'sub', text: sub }));
     // animate after mount
     setTimeout(() => {
       const deg = -90 + (pct / 100) * 180, off = 251 - (pct / 100) * 251;
