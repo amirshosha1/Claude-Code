@@ -546,7 +546,9 @@ App.seed = {
       ],
       scans: [
         { date: '2026-07-11', tool: 'AlfaOBD', by: 'Owner', note: 'Full multi-module scan — 7+ CAN codes; battery 12.0V, dips 10.3V cranking' },
-        { date: '2025-12', tool: 'MultiECUScan', by: 'Eng. Louai', note: 'Proxi alignment — cleared fault, recurred later (milder)' }
+        { date: '2025-12', tool: 'MultiECUScan', by: 'Eng. Louai', note: 'Proxi alignment — cleared fault, recurred later (milder)' },
+        { date: '2024-06-27', tool: 'MultiECUScan', by: 'Owner', note: 'car_report.pdf — scan (before cleaning)' },
+        { date: '2024-06-27', tool: 'MultiECUScan', by: 'Owner', note: 'car_report_after_cleaning.pdf — scan (after cleaning)' }
       ],
       /* ---- SERVICE BOOK ---- */
       service: [
@@ -624,7 +626,7 @@ App.seed = {
         { stage: 'before', label: 'Rear-impact zone / cowl panel', date: '2026-07' }
       ],
       /* ---- VALUE ---- */
-      value: { purchase: 320000, invested: 55000, repairEstimate: 40000, modEstimate: 25000, estResale: 380000 }
+      value: { purchase: 72000, purchaseYear: 2013, invested: 12000, runningLogged: 36612, repairEstimate: 40000, modEstimate: 25000, estResale: 325000 }
     }
   }]
 };
@@ -1985,16 +1987,21 @@ App.router = (function () {
       const invested = v.data.installed.reduce((s, x) => s + (x.paid || 0), 0) + (val.invested || 0);
       view.appendChild(ui.secHead('14', 'Vehicle Value', 'قيمة العربية'));
       view.appendChild(el('div', { class: 'tiles stagger' }, [
-        ui.tile('Purchase', money(val.purchase), 'buy-in'),
-        ui.tile('Invested', money(invested), 'repairs to date', { color: 'var(--green)' }),
+        ui.tile('Purchase (' + (val.purchaseYear || '') + ')', money(val.purchase), 'buy-in'),
+        ui.tile('Invested', money(invested), 'documented repairs', { color: 'var(--green)' }),
         ui.tile('Repairs ahead', money(val.repairEstimate), 'Phase 1–2 est.', { color: 'var(--amber)' }),
-        ui.tile('Est. resale', money(val.estResale), 'after restoration', { color: 'var(--steel)' })
+        ui.tile('Market value', money(val.estResale), 'today', { color: 'var(--steel)' })
       ]));
-      const net = val.estResale - val.purchase - invested - val.repairEstimate;
+      const nominal = val.estResale - val.purchase;
+      // real-terms in USD: 2013 EGP≈6.9/USD, 2026≈48/USD
+      const usdThen = Math.round(val.purchase / 6.9), usdNow = Math.round(val.estResale / 48);
       view.appendChild(el('div', { class: 'card', style: 'margin-top:16px' }, [el('div', { class: 'pad' }, [
-        el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase', text: 'Position after full restoration' }),
-        el('div', { class: 'h-disp', style: 'font-size:26px;margin-top:4px;color:' + (net >= 0 ? 'var(--green)' : 'var(--rosso)'), text: (net >= 0 ? '+' : '') + money(net) }),
-        el('div', { class: 'mono muted', style: 'font-size:11px;margin-top:4px', text: 'Note: a well-documented restoration protects value more than it profits — the dossier is the asset.' })
+        el('div', { class: 'mono muted', style: 'font-size:10px;letter-spacing:.14em;text-transform:uppercase', text: 'Nominal change (EGP)' }),
+        el('div', { class: 'h-disp', style: 'font-size:26px;margin-top:4px;color:var(--green)', text: '+' + money(nominal) }),
+        el('div', { class: 'mono muted', style: 'font-size:11.5px;margin-top:8px;line-height:1.7', html:
+          'Reality check: most of that "gain" is <b>EGP devaluation</b>, not real appreciation.<br>' +
+          'In USD: bought ≈ <b>$' + usdThen.toLocaleString() + '</b> (2013) → worth ≈ <b>$' + usdNow.toLocaleString() + '</b> today.<br>' +
+          'So in real terms it depreciated like a normal car. The win is <b>cheap, reliable motoring</b> if kept — restoration is for keeping, not profit.' })
       ])]));
     }
   });

@@ -72,7 +72,9 @@ App.seed = {
       ],
       scans: [
         { date: '2026-07-11', tool: 'AlfaOBD', by: 'Owner', note: 'Full multi-module scan — 7+ CAN codes; battery 12.0V, dips 10.3V cranking' },
-        { date: '2025-12', tool: 'MultiECUScan', by: 'Eng. Louai', note: 'Proxi alignment — cleared fault, recurred later (milder)' }
+        { date: '2025-12', tool: 'MultiECUScan', by: 'Eng. Louai', note: 'Proxi alignment — cleared fault, recurred later (milder)' },
+        { date: '2024-06-27', tool: 'MultiECUScan', by: 'Owner', note: 'car_report.pdf — scan (before cleaning)' },
+        { date: '2024-06-27', tool: 'MultiECUScan', by: 'Owner', note: 'car_report_after_cleaning.pdf — scan (after cleaning)' }
       ],
       /* ---- SERVICE BOOK ---- */
       service: [
@@ -150,7 +152,7 @@ App.seed = {
         { stage: 'before', label: 'Rear-impact zone / cowl panel', date: '2026-07' }
       ],
       /* ---- VALUE ---- */
-      value: { purchase: 320000, invested: 55000, repairEstimate: 40000, modEstimate: 25000, estResale: 380000 }
+      value: { purchase: 72000, purchaseYear: 2013, invested: 12000, runningLogged: 36612, repairEstimate: 40000, modEstimate: 25000, estResale: 325000 }
     }
   }]
 };
